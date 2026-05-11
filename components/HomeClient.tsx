@@ -33,11 +33,11 @@ export default function HomeClient({ tools }: { tools: any[] }) {
 
   return (
     <main className="h-screen bg-[#0a0a0a] overflow-y-scroll overflow-x-hidden snap-y snap-mandatory scroll-smooth">
-
+      
       {/* HERO SECTION */}
       <section className="relative h-screen w-full flex flex-col justify-center px-6 md:px-16 snap-start">
         <div className="absolute inset-0 pointer-events-none">
-          <div
+          <div 
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-[0.06] blur-3xl"
             style={{ background: 'radial-gradient(circle, #2E5BFF 0%, transparent 70%)' }}
           />
@@ -99,16 +99,27 @@ export default function HomeClient({ tools }: { tools: any[] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
           >
-            <a href="#branches" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-300 hover:scale-105" style={{ background: '#2E5BFF' }}>
+            <a
+              href="#branches"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-300 hover:scale-105"
+              style={{ background: '#2E5BFF' }}
+            >
               Explore Your Branches
             </a>
-            <Link href="/signup" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white/60 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white/60 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+            >
               Sign up for free protocols
             </Link>
           </motion.div>
         </div>
 
-        <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+        <motion.div
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+        >
           <div className="w-px h-10 bg-gradient-to-b from-transparent to-white/20" />
         </motion.div>
       </section>
@@ -116,9 +127,16 @@ export default function HomeClient({ tools }: { tools: any[] }) {
       {/* BRANCHES SECTION */}
       <section id="branches" className="h-screen w-full flex flex-col justify-center snap-start">
         <div className="px-6 md:px-16 mb-10">
-          <motion.div className="flex items-center gap-4 mb-2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <motion.div
+            className="flex items-center gap-4 mb-2"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
             <div className="h-px flex-1 bg-white/5" />
-            <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">7 Branches of Life</span>
+            <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">
+              7 Branches of Life
+            </span>
             <div className="h-px flex-1 bg-white/5" />
           </motion.div>
 
@@ -142,41 +160,58 @@ export default function HomeClient({ tools }: { tools: any[] }) {
           </motion.p>
         </div>
 
-        <div
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-6 md:px-16 pb-12 w-full"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {branches.map((branch, i) => (
-            <motion.div
-              key={branch.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Link
-                href={`/${branch.slug}`}
-                className="relative flex flex-col justify-between h-[400px] w-[320px] shrink-0 p-8 rounded-[2rem] border border-white/5 bg-[#111111] hover:bg-[#161616] transition-all duration-300 overflow-hidden snap-center group"
+        <div className="relative">
+          <div 
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-6 md:px-16 pb-12 w-full"
+            style={{ 
+              scrollSnapType: 'x mandatory',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
+            {branches.map((branch, i) => (
+              <motion.div
+                key={branch.slug}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                style={{ scrollSnapAlign: 'start' }}
+                className="shrink-0"
               >
-                <div
-                  className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20"
-                  style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
-                />
-
-                <div
-                  className="relative z-10 text-8xl font-black opacity-20 transition-opacity duration-300 group-hover:opacity-40 leading-none"
-                  style={{ color: branch.color }}
+                <Link 
+                  href={`/${branch.slug}`}
+                  className="relative flex flex-col justify-between h-[400px] w-[320px] p-8 rounded-[2rem] border border-white/5 bg-[#111111] hover:bg-[#161616] transition-all duration-300 overflow-hidden group hover:animate-pulse"
+                  style={{ 
+                    boxShadow: `0 0 40px ${branch.color}15`,
+                    transition: 'box-shadow 2s ease-in-out, all 0.3s ease'
+                  }}
                 >
-                  {branch.num}
-                </div>
+                  <div 
+                    className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
+                    style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
+                  />
+                  
+                  <div 
+                    className="text-8xl font-black opacity-20 transition-opacity duration-300 group-hover:opacity-40 leading-none" 
+                    style={{ color: branch.color }}
+                  >
+                    {branch.num}
+                  </div>
 
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-bold text-white mb-3 tracking-tight group-hover:text-yellow-400 transition-colors">{branch.name}</h3>
-                  <p className="text-white/40 text-sm leading-relaxed">{branch.description}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                  <div className="relative z-10 mt-auto">
+                    <h3 
+                      className="text-2xl font-bold mb-3 tracking-tight transition-colors"
+                      style={{ color: branch.color }}
+                    >
+                      {branch.name}
+                    </h3>
+                    <p className="text-white/40 text-sm leading-relaxed">{branch.description}</p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -200,23 +235,35 @@ export default function HomeClient({ tools }: { tools: any[] }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
+              className="h-full"
             >
-              <div className="group relative bg-[#111111] border border-white/5 rounded-3xl p-8 hover:bg-[#161616] transition-all duration-500 h-full">
+              <div className="group relative bg-[#111111] border border-white/5 rounded-3xl p-8 hover:bg-[#161616] transition-all duration-500 h-full flex flex-col overflow-hidden">
+                 {/* Structured Thinking Decoration */}
+                 <div className="absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none">
+                    <div 
+                        className="w-full h-full rounded-2xl backdrop-blur-sm border border-white/10"
+                        style={{ 
+                            background: `linear-gradient(135deg, white, transparent)`,
+                            transform: 'rotate(12deg) translate(20px, -20px)'
+                        }}
+                    />
+                 </div>
+
                  <div className="flex justify-between items-start mb-6">
                     <span className="text-[10px] bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white/40 uppercase tracking-widest">
                       {tool.branch}
                     </span>
-                    <div className="text-white/20 group-hover:text-yellow-400 transition-colors">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                    </div>
                  </div>
                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-white/80 transition-colors">{tool.name}</h3>
                  <p className="text-white/30 text-sm leading-relaxed mb-8">{tool.tldr || tool.description?.substring(0, 100) + '...'}</p>
                  
-                 <div className="mt-auto flex items-center gap-3">
-                    <div className="bg-black border border-white/10 rounded-lg px-3 py-2">
-                        <p className="text-[9px] text-white/30 uppercase tracking-tighter">WhatsApp Keyword</p>
-                        <p className="font-mono text-sm font-bold">{tool.keyword}</p>
+                 <div className="mt-auto">
+                    <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
+                        <span className="text-xs text-white/40 uppercase tracking-widest">Text this →</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-lg">⚡</span>
+                            <span className="font-bold tracking-widest uppercase">{tool.keyword}</span>
+                        </div>
                     </div>
                  </div>
               </div>
@@ -250,7 +297,7 @@ export default function HomeClient({ tools }: { tools: any[] }) {
             The world wasn't built for your brain. We build systems that are.
           </motion.h2>
           <motion.p
-            className="text-white/40 text-lg max-w-2xl leading-relaxed"
+            className="text-white/40 text-lg max-w-2xl leading-relaxed mb-10"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -258,6 +305,20 @@ export default function HomeClient({ tools }: { tools: any[] }) {
           >
             ADHD, neurodivergence, and a busy mind aren't flaws to be fixed. They're operating systems that need the right software. SOR7ED is that software, delivered one protocol at a time.
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-300 hover:scale-105"
+              style={{ background: '#2E5BFF' }}
+            >
+              Start your journey →
+            </Link>
+          </motion.div>
         </div>
       </section>
 

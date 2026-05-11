@@ -47,6 +47,7 @@ async function syncProtocols() {
       seo_title: extractText(props['SEO Title']),
       meta_description: extractText(props['Meta Description']),
       read_time: extractText(props['Read Time']),
+      deep_dive: extractText(props['Deep Dive']),
     }
 
     const { error } = await supabase.from('protocols').upsert(data, { onConflict: 'slug' })
@@ -80,6 +81,11 @@ async function syncTools() {
       keyword: extractText(props['WhatsApp Trigger']),
       tldr: extractText(props['TL,:DR']) || extractText(props['TL;DR']), // Handle potential typo
       description: extractText(props['Blog Post']),
+      long_description: extractText(props['Long Description']),
+      short_description: extractText(props['Short Description']),
+      featured: props.Featured?.checkbox || false,
+      questions: props.Questions?.rich_text?.[0]?.plain_text ? JSON.parse(props.Questions.rich_text[0].plain_text) : [],
+      color: extractText(props.Color) || '#ffffff',
       meta_description: extractText(props['Meta Description']),
       cover_image: props['Cover Image']?.files?.[0]?.file?.url || props['Cover Image']?.files?.[0]?.external?.url || '',
     }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function ToolList({ initialTools }: { initialTools: any[] }) {
     const [search, setSearch] = useState("");
@@ -12,8 +13,11 @@ export default function ToolList({ initialTools }: { initialTools: any[] }) {
         tool.keyword?.toLowerCase().includes(search.toLowerCase())
     );
 
+    const featuredTools = filteredTools.filter(tool => tool.featured);
+    const regularTools = filteredTools.filter(tool => !tool.featured);
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-16">
             {/* Search Bar */}
             <div className="relative group max-w-2xl">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-white/50 transition-colors">
@@ -21,69 +25,103 @@ export default function ToolList({ initialTools }: { initialTools: any[] }) {
                 </div>
                 <input 
                     type="text" 
-                    placeholder="Search tools, templates, or keywords..." 
+                    placeholder="Search assessments, categories, or keywords..." 
                     className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTools.map((tool) => (
-                    <div
-                        key={tool.slug}
-                        className="group relative bg-[#111111] border border-white/5 rounded-[2rem] overflow-hidden hover:bg-[#161616] transition-all duration-500 flex flex-col h-full"
-                    >
-                        {/* Tool Preview */}
-                        <div className="h-48 w-full bg-white/5 relative overflow-hidden">
-                            {tool.cover_image ? (
-                                <img 
-                                    src={tool.cover_image} 
-                                    alt={tool.name} 
-                                    className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                                    <span className="text-6xl font-black uppercase tracking-tighter">{tool.branch}</span>
-                                </div>
-                            )}
-                            <div className="absolute top-4 left-4">
-                                <span className="text-[10px] bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-white/70 uppercase tracking-widest">
-                                    {tool.branch}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div className="p-8 flex flex-col flex-1">
-                            <h2 className="text-xl font-bold mb-3 group-hover:text-white transition-colors">
-                                {tool.name}
-                            </h2>
-                            <p className="text-white/40 text-sm leading-relaxed mb-8 flex-1">
-                                {tool.tldr || tool.description}
-                            </p>
-
-                            <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
-                                <div>
-                                    <p className="text-[10px] text-white/20 uppercase tracking-widest mb-1">WhatsApp Keyword</p>
-                                    <p className="font-mono font-bold text-white group-hover:text-yellow-400 transition-colors">{tool.keyword}</p>
-                                </div>
-                                <Link 
-                                    href="/signup"
-                                    className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white hover:text-black transition-all"
-                                >
-                                    →
-                                </Link>
-                            </div>
-                        </div>
+            {/* Featured Assessments */}
+            {featuredTools.length > 0 && (
+                <div>
+                    <h2 className="text-white/30 text-xs uppercase tracking-[0.3em] font-bold mb-8">Featured Assessments</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {featuredTools.map((tool) => (
+                            <ToolCard key={tool.slug} tool={tool} featured={true} />
+                        ))}
                     </div>
-                ))}
-                
-                {filteredTools.length === 0 && (
-                    <div className="col-span-full text-center py-32 border border-dashed border-white/10 rounded-[3rem]">
-                        <p className="text-white/20 italic text-xl">No tools match your search.</p>
-                    </div>
+                </div>
+            )}
+
+            {/* All Assessments */}
+            <div>
+                {featuredTools.length > 0 && (
+                    <h2 className="text-white/30 text-xs uppercase tracking-[0.3em] font-bold mb-8">All Assessments</h2>
                 )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {regularTools.map((tool) => (
+                        <ToolCard key={tool.slug} tool={tool} featured={false} />
+                    ))}
+                    
+                    {filteredTools.length === 0 && (
+                        <div className="col-span-full text-center py-32 border border-dashed border-white/10 rounded-[3rem]">
+                            <p className="text-white/20 italic text-xl">No assessments found for "{search}".</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
+    );
+}
+
+function ToolCard({ tool, featured }: { tool: any, featured: boolean }) {
+    const color = tool.color || '#3B82F6';
+
+    return (
+        <Link
+            href={`/tools/${tool.slug}`}
+            className={`relative flex flex-col p-8 rounded-[2.5rem] border border-white/10 bg-[#111111] hover:bg-[#161616] transition-all duration-500 overflow-hidden group ${
+                featured ? 'h-[450px]' : 'h-[400px]'
+            }`}
+        >
+            <div 
+                className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 blur-3xl transition-opacity duration-700 group-hover:opacity-20" 
+                style={{ backgroundColor: color, transform: 'translate(25%, -25%)' }}
+            />
+            
+            <div className="flex justify-between items-start mb-6 relative z-10">
+                <div className="flex items-center gap-2">
+                    <span 
+                        className="text-[10px] px-3 py-1 rounded-full tracking-[0.2em] uppercase font-bold border"
+                        style={{ 
+                            backgroundColor: `${color}20`, 
+                            color: color,
+                            borderColor: `${color}40`
+                        }}
+                    >
+                        {tool.branch}
+                    </span>
+                    {featured && (
+                        <span className="text-[10px] px-3 py-1 rounded-full bg-white/10 text-white/60 font-bold uppercase tracking-widest">
+                            FEATURED
+                        </span>
+                    )}
+                </div>
+                
+                <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
+                    <span className="text-[10px] text-white/40 uppercase tracking-widest block mb-1">Text this →</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm">⚡</span>
+                        <span className="font-bold tracking-widest text-sm" style={{ color: tool.color || '#ffffff' }}>
+                            {tool.keyword}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="relative z-10 mt-auto">
+                <h2 className="text-2xl font-black mb-4 group-hover:text-white transition-colors leading-tight tracking-tight">
+                    {tool.name}
+                </h2>
+                <p className="text-white/40 text-sm leading-relaxed mb-8 line-clamp-3">
+                    {tool.short_description || tool.tldr || tool.description}
+                </p>
+                
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em]" style={{ color }}>
+                    Start Assessment <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+            </div>
+        </Link>
     );
 }

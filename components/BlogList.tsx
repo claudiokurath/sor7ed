@@ -47,9 +47,12 @@ export default function BlogList({ initialPosts }: { initialPosts: any[] }) {
                             <span className="text-xs bg-white/10 px-3 py-1 rounded-full text-white/70">
                                 {post.branch}
                             </span>
-                            <div className="bg-white/5 px-3 py-2 rounded-lg border border-white/10">
-                                <p className="text-xs text-white/50 uppercase">Keyword:</p>
-                                <p className="font-mono font-bold text-sm">{post.keyword}</p>
+                            <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
+                                <span className="text-xs text-white/40 uppercase tracking-widest">Text this →</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">⚡</span>
+                                    <span className="font-bold tracking-widest uppercase">{post.keyword}</span>
+                                </div>
                             </div>
                         </div>
                         <h2 className="text-xl font-bold mb-2 group-hover:text-white/80 transition-colors">

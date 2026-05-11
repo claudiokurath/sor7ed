@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import BlogPostClient from "@/components/BlogPostClient";
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
@@ -25,23 +26,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     ← Back to articles
                 </Link>
 
-                {/* Article Header */}
-                <div className="mb-12">
-                    <span className="text-xs bg-white/10 px-3 py-1 rounded-full text-white/70 mb-6 inline-block">
-                        {article.branch}
-                    </span>
-                    <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">{article.title}</h1>
-                </div>
-
-                {/* Article Content */}
-                <div className="space-y-6 text-white/80 leading-relaxed mb-20 border-t border-white/10 pt-12">
-                    {/* Handle both plain text and potential block-based content if we expand later */}
-                    {article.content?.split('\n\n').map((paragraph: string, index: number) => (
-                        <p key={index}>{paragraph}</p>
-                    )) || (
-                        <p>{article.problem || article.description}</p>
-                    )}
-                </div>
+                {/* Interactive Client Content (Read Aloud + Deep Dive) */}
+                <BlogPostClient article={article} />
 
                 {/* WhatsApp Protocol CTA */}
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 text-center">
@@ -50,9 +36,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         The complete step-by-step protocol is delivered straight to your phone. Sign up for free, then text the keyword below.
                     </p>
 
-                    <div className="bg-black border border-white/20 rounded-2xl p-6 inline-block mb-8 min-w-[250px]">
-                        <p className="text-white/40 text-xs uppercase tracking-widest mb-2">Text this keyword</p>
-                        <p className="text-3xl font-mono font-bold tracking-widest text-white">{article.keyword}</p>
+                    <div className="bg-black/50 border border-white/20 rounded-2xl p-6 inline-block mb-8 min-w-[280px] font-mono">
+                        <span className="text-white/40 text-xs uppercase tracking-widest block mb-2">Text this →</span>
+                        <div className="flex items-center justify-center gap-4">
+                            <span className="text-3xl">⚡</span>
+                            <span className="text-4xl font-bold tracking-[0.2em] text-white uppercase">{article.keyword}</span>
+                        </div>
                     </div>
 
                     <div>
@@ -69,4 +58,3 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         </main>
     );
 }
-

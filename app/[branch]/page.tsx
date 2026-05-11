@@ -56,9 +56,12 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                                 <h3 className="text-lg font-bold group-hover:text-white/80 transition-colors">{post.title}</h3>
                                 <p className="text-white/50 text-sm">{post.excerpt || post.description}</p>
                             </div>
-                            <div className="bg-white/5 px-4 py-3 rounded-xl text-center border border-white/10 min-w-[120px]">
-                                <p className="text-xs text-white/40 uppercase mb-1">Keyword</p>
-                                <p className="font-mono font-bold tracking-widest">{post.keyword}</p>
+                            <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono min-w-[140px]">
+                                <span className="text-xs text-white/40 uppercase tracking-widest block mb-1">Text this →</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">⚡</span>
+                                    <span className="font-bold tracking-widest uppercase">{post.keyword}</span>
+                                </div>
                             </div>
                         </Link>
                     ))}
