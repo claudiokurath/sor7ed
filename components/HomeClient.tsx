@@ -160,58 +160,70 @@ export default function HomeClient({ tools }: { tools: any[] }) {
           </motion.p>
         </div>
 
-        <div className="relative">
-          <div 
-            className="flex gap-6 overflow-x-auto snap-x snap-mandatory px-6 md:px-16 pb-12 w-full"
-            style={{ 
-              scrollSnapType: 'x mandatory',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
-            }}
-          >
-            {branches.map((branch, i) => (
-              <motion.div
-                key={branch.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                style={{ scrollSnapAlign: 'start' }}
-                className="shrink-0"
+        {/* Enhanced Carousel with Perfect Glowing Borders */}
+        <div 
+          className="flex gap-5 overflow-x-auto snap-x snap-mandatory px-6 md:px-16 pb-12 w-full"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          <style jsx>{`
+            div::-webkit-scrollbar { display: none; }
+          `}</style>
+          
+          {branches.map((branch, i) => (
+            <motion.div
+              key={branch.slug}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              style={{ scrollSnapAlign: 'start' }}
+              className="shrink-0 p-1" // Padding for glow effect
+            >
+              <Link 
+                href={`/${branch.slug}`}
+                className="relative flex flex-col justify-between h-[380px] w-[300px] p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
+                style={{
+                  // Glowing border on hover
+                  '--glow-color': branch.color
+                } as any}
               >
-                <Link 
-                  href={`/${branch.slug}`}
-                  className="relative flex flex-col justify-between h-[400px] w-[320px] p-8 rounded-[2rem] border border-white/5 bg-[#111111] hover:bg-[#161616] transition-all duration-300 overflow-hidden group hover:animate-pulse"
+                {/* Hover glow effect */}
+                <div 
+                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{ 
-                    boxShadow: `0 0 40px ${branch.color}15`,
-                    transition: 'box-shadow 2s ease-in-out, all 0.3s ease'
+                    border: `1.5px solid ${branch.color}`,
+                    boxShadow: `
+                      0 0 20px ${branch.color}40,
+                      inset 0 0 20px ${branch.color}10,
+                      0 0 40px ${branch.color}20
+                    `,
+                    background: `radial-gradient(circle at 70% 30%, ${branch.color}08, transparent 70%)`
                   }}
+                />
+                
+                {/* Large number in top-left */}
+                <div 
+                  className="text-7xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none" 
+                  style={{ color: branch.color }}
                 >
-                  <div 
-                    className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
-                    style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
-                  />
-                  
-                  <div 
-                    className="text-8xl font-black opacity-20 transition-opacity duration-300 group-hover:opacity-40 leading-none" 
+                  {branch.num}
+                </div>
+
+                {/* Bottom content */}
+                <div className="relative z-10 mt-auto">
+                  <h3 
+                    className="text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:brightness-110"
                     style={{ color: branch.color }}
                   >
-                    {branch.num}
-                  </div>
-
-                  <div className="relative z-10 mt-auto">
-                    <h3 
-                      className="text-2xl font-bold mb-3 tracking-tight transition-colors"
-                      style={{ color: branch.color }}
-                    >
-                      {branch.name}
-                    </h3>
-                    <p className="text-white/40 text-sm leading-relaxed">{branch.description}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+                    {branch.name}
+                  </h3>
+                  <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors">
+                    {branch.description}
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -228,47 +240,65 @@ export default function HomeClient({ tools }: { tools: any[] }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {tools.slice(0, 3).map((tool, i) => (
-            <motion.div
-              key={tool.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="h-full"
-            >
-              <div className="group relative bg-[#111111] border border-white/5 rounded-3xl p-8 hover:bg-[#161616] transition-all duration-500 h-full flex flex-col overflow-hidden">
-                 {/* Structured Thinking Decoration */}
-                 <div className="absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none">
-                    <div 
-                        className="w-full h-full rounded-2xl backdrop-blur-sm border border-white/10"
-                        style={{ 
-                            background: `linear-gradient(135deg, white, transparent)`,
-                            transform: 'rotate(12deg) translate(20px, -20px)'
-                        }}
-                    />
-                 </div>
+          {tools.slice(0, 3).map((tool, i) => {
+            const color = tool.color || '#3B82F6';
+            return (
+              <motion.div
+                key={tool.slug}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="h-full"
+              >
+                <Link
+                  href={`/tools/${tool.slug}`}
+                  className="group relative bg-[#0f0f0f] border border-white/5 rounded-3xl p-8 hover:border-transparent transition-all duration-500 h-full flex flex-col overflow-hidden"
+                >
+                  {/* Hover glow effect */}
+                  <div 
+                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{ 
+                      border: `1.5px solid ${color}`,
+                      boxShadow: `
+                        0 0 20px ${color}40,
+                        inset 0 0 20px ${color}10,
+                        0 0 40px ${color}20
+                      `,
+                      background: `radial-gradient(circle at 70% 30%, ${color}08, transparent 70%)`
+                    }}
+                  />
 
-                 <div className="flex justify-between items-start mb-6">
-                    <span className="text-[10px] bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white/40 uppercase tracking-widest">
-                      {tool.branch}
-                    </span>
-                 </div>
-                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-white/80 transition-colors">{tool.name}</h3>
-                 <p className="text-white/30 text-sm leading-relaxed mb-8">{tool.tldr || tool.description?.substring(0, 100) + '...'}</p>
-                 
-                 <div className="mt-auto">
-                    <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
-                        <span className="text-xs text-white/40 uppercase tracking-widest">Text this →</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-lg">⚡</span>
-                            <span className="font-bold tracking-widest uppercase">{tool.keyword}</span>
-                        </div>
-                    </div>
-                 </div>
-              </div>
-            </motion.div>
-          ))}
+                   <div className="flex justify-between items-start mb-6 relative z-10">
+                      <span 
+                        className="text-[10px] px-3 py-1 rounded-full tracking-[0.2em] uppercase font-bold border"
+                        style={{ 
+                            backgroundColor: `${color}20`, 
+                            color: color,
+                            borderColor: `${color}40`
+                        }}
+                      >
+                        {tool.branch}
+                      </span>
+                   </div>
+                   <h3 className="text-xl font-black text-white mb-3 group-hover:text-white/80 transition-colors relative z-10 tracking-tight">{tool.name}</h3>
+                   <p className="text-white/40 text-sm leading-relaxed mb-8 relative z-10 line-clamp-2">{tool.short_description || tool.tldr || tool.description}</p>
+                   
+                   <div className="mt-auto relative z-10">
+                      <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
+                          <span className="text-[10px] text-white/40 uppercase tracking-widest block mb-1">Text this →</span>
+                          <div className="flex items-center gap-2">
+                              <span className="text-sm">⚡</span>
+                              <span className="font-bold tracking-widest text-sm" style={{ color: tool.color || '#ffffff' }}>
+                                {tool.keyword}
+                              </span>
+                          </div>
+                      </div>
+                   </div>
+                </Link>
+              </motion.div>
+            );
+          })}
           {tools.length === 0 && (
             <div className="col-span-3 py-20 text-center border border-dashed border-white/5 rounded-3xl">
                 <p className="text-white/20 italic">No tools synced yet. Check back soon.</p>

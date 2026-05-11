@@ -71,13 +71,23 @@ function ToolCard({ tool, featured }: { tool: any, featured: boolean }) {
     return (
         <Link
             href={`/tools/${tool.slug}`}
-            className={`relative flex flex-col p-8 rounded-[2.5rem] border border-white/10 bg-[#111111] hover:bg-[#161616] transition-all duration-500 overflow-hidden group ${
+            className={`relative flex flex-col p-8 rounded-[2.5rem] bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group ${
                 featured ? 'h-[450px]' : 'h-[400px]'
             }`}
+            style={{ '--glow-color': color } as any}
         >
+            {/* Hover glow effect */}
             <div 
-                className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 blur-3xl transition-opacity duration-700 group-hover:opacity-20" 
-                style={{ backgroundColor: color, transform: 'translate(25%, -25%)' }}
+                className="absolute inset-0 rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{ 
+                    border: `1.5px solid ${color}`,
+                    boxShadow: `
+                        0 0 20px ${color}40,
+                        inset 0 0 20px ${color}10,
+                        0 0 40px ${color}20
+                    `,
+                    background: `radial-gradient(circle at 70% 30%, ${color}08, transparent 70%)`
+                }}
             />
             
             <div className="flex justify-between items-start mb-6 relative z-10">
