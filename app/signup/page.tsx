@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { handleSignupOrLogin } from '../actions/auth';
-import { supabase } from '../../lib/supabase';
+import { createClient } from '@/lib/supabase/client';
+
+const supabase = createClient();
 
 const countryCodes = [
   { code: '+44', flag: '🇬🇧', name: 'UK' },

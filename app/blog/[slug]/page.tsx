@@ -40,12 +40,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
     return (
         <main className="min-h-screen bg-black text-white px-6 py-20">
-            <div className="max-w-3xl mx-auto">
-
-                <Link href="/blog" className="text-white/30 text-sm hover:text-white transition-colors block mb-12">
-                    ← Back to articles
-                </Link>
-
+            <div className="max-w-3xl mx-auto pt-16">
                 {/* Interactive Client Content (Read Aloud + Deep Dive) */}
                 <BlogPostClient article={article} />
 

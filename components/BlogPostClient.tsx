@@ -1,13 +1,72 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+
+import ArticleCover from './ArticleCover';
+import BranchIcon from './BranchIcon';
 
 export default function BlogPostClient({ article }: { article: any }) {
+    const { scrollYProgress } = useScroll();
     const [isPlaying, setIsPlaying] = useState(false);
     const [showDeepDive, setShowDeepDive] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [isSaved, setIsSaved] = useState(false);
+    
+    const supabase = createClient();
+    const router = useRouter();
+
+    useEffect(() => {
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+
+            if (user) {
+                const { data } = await supabase
+                    .from('user_favorites')
+                    .select('id')
+                    .eq('item_slug', article.slug)
+                    .eq('user_id', user.id)
+                    .single();
+                if (data) setIsSaved(true);
+            }
+        }
+        checkUser();
+    }, [article.slug]);
+
+    const toggleSave = async () => {
+        if (!user) {
+            router.push('/signup');
+            return;
+        }
+
+        if (isSaved) {
+            const { error } = await supabase
+                .from('user_favorites')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('item_type', 'protocol')
+                .eq('item_slug', article.slug);
+            
+            if (!error) setIsSaved(false);
+        } else {
+            const { error } = await supabase.from('user_favorites').insert({
+                user_id: user.id,
+                item_type: 'protocol',
+                item_slug: article.slug,
+                item_name: article.title,
+                item_keyword: article.keyword,
+                item_color: '#3B82F6', // Default color for protocols
+                item_branch: article.branch
+            });
+
+            if (!error) setIsSaved(true);
+        }
+    };
 
     // Toggle body class for Focus Mode
     useEffect(() => {
@@ -56,6 +115,55 @@ export default function BlogPostClient({ article }: { article: any }) {
 
     return (
         <div className="max-w-3xl mx-auto">
+            {/* Scroll Progress Bar */}
+            <motion.div
+                className="fixed top-0 left-0 right-0 h-1 z-[60] origin-left"
+                style={{ 
+                    scaleX: scrollYProgress,
+                    backgroundColor: article.color || '#3B82F6'
+                }}
+            />
+            {/* Premium Header */}
+            <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
+                <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors">
+                    SOR7ED
+                </Link>
+                
+                {user ? (
+                    <div className="flex items-center gap-6">
+                        <Link
+                            href="/dashboard"
+                            className="text-white/50 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
+                        >
+                            Dashboard
+                        </Link>
+                        <button
+                            onClick={() => supabase.auth.signOut().then(() => setUser(null))}
+                            className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors"
+                        >
+                            Sign Out
+                        </button>
+                    </div>
+                ) : (
+                    <Link
+                        href="/signup"
+                        className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
+                    >
+                        Sign In →
+                    </Link>
+                )}
+            </div>
+
+            {/* Article Cover Visual */}
+            <div className="mb-12">
+              <ArticleCover 
+                keyword={article.keyword} 
+                branch={article.branch} 
+                color={article.color || "#3B82F6"} 
+                title={article.title} 
+              />
+            </div>
+
             {/* Article Header */}
             <div className="mb-12">
                 <span 
@@ -68,7 +176,7 @@ export default function BlogPostClient({ article }: { article: any }) {
                     {article.title}
                 </h1>
 
-                {/* Read Aloud & Focus Mode Buttons */}
+                {/* Read Aloud, Focus Mode & Save Buttons */}
                 <div className="flex flex-wrap gap-3">
                     <button 
                         onClick={toggleAudio}
@@ -79,7 +187,7 @@ export default function BlogPostClient({ article }: { article: any }) {
                         }`}
                     >
                         <span className="text-lg">{isPlaying ? '⏹' : '▶'}</span>
-                        <span>{isPlaying ? 'Stop reading' : 'Listen to this article'}</span>
+                        <span>{isPlaying ? 'Stop' : 'Listen'}</span>
                     </button>
 
                     <button 
@@ -92,6 +200,18 @@ export default function BlogPostClient({ article }: { article: any }) {
                     >
                         <span className="text-lg">{isFocusMode ? '✨' : '🧘'}</span>
                         <span>{isFocusMode ? 'Focus On' : 'Focus Mode'}</span>
+                    </button>
+
+                    <button 
+                        onClick={toggleSave}
+                        className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
+                            isSaved 
+                                ? 'bg-green-500/10 text-green-400 border-green-500/20' 
+                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
+                        }`}
+                    >
+                        <span className="text-lg">{isSaved ? '✓' : '🔖'}</span>
+                        <span>{isSaved ? 'Saved' : 'Save Protocol'}</span>
                     </button>
                 </div>
             </div>
@@ -116,12 +236,25 @@ export default function BlogPostClient({ article }: { article: any }) {
                                     <span className="font-mono font-bold text-blue-400">{article.keyword}</span>{' '}
                                     to get the step-by-step protocol on WhatsApp.
                                 </p>
-                                <Link
-                                    href="/signup"
-                                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 transition-all duration-300"
-                                >
-                                    Get This Protocol on WhatsApp →
-                                </Link>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                                    <Link
+                                        href="/signup"
+                                        className="inline-block bg-white text-black font-bold px-10 py-5 rounded-full hover:bg-white/90 transition-all duration-300"
+                                    >
+                                        Get This Protocol on WhatsApp →
+                                    </Link>
+                                    <button
+                                        onClick={toggleSave}
+                                        className={`flex items-center justify-center gap-2 px-8 py-5 rounded-full border text-sm font-medium transition-all duration-300 ${
+                                            isSaved
+                                                ? 'bg-white/10 border-white/30 text-white'
+                                                : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'
+                                        }`}
+                                    >
+                                        <span>{isSaved ? '★' : '☆'}</span>
+                                        {isSaved ? 'Saved to Dashboard' : 'Save to Dashboard'}
+                                    </button>
+                                </div>
                             </motion.div>
                         )}
                     </div>

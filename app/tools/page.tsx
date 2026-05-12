@@ -20,13 +20,20 @@ export default async function ToolsPage() {
         <main className="min-h-screen bg-[#0a0a0a] text-white px-6 py-20">
             <div className="max-w-5xl mx-auto">
                 
-                <div className="flex justify-between items-center mb-12">
-                    <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors">
-                        ← Back to home
+                {/* Premium Header */}
+                <div className="flex justify-between items-center mb-16 pt-4">
+                    <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors">
+                        SOR7ED
                     </Link>
-                    <Link href="/signup" className="text-white/30 text-sm hover:text-white transition-colors uppercase tracking-widest font-medium">
-                        Sign In
-                    </Link>
+                    
+                    <div className="flex items-center gap-6">
+                        <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                            Dashboard
+                        </Link>
+                        <Link href="/signup" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                            Sign In →
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="max-w-2xl mb-16">

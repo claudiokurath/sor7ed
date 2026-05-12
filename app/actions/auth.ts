@@ -13,7 +13,9 @@ const getServiceClient = () => createClient(
 export async function handleSignupOrLogin(prevState: any, formData: FormData) {
   const supabase = getServiceClient()
   const headerList = await headers()
-  const origin = headerList.get('origin')
+  const host = headerList.get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const baseUrl = `${protocol}://${host}`
 
   const email = formData.get('email') as string
   const firstName = formData.get('firstName') as string
@@ -63,7 +65,7 @@ export async function handleSignupOrLogin(prevState: any, formData: FormData) {
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: cleanEmail,
       options: {
-        emailRedirectTo: `${origin}/auth/callback`,
+        emailRedirectTo: `${baseUrl}/auth/callback`,
       },
     })
 

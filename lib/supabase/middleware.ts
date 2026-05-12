@@ -53,7 +53,12 @@ export async function updateSession(request: NextRequest) {
     // no user, redirect to signup page
     const url = request.nextUrl.clone()
     url.pathname = '/signup'
-    return NextResponse.redirect(url)
+    const response = NextResponse.redirect(url)
+    // Copy over the refreshed cookies to the redirect response
+    supabaseResponse.cookies.getAll().forEach(cookie => {
+      response.cookies.set(cookie.name, cookie.value, cookie)
+    })
+    return response
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
