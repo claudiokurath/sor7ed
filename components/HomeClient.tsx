@@ -47,8 +47,8 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
           <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">SOR7ED</span>
           <div className="flex gap-8">
             {user ? (
-              <Link href="/tools" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-                My Tools
+              <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                Dashboard
               </Link>
             ) : (
               <>

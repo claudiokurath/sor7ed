@@ -4,11 +4,19 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function SmartNav() {
   const [isVisible, setIsVisible] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const pathname = usePathname();
+  const supabase = createClient();
   
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+  }, []);
   // Only show on non-homepage after user scrolls
   useEffect(() => {
     if (pathname === '/') return;
@@ -47,10 +55,10 @@ export default function SmartNav() {
             </div>
 
             <Link 
-              href="/signup" 
-              className="bg-white text-black font-bold px-4 py-2 rounded-full text-sm hover:scale-105 transition-all"
+              href={user ? "/dashboard" : "/signup"} 
+              className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm hover:scale-105 transition-all shadow-lg"
             >
-              Sign Up
+              {user ? "Dashboard" : "Sign Up"}
             </Link>
           </div>
         </motion.nav>
