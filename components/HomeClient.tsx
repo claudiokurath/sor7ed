@@ -137,6 +137,37 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
         </motion.div>
       </section>
 
+      {/* START HERE ONBOARDING - Add after hero, before branches */}
+      <section className="px-6 md:px-16 py-12">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex-1">
+              <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-3 font-medium">
+                Feeling overwhelmed? Start here
+              </p>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
+                Not sure which branch you need? Take the 2-minute triage.
+              </h2>
+              <p className="text-white/50 leading-relaxed">
+                Answer a few questions and we'll point you to the exact assessment and protocol for your situation. No account needed to try.
+              </p>
+            </div>
+            <Link
+              href="/tools/friction-finder"
+              className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-sm bg-white text-black hover:scale-105 transition-all duration-300 whitespace-nowrap"
+              style={{ boxShadow: '0 0 40px rgba(255,255,255,0.1)' }}
+            >
+              Start Triage Assessment →
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* BRANCHES SECTION */}
       <section id="branches" className="h-screen w-full flex flex-col justify-center snap-start">
         <div className="px-6 md:px-16 mb-10">
