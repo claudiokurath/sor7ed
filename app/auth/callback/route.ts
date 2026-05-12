@@ -7,7 +7,15 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && user?.email) {
+      // Link the authenticated user to their record in the 'users' table
+      await supabase
+        .from('users')
+        .update({ user_id: user.id })
+        .eq('email', user.email.toLowerCase().trim());
+    }
   }
 
   // Redirect to tools after successful sign-in

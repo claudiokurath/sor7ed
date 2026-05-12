@@ -55,7 +55,8 @@ export default function Signup() {
     }
     const fullWhatsApp = `${countryCode}${cleanPhone}`;
 
-    const { error } = await supabase
+    // 1. Store user data in database
+    const { error: dbError } = await supabase
       .from('users')
       .insert({
         first_name: cleanName,
@@ -63,13 +64,27 @@ export default function Signup() {
         whatsapp_number: fullWhatsApp
       });
 
-    if (error) {
+    if (dbError) {
       setStatus('error');
-      if (error.code === '23505') {
+      if (dbError.code === '23505') {
         setErrorMessage('That email or WhatsApp number is already signed up.');
       } else {
-        setErrorMessage('Something went wrong. Please try again.');
+        setErrorMessage('Something went wrong saving your details. Please try again.');
       }
+      return;
+    }
+
+    // 2. Trigger Magic Link sign-in
+    const { error: authError } = await supabase.auth.signInWithOtp({
+      email: cleanEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (authError) {
+      setStatus('error');
+      setErrorMessage(authError.message);
       return;
     }
 
@@ -96,10 +111,10 @@ export default function Signup() {
           </motion.div>
 
           <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">
-            You're in, {firstName}.
+            Check your email, {firstName}.
           </h1>
           <p className="text-white/50 text-lg mb-12 leading-relaxed max-w-md mx-auto">
-            Find an article or tool that matches your situation, then text its keyword to receive your protocol on WhatsApp instantly.
+            We've sent a magic link to <strong>{email}</strong>. Click it to confirm your account and start receiving protocols on WhatsApp.
           </p>
 
           <div className="space-y-3">
@@ -107,19 +122,7 @@ export default function Signup() {
               href="/"
               className="block bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-white/90 transition-all duration-300"
             >
-              Explore the 7 branches →
-            </Link>
-            <Link
-              href="/tools"
-              className="block border border-white/10 text-white/70 font-semibold px-8 py-4 rounded-full hover:border-white/30 hover:text-white transition-all duration-300"
-            >
-              Try an assessment
-            </Link>
-            <Link
-              href="/blog"
-              className="block border border-white/10 text-white/70 font-semibold px-8 py-4 rounded-full hover:border-white/30 hover:text-white transition-all duration-300"
-            >
-              Browse articles
+              Back to Home
             </Link>
           </div>
         </motion.div>

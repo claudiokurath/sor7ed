@@ -37,8 +37,27 @@ export async function POST(req: NextRequest) {
 
             console.log(`Received WhatsApp keyword: ${text} from ${senderPhone}`);
 
-            // 1. Search for a matching protocol
+            // 1. Verify membership
             const supabase = getSupabase();
+            
+            // Normalize phone number (Meta often sends it without the '+' prefix)
+            const normalizedPhone = senderPhone.startsWith('+') ? senderPhone : `+${senderPhone}`;
+            
+            const { data: user } = await supabase
+                .from('users')
+                .select('first_name')
+                .eq('whatsapp_number', normalizedPhone)
+                .single();
+
+            if (!user) {
+                const signupPrompt = "Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at https://sor7ed.com/signup to unlock your protocols.";
+                await sendWhatsAppMessage(senderPhone, signupPrompt);
+                return NextResponse.json({ status: "unregistered" });
+            }
+
+            console.log(`Verified member: ${user.first_name} (${senderPhone})`);
+
+            // 2. Search for a matching protocol
             const { data: protocol } = await supabase
                 .from('protocols')
                 .select('*')
@@ -51,7 +70,7 @@ export async function POST(req: NextRequest) {
 
             if (protocol) {
                 title = protocol.title;
-                content = `*${protocol.title}*\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
+                content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
             } else {
                 const { data: tool } = await supabase
                     .from('tools')
@@ -61,7 +80,7 @@ export async function POST(req: NextRequest) {
                 
                 if (tool) {
                     title = tool.name;
-                    content = `*${tool.name}*\n\n${tool.tldr}\n\n*ACCESS TOOL:*\n${tool.description}\n\n(Keyword: ${tool.keyword})`;
+                    content = `Hi ${user.first_name}, here is the link for *${tool.name}*:\n\n${tool.tldr}\n\n*ACCESS TOOL:*\n${tool.description}\n\n(Keyword: ${tool.keyword})`;
                 }
             }
 
