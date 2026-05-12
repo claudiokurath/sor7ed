@@ -57,7 +57,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
 
         <div className="relative z-10 max-w-5xl">
           <motion.p
-            className="text-xs tracking-[0.35em] uppercase text-white/30 mb-6 font-medium"
+            className="text-sm md:text-xs tracking-[0.35em] uppercase text-white/30 mb-6 font-medium"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -66,7 +66,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
           </motion.p>
 
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 leading-[1.0] tracking-tight"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 leading-[1.0] tracking-tight"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
@@ -74,7 +74,8 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
             If you're feeling
           </motion.h1>
 
-          <div className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-[1.0] h-[1.2em] overflow-hidden tracking-tight">
+          {/* Rotating words - bigger on mobile */}
+          <div className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-[1.0] h-[1.2em] overflow-hidden tracking-tight">
             <AnimatePresence mode="wait">
               <motion.span
                 key={taglineIndex}
@@ -90,7 +91,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
           </div>
 
           <motion.p
-            className="text-white/40 text-lg md:text-xl max-w-xl leading-relaxed"
+            className="text-white/40 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -98,22 +99,23 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
             SOR7ED delivers practical protocols and tools for neurodivergent adults via WhatsApp — organised into 7 branches of life.
           </motion.p>
 
+          {/* Full-width buttons on mobile */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 mt-10"
+            className="flex flex-col sm:flex-row gap-4 mt-10 w-full sm:w-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
           >
             <a
               href="#branches"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-300 hover:scale-105"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white text-base transition-all duration-300 hover:scale-105"
               style={{ background: '#2E5BFF' }}
             >
               Explore Your Branches
             </a>
             <Link
               href="/signup"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white/60 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
             >
               Sign up for free protocols
             </Link>
