@@ -24,10 +24,10 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
   }, []);
 
   return (
-    <main className="h-screen bg-[#0a0a0a] overflow-y-scroll overflow-x-hidden snap-y snap-mandatory scroll-smooth">
+    <main className="min-h-screen bg-[#0a0a0a] overflow-y-scroll overflow-x-hidden scroll-smooth sm:snap-y sm:snap-mandatory">
       
       {/* HERO SECTION */}
-      <section className="relative h-screen w-full flex flex-col justify-center px-6 md:px-16 snap-start">
+      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start">
         <div className="absolute inset-0 pointer-events-none">
           <div 
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-[0.06] blur-3xl"
@@ -35,7 +35,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
           />
         </div>
 
-        <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-6 md:px-16">
+        <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
           <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">SOR7ED</span>
           <div className="flex gap-8">
             {user ? (
@@ -132,7 +132,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
       </section>
 
       {/* START HERE ONBOARDING - Add after hero, before branches */}
-      <section className="px-6 md:px-16 py-12">
+      <section className="px-4 sm:px-6 md:px-16 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto">
           <motion.div
             className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center gap-6"
@@ -163,44 +163,44 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
       </section>
 
       {/* BRANCHES SECTION */}
-      <section id="branches" className="h-screen w-full flex flex-col justify-center snap-start">
-        <div className="px-6 md:px-16 mb-10">
-          <motion.div
-            className="flex items-center gap-4 mb-2"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <div className="h-px flex-1 bg-white/5" />
-            <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">
-              7 Branches of Life
-            </span>
-            <div className="h-px flex-1 bg-white/5" />
-          </motion.div>
+      <section id="branches" className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center sm:snap-start px-4 sm:px-6 md:px-16 pt-10 pb-6">
+          <div className="mb-10">
+            <motion.div
+                className="flex items-center gap-4 mb-2"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+            >
+                <div className="h-px flex-1 bg-white/5" />
+                <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">
+                7 Branches of Life
+                </span>
+                <div className="h-px flex-1 bg-white/5" />
+            </motion.div>
 
-          <motion.h2
-            className="text-3xl md:text-5xl font-bold text-white mt-6 mb-2 tracking-tight"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            Every part of your life,<br />simplified.
-          </motion.h2>
+            <motion.h2
+                className="text-3xl md:text-5xl font-bold text-white mt-6 mb-2 tracking-tight"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+            >
+                Every part of your life,<br />simplified.
+            </motion.h2>
 
-          <motion.p
-            className="text-white/30 text-base max-w-lg leading-relaxed"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
-            Each branch contains practical protocols — 2-minute micro-actions designed for busy, distracted, and neurodivergent minds.
-          </motion.p>
-        </div>
+            <motion.p
+                className="text-white/30 text-base max-w-lg leading-relaxed"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+            >
+                Each branch contains practical protocols — 2-minute micro-actions designed for busy, distracted, and neurodivergent minds.
+            </motion.p>
+          </div>
 
-        {/* Enhanced Carousel with Perfect Glowing Borders */}
+        {/* Enhanced carousel with mobile-optimized cards */}
         <div 
-          className="flex gap-5 overflow-x-auto snap-x snap-mandatory px-6 md:px-16 pb-12 w-full"
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-12 w-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           <style jsx>{`
@@ -215,33 +215,21 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
               style={{ scrollSnapAlign: 'start' }}
-              className="shrink-0 p-1" // Padding for glow effect
+              className="shrink-0"
             >
               <Link 
                 href={`/${branch.slug}`}
-                className="relative flex flex-col justify-between h-[380px] w-[300px] p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
-                style={{
-                  // Glowing border on hover
-                  '--glow-color': branch.color
-                } as any}
+                className="relative flex flex-col justify-between h-[50vh] min-h-[360px] max-h-[420px] w-[85vw] sm:w-[320px] p-6 sm:p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
               >
-                {/* Hover glow effect */}
+                {/* Card glow effect */}
                 <div 
-                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ 
-                    border: `1.5px solid ${branch.color}`,
-                    boxShadow: `
-                      0 0 20px ${branch.color}40,
-                      inset 0 0 20px ${branch.color}10,
-                      0 0 40px ${branch.color}20
-                    `,
-                    background: `radial-gradient(circle at 70% 30%, ${branch.color}08, transparent 70%)`
-                  }}
+                  className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
+                  style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
                 />
                 
                 {/* Large number in top-left */}
                 <div 
-                  className="text-7xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none" 
+                  className="text-6xl sm:text-7xl md:text-8xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none" 
                   style={{ color: branch.color }}
                 >
                   {branch.num}
@@ -250,7 +238,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
                 {/* Bottom content */}
                 <div className="relative z-10 mt-auto">
                   <h3 
-                    className="text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:brightness-110"
+                    className="text-xl sm:text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:brightness-110"
                     style={{ color: branch.color }}
                   >
                     {branch.name}
@@ -266,7 +254,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
       </section>
 
       {/* TOOLS GALLERY SECTION */}
-      <section className="h-screen w-full flex flex-col justify-center px-6 md:px-16 snap-start border-t border-white/5">
+      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start border-t border-white/5">
         <div className="flex justify-between items-end mb-12">
           <div>
             <span className="text-xs tracking-[0.35em] uppercase text-white/20 mb-4 font-medium block">The Toolbox</span>
@@ -346,7 +334,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
       </section>
 
       {/* MISSION SECTION */}
-      <section className="h-screen w-full flex flex-col justify-center px-6 md:px-16 snap-start border-t border-white/5">
+      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start border-t border-white/5">
         <div className="max-w-4xl">
           <motion.p
             className="text-xs tracking-[0.35em] uppercase text-white/20 mb-6 font-medium"
