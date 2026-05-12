@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useActionState } from 'react';
 import Link from 'next/link';
-import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
+import { handleSignupOrLogin } from '../actions/auth';
+import { supabase } from '../../lib/supabase';
 
 const countryCodes = [
   { code: '+44', flag: '🇬🇧', name: 'UK' },
@@ -42,61 +43,28 @@ function SignupForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLogin, setIsLogin] = useState(false);
 
+  const [state, formAction, isPending] = useActionState(handleSignupOrLogin, null);
+
   useEffect(() => {
     if (searchParams.get('mode') === 'login') {
       setIsLogin(true);
     }
   }, [searchParams]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus('loading');
-    setErrorMessage('');
-
-    const cleanEmail = email.toLowerCase().trim();
-    const cleanName = firstName.trim();
-    
-    let cleanPhone = phone.replace(/\D/g, '');
-    if (cleanPhone.startsWith('0')) {
-      cleanPhone = cleanPhone.substring(1);
-    }
-    const fullWhatsApp = `${countryCode}${cleanPhone}`;
-
-    if (!isLogin) {
-        const { error: dbError } = await supabase
-        .from('users')
-        .insert({
-            first_name: cleanName,
-            email: cleanEmail,
-            whatsapp_number: fullWhatsApp
-        });
-
-        if (dbError) {
-            setStatus('error');
-            if (dbError.code === '23505') {
-                setErrorMessage('That email or WhatsApp number is already signed up. Try signing in!');
-            } else {
-                setErrorMessage('Something went wrong saving your details. Please try again.');
-            }
-            return;
-        }
-    }
-
-    const { error: authError } = await supabase.auth.signInWithOtp({
-      email: cleanEmail,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (authError) {
+  useEffect(() => {
+    if (state?.success) {
+      setStatus('success');
+    } else if (state?.error) {
       setStatus('error');
-      setErrorMessage(authError.message);
-      return;
+      setErrorMessage(state.error);
     }
+  }, [state]);
 
-    setStatus('success');
-  }
+  useEffect(() => {
+    if (isPending) {
+        setStatus('loading');
+    }
+  }, [isPending]);
 
   async function handleGoogleSignIn() {
     setStatus('loading');
@@ -112,6 +80,8 @@ function SignupForm() {
       setErrorMessage(error.message);
     }
   }
+
+  const fullWhatsApp = `${countryCode}${phone.replace(/\D/g, '').replace(/^0/, '')}`;
 
   if (status === 'success') {
     return (
@@ -170,7 +140,9 @@ function SignupForm() {
             }
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form action={formAction} className="space-y-5">
+          <input type="hidden" name="isLogin" value={String(isLogin)} />
+          <input type="hidden" name="whatsapp" value={fullWhatsApp} />
 
           {!isLogin && (
             <motion.div
@@ -183,6 +155,7 @@ function SignupForm() {
                 </label>
                 <input
                 type="text"
+                name="firstName"
                 placeholder="What should we call you?"
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
@@ -198,6 +171,7 @@ function SignupForm() {
             </label>
             <input
               type="email"
+              name="email"
               placeholder="you@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -244,7 +218,7 @@ function SignupForm() {
                     </div>
                     {phone && (
                         <p className="text-white/30 text-xs mt-2 font-mono">
-                            Full number: {countryCode}{phone.replace(/\D/g, '').replace(/^0/, '')}
+                            Full number: {fullWhatsApp}
                         </p>
                     )}
                 </div>

@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { headers } from 'next/headers'
 
 // We use a dedicated Service Role client here because signups 
 // need to bypass RLS to insert new records before a user is "logged in".
@@ -9,41 +10,71 @@ const getServiceClient = () => createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function signup(prevState: any, formData: FormData) {
+export async function handleSignupOrLogin(prevState: any, formData: FormData) {
   const supabase = getServiceClient()
+  const headerList = await headers()
+  const origin = headerList.get('origin')
 
   const email = formData.get('email') as string
+  const firstName = formData.get('firstName') as string
   const whatsapp = formData.get('whatsapp') as string
+  const isLogin = formData.get('isLogin') === 'true'
 
-  if (!email || !whatsapp) {
-    return { error: 'Email and WhatsApp number are required.' }
+  if (!email) {
+    return { error: 'Email is required.' }
   }
 
-  // Clean input
   const cleanEmail = email.toLowerCase().trim()
-  const cleanWhatsapp = whatsapp.trim().replace(/\s+/g, '') // Remove spaces from phone
 
-  console.log(`Attempting signup for: ${cleanEmail}`);
+  if (!isLogin) {
+    if (!firstName || !whatsapp) {
+      return { error: 'First name and WhatsApp number are required for signup.' }
+    }
 
-  try {
-    const { error } = await supabase
-      .from('users')
-      .insert({
-        email: cleanEmail,
-        whatsapp_number: cleanWhatsapp
-      })
+    const cleanFirstName = firstName.trim()
+    const cleanWhatsapp = whatsapp.trim().replace(/\s+/g, '')
 
-    if (error) {
-      console.error('Signup DB Error:', error)
-      if (error.code === '23505') {
-        return { error: 'That email or WhatsApp number is already signed up.' }
+    console.log(`Attempting signup for: ${cleanEmail}`)
+
+    try {
+      const { error: dbError } = await supabase
+        .from('users')
+        .insert({
+          first_name: cleanFirstName,
+          email: cleanEmail,
+          whatsapp_number: cleanWhatsapp
+        })
+
+      if (dbError) {
+        console.error('Signup DB Error:', dbError)
+        if (dbError.code === '23505') {
+          return { error: 'That email or WhatsApp number is already signed up. Try signing in!' }
+        }
+        return { error: `Database error: ${dbError.message}` }
       }
-      return { error: `Database error: ${error.message}` }
+    } catch (err: any) {
+      console.error('Signup DB Critical Error:', err)
+      return { error: 'Something went wrong saving your details.' }
+    }
+  }
+
+  // Send Magic Link
+  try {
+    const { error: authError } = await supabase.auth.signInWithOtp({
+      email: cleanEmail,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
+    })
+
+    if (authError) {
+      console.error('Auth Error:', authError)
+      return { error: authError.message }
     }
 
     return { success: true }
   } catch (err: any) {
-    console.error('Signup Critical Error:', err)
-    return { error: 'Something went wrong. Please try again.' }
+    console.error('Auth Critical Error:', err)
+    return { error: 'Failed to send magic link. Please try again.' }
   }
 }
