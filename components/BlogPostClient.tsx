@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 export default function BlogPostClient({ article }: { article: any }) {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -73,7 +74,32 @@ export default function BlogPostClient({ article }: { article: any }) {
             {/* Main Article Content */}
             <div className="space-y-6 text-white/80 text-lg leading-relaxed mb-16 border-t border-white/10 pt-12">
                 {article.problem?.split('\n\n').map((paragraph: string, index: number) => (
-                    <p key={index} className="max-w-none">{paragraph}</p>
+                    <div key={index}>
+                        <p className="max-w-none mb-6">{paragraph}</p>
+                        
+                        {/* Inline CTA after the first paragraph (or if there's only one, after the description) */}
+                        {index === 0 && (
+                            <motion.div 
+                                className="my-12 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/10 rounded-3xl p-8 text-center"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                            >
+                                <h3 className="text-xl font-bold mb-3">This hitting close to home?</h3>
+                                <p className="text-white/60 mb-6 max-w-md mx-auto">
+                                    Don't just close the tab and forget. Sign up once, then text{' '}
+                                    <span className="font-mono font-bold text-blue-400">{article.keyword}</span>{' '}
+                                    to get the step-by-step protocol on WhatsApp.
+                                </p>
+                                <Link
+                                    href="/signup"
+                                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:scale-105 transition-all duration-300"
+                                >
+                                    Get This Protocol on WhatsApp →
+                                </Link>
+                            </motion.div>
+                        )}
+                    </div>
                 )) || <p>{article.description}</p>}
             </div>
 
