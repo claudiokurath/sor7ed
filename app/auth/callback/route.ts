@@ -18,6 +18,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redirect to tools after successful sign-in
-  return NextResponse.redirect(new URL('/tools', requestUrl.origin));
+  // Redirect to dashboard after successful sign-in
+  return NextResponse.redirect(new URL('/dashboard', requestUrl.origin));
 }
