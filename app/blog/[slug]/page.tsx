@@ -3,6 +3,26 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import BlogPostClient from "@/components/BlogPostClient";
 
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const resolvedParams = await params;
+    const supabase = await createClient();
+    
+    const { data: article } = await supabase
+        .from('protocols')
+        .select('title, problem, description, branch')
+        .eq('slug', resolvedParams.slug)
+        .single();
+        
+    if (!article) return { title: 'Article Not Found' };
+
+    return {
+        title: `${article.title} | SOR7ED`,
+        description: article.problem || article.description || `Read about ${article.title} in the ${article.branch} branch.`,
+    };
+}
+
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
     const supabase = await createClient();

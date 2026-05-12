@@ -7,6 +7,17 @@ import Link from 'next/link';
 export default function BlogPostClient({ article }: { article: any }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [showDeepDive, setShowDeepDive] = useState(false);
+    const [isFocusMode, setIsFocusMode] = useState(false);
+
+    // Toggle body class for Focus Mode
+    useEffect(() => {
+        if (isFocusMode) {
+            document.body.classList.add('focus-mode');
+        } else {
+            document.body.classList.remove('focus-mode');
+        }
+        return () => document.body.classList.remove('focus-mode');
+    }, [isFocusMode]);
 
     // Cleanup speech synthesis when component unmounts
     useEffect(() => {
@@ -57,18 +68,32 @@ export default function BlogPostClient({ article }: { article: any }) {
                     {article.title}
                 </h1>
 
-                {/* Read Aloud Button */}
-                <button 
-                    onClick={toggleAudio}
-                    className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
-                        isPlaying 
-                            ? 'bg-white text-black border-white shadow-lg' 
-                            : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
-                    }`}
-                >
-                    <span className="text-lg">{isPlaying ? '⏹' : '▶'}</span>
-                    <span>{isPlaying ? 'Stop reading' : 'Listen to this article'}</span>
-                </button>
+                {/* Read Aloud & Focus Mode Buttons */}
+                <div className="flex flex-wrap gap-3">
+                    <button 
+                        onClick={toggleAudio}
+                        className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
+                            isPlaying 
+                                ? 'bg-white text-black border-white shadow-lg' 
+                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
+                        }`}
+                    >
+                        <span className="text-lg">{isPlaying ? '⏹' : '▶'}</span>
+                        <span>{isPlaying ? 'Stop reading' : 'Listen to this article'}</span>
+                    </button>
+
+                    <button 
+                        onClick={() => setIsFocusMode(!isFocusMode)}
+                        className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
+                            isFocusMode 
+                                ? 'bg-blue-500 text-white border-blue-400 shadow-lg' 
+                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
+                        }`}
+                    >
+                        <span className="text-lg">{isFocusMode ? '✨' : '🧘'}</span>
+                        <span>{isFocusMode ? 'Focus On' : 'Focus Mode'}</span>
+                    </button>
+                </div>
             </div>
 
             {/* Main Article Content */}

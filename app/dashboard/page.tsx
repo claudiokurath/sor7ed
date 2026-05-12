@@ -5,16 +5,8 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { branches } from '@/lib/constants';
 
-const branches = [
-  { name: "Keep Going", slug: "keep-going", icon: "🚀", color: "#3B82F6" },
-  { name: "Feel Good", slug: "feel-good", icon: "🧠", color: "#A855F7" },
-  { name: "Spend Smart", slug: "spend-smart", icon: "💰", color: "#10B981" },
-  { name: "Be Connected", slug: "be-connected", icon: "🤝", color: "#F59E0B" },
-  { name: "Plan Ahead", slug: "plan-ahead", icon: "📅", color: "#06B6D4" },
-  { name: "Be Yourself", slug: "be-yourself", icon: "🌈", color: "#FB7185" },
-  { name: "Level Up", slug: "level-up", icon: "⚡", color: "#6366F1" },
-];
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { branches } from '@/lib/constants';
 
 const taglines = [
   { word: 'Overwhelmed', color: '#6366F1' },
@@ -11,15 +12,6 @@ const taglines = [
   { word: 'Wired differently', color: '#06B6D4' },
 ];
 
-const branches = [
-  { num: "01", color: "#3B82F6", name: "Keep Going", slug: "keep-going", description: "Career momentum, learning, skill-building, progress" },
-  { num: "02", color: "#A855F7", name: "Feel Good", slug: "feel-good", description: "Health, nervous system, energy, meds, food, sleep, sensory" },
-  { num: "03", color: "#10B981", name: "Spend Smart", slug: "spend-smart", description: "Money admin, bills, budgeting, impulse spending" },
-  { num: "04", color: "#F59E0B", name: "Be Connected", slug: "be-connected", description: "Relationships, communication, boundaries, social scripts" },
-  { num: "05", color: "#06B6D4", name: "Plan Ahead", slug: "plan-ahead", description: "Planning, executive function, and the systems that support it" },
-  { num: "06", color: "#FB7185", name: "Be Yourself", slug: "be-yourself", description: "Unmasking, identity, shame, self-concept, emotional regulation" },
-  { num: "07", color: "#6366F1", name: "Level Up", slug: "level-up", description: "Digital systems, automation, apps, setups" },
-];
 
 export default function HomeClient({ tools, user }: { tools: any[], user: any }) {
   const [taglineIndex, setTaglineIndex] = useState(0);

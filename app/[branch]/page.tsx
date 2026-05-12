@@ -2,20 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-const branches = {
-    "keep-going": { name: "Keep Going", description: "Career momentum, learning, skill-building, progress" },
-    "feel-good": { name: "Feel Good", description: "Health, nervous system, energy, meds, food, sleep, sensory" },
-    "spend-smart": { name: "Spend Smart", description: "Money admin, bills, budgeting, impulse spending" },
-    "be-connected": { name: "Be Connected", description: "Relationships, communication, boundaries, social scripts" },
-    "plan-ahead": { name: "Plan Ahead", description: "Planning, executive function, and the systems that support it" },
-    "be-yourself": { name: "Be Yourself", description: "Unmasking, identity, shame, self-concept, emotional regulation" },
-    "level-up": { name: "Level Up", description: "Digital systems, automation, apps, setups" },
-};
+import { branches } from "@/lib/constants";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ branch: string }> }): Promise<Metadata> {
+    const resolvedParams = await params;
+    const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
+    
+    if (!branchInfo) return { title: 'Branch Not Found' };
+
+    return {
+        title: `${branchInfo.name} | SOR7ED Branch`,
+        description: branchInfo.description,
+    };
+}
 
 export default async function BranchPage({ params }: { params: Promise<{ branch: string }> }) {
     const resolvedParams = await params;
-    const branchKey = resolvedParams.branch as keyof typeof branches;
-    const branchInfo = branches[branchKey];
+    const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
 
     if (!branchInfo) notFound();
 

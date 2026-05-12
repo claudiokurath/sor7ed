@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,23 @@ export async function GET(req: NextRequest) {
 // Meta Message Handler (POST)
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
+        const rawBody = await req.text();
+        const signature = req.headers.get("x-hub-signature-256");
+
+        // Verify signature (Security Hardening)
+        if (process.env.META_APP_SECRET && signature) {
+            const hmac = crypto.createHmac("sha256", process.env.META_APP_SECRET);
+            const digest = "sha256=" + hmac.update(rawBody).digest("hex");
+            
+            if (signature !== digest) {
+                console.error("Webhook signature verification failed");
+                return new NextResponse("Unauthorized", { status: 401 });
+            }
+        } else if (!process.env.META_APP_SECRET) {
+            console.warn("META_APP_SECRET is not set. Webhook is vulnerable to spoofing.");
+        }
+
+        const body = JSON.parse(rawBody);
 
         // Check if it's a message event
         const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
