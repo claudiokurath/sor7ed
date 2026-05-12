@@ -20,9 +20,14 @@ export default async function ToolsPage() {
         <main className="min-h-screen bg-[#0a0a0a] text-white px-6 py-20">
             <div className="max-w-5xl mx-auto">
                 
-                <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors block mb-12">
-                    ← Back to home
-                </Link>
+                <div className="flex justify-between items-center mb-12">
+                    <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors">
+                        ← Back to home
+                    </Link>
+                    <Link href="/signup" className="text-white/30 text-sm hover:text-white transition-colors uppercase tracking-widest font-medium">
+                        Sign In
+                    </Link>
+                </div>
 
                 <div className="max-w-2xl mb-16">
                     <h1 className="text-4xl md:text-7xl font-black mb-6 tracking-tighter leading-tight">Interactive Assessments</h1>

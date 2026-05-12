@@ -21,7 +21,7 @@ const branches = [
   { num: "07", color: "#6366F1", name: "Level Up", slug: "level-up", description: "Digital systems, automation, apps, setups" },
 ];
 
-export default function HomeClient({ tools }: { tools: any[] }) {
+export default function HomeClient({ tools, user }: { tools: any[], user: any }) {
   const [taglineIndex, setTaglineIndex] = useState(0);
 
   useEffect(() => {
@@ -45,9 +45,22 @@ export default function HomeClient({ tools }: { tools: any[] }) {
 
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-6 md:px-16">
           <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">SOR7ED</span>
-          <Link href="/signup" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-            Sign Up →
-          </Link>
+          <div className="flex gap-8">
+            {user ? (
+              <Link href="/tools" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                My Tools
+              </Link>
+            ) : (
+              <>
+                <Link href="/signup" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                  Sign In
+                </Link>
+                <Link href="/signup" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                  Sign Up →
+                </Link>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="relative z-10 max-w-5xl">
