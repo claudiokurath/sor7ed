@@ -1,17 +1,18 @@
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { headers } from 'next/headers'
 
-// We use a dedicated Service Role client here because signups 
-// need to bypass RLS to insert new records before a user is "logged in".
-const getServiceClient = () => createClient(
+// Service Role client for bypassing RLS during signup
+const getAdminClient = () => createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
 export async function handleSignupOrLogin(prevState: any, formData: FormData) {
-  const supabase = getServiceClient()
+  const adminClient = getAdminClient()
+  const supabase = await createServerClient()
   const headerList = await headers()
   const host = headerList.get('host')
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
@@ -39,7 +40,7 @@ export async function handleSignupOrLogin(prevState: any, formData: FormData) {
     console.log(`Attempting signup for: ${cleanEmail}`)
 
     try {
-      const { error: dbError } = await supabase
+      const { error: dbError } = await adminClient
         .from('users')
         .insert({
           first_name: cleanFirstName,

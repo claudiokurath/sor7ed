@@ -51,6 +51,11 @@ function SignupForm() {
     if (searchParams.get('mode') === 'login') {
       setIsLogin(true);
     }
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      setStatus('error');
+      setErrorMessage(errorParam === 'auth_failed' ? 'Authentication failed. Please try again.' : decodeURIComponent(errorParam));
+    }
   }, [searchParams]);
 
   useEffect(() => {
