@@ -44,11 +44,11 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
               </Link>
             ) : (
               <>
-                <Link href="/signup" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                <Link href="/signup?mode=login" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
                   Sign In
                 </Link>
-                <Link href="/signup" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-                  Sign Up →
+                <Link href="/signup" className="px-6 py-2 bg-white text-black text-xs tracking-widest uppercase font-black rounded-full hover:scale-105 transition-all">
+                  Sign Up
                 </Link>
               </>
             )}
