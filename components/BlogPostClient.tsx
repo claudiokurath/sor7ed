@@ -218,42 +218,71 @@ export default function BlogPostClient({ article }: { article: any }) {
 
             {/* Main Article Content */}
             <div className="space-y-6 text-white/80 text-lg leading-relaxed mb-16 border-t border-white/10 pt-12">
+                
+                {/* SYSTEM: TL;DR Section */}
+                {article.tldr && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="mb-12 bg-white/5 border-l-2 border-white/20 p-6 font-mono"
+                    >
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-3">SYSTEM: TL;DR</p>
+                        <p className="text-white/70 text-base leading-relaxed">
+                            {article.tldr}
+                        </p>
+                    </motion.div>
+                )}
+
                 {article.problem?.split('\n\n').map((paragraph: string, index: number) => (
                     <div key={index}>
                         <p className="max-w-none mb-6">{paragraph}</p>
                         
-                        {/* Inline CTA after the first paragraph (or if there's only one, after the description) */}
+                        {/* Dynamic CTA Section - Injected after first paragraph */}
                         {index === 0 && (
                             <motion.div 
-                                className="my-12 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-white/10 rounded-3xl p-8 text-center"
+                                className="my-16 bg-[#0f0f0f] border border-white/5 rounded-[40px] p-10 md:p-14 text-center relative overflow-hidden"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                             >
-                                <h3 className="text-xl font-bold mb-3">This hitting close to home?</h3>
-                                <p className="text-white/60 mb-6 max-w-md mx-auto">
-                                    Don't just close the tab and forget. Sign up once, then text{' '}
-                                    <span className="font-mono font-bold text-blue-400">{article.keyword}</span>{' '}
-                                    to get the step-by-step protocol on WhatsApp.
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 blur-[100px] rounded-full" />
+                                
+                                <h3 className="text-2xl md:text-3xl font-black mb-6 relative z-10">
+                                    {article.cta_headline || "Ready to implement this?"}
+                                </h3>
+                                
+                                <p className="text-white/40 mb-10 max-w-lg mx-auto text-base md:text-lg leading-relaxed relative z-10">
+                                    {article.cta || `This protocol is built for immediate action. Text the keyword below to get the full step-by-step guide on WhatsApp.`}
                                 </p>
-                                <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                                    <Link
-                                        href="/signup"
-                                        className="inline-block bg-white text-black font-bold px-10 py-5 rounded-full hover:bg-white/90 transition-all duration-300"
-                                    >
-                                        Get This Protocol on WhatsApp →
-                                    </Link>
-                                    <button
-                                        onClick={toggleSave}
-                                        className={`flex items-center justify-center gap-2 px-8 py-5 rounded-full border text-sm font-medium transition-all duration-300 ${
-                                            isSaved
-                                                ? 'bg-white/10 border-white/30 text-white'
-                                                : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'
-                                        }`}
-                                    >
-                                        <span>{isSaved ? '★' : '☆'}</span>
-                                        {isSaved ? 'Saved to Dashboard' : 'Save to Dashboard'}
-                                    </button>
+
+                                <div className="flex flex-col items-center gap-6 relative z-10">
+                                    <div className="bg-black/80 border border-white/10 rounded-3xl px-10 py-6 inline-block shadow-2xl">
+                                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-3">TEXT THIS KEYWORD</p>
+                                        <p className="text-4xl md:text-5xl font-black tracking-[0.2em] text-white">
+                                            {article.keyword}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md mt-6">
+                                        <Link
+                                            href={`https://wa.me/447360277713?text=${encodeURIComponent(article.keyword)}`}
+                                            target="_blank"
+                                            className="flex-1 bg-white text-black font-black px-10 py-5 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-widest"
+                                        >
+                                            OPEN WHATSAPP →
+                                        </Link>
+                                        <button
+                                            onClick={toggleSave}
+                                            className={`flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                isSaved
+                                                    ? 'bg-white/10 border-white/20 text-white'
+                                                    : 'bg-transparent border-white/10 text-white/30 hover:border-white/30 hover:text-white'
+                                            }`}
+                                        >
+                                            {isSaved ? 'SAVED TO ARCHIVE' : 'SAVE TO ARCHIVE'}
+                                        </button>
+                                    </div>
                                 </div>
                             </motion.div>
                         )}

@@ -58,7 +58,7 @@ export default function BlogList({ initialPosts }: { initialPosts: any[] }) {
                         <h2 className="text-xl font-bold mb-2 group-hover:text-white/80 transition-colors">
                             {post.title}
                         </h2>
-                        <p className="text-white/50 text-sm leading-relaxed">{post.excerpt || post.description}</p>
+                        <p className="text-white/50 text-sm leading-relaxed">{post.tldr || post.excerpt || post.description}</p>
                     </Link>
                 ))}
                 
