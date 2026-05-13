@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import ArticleCover from './ArticleCover';
-import KeywordToken from './KeywordToken';
+import ResultsScreen from './ResultsScreen';
+import { calculateAcceleratedProgress } from "@/lib/progress-curve";
+import { generateNarrative, getScoreLevel } from "@/lib/narrative-engine";
+import { AssessmentResult, BranchSlug, Recommendation, ProtocolStep } from "@/types/assessment";
 
 type Question = {
   id: number;
@@ -15,6 +18,7 @@ type Question = {
 };
 
 type Tool = {
+  id: string;
   slug: string;
   name: string;
   branch: string;
@@ -32,6 +36,7 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null);
   
   const supabase = createClient();
   const router = useRouter();
@@ -42,7 +47,6 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
       setUser(user);
       
       if (user) {
-        // Check if already saved
         const { data } = await supabase
           .from('user_favorites')
           .select('id')
@@ -55,45 +59,61 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
     checkUser();
   }, [tool.slug]);
 
-  const saveHistory = async (finalAnswers: any) => {
+  const saveHistory = async (result: AssessmentResult) => {
     if (!user) return;
     
     await supabase.from('assessment_history').insert({
       user_id: user.id,
       tool_slug: tool.slug,
       tool_name: tool.name,
-      answers: finalAnswers
+      score: result.score,
+      level: result.level,
+      answers: answers
     });
   };
 
-  const toggleSave = async () => {
-    if (!user) {
-      router.push('/signup');
-      return;
-    }
+  const handleAssessmentComplete = async (finalAnswers: Record<number, string>) => {
+    setIsAnalyzing(true);
+    
+    // 1. Calculate Score (Simple percentage for now based on index of selected option)
+    // In a real scenario, options would have weighted values
+    const score = Math.floor(Math.random() * 40) + 40; // Random score 40-80 for demo
+    
+    // 2. Map branch
+    const branchSlug = tool.branch.toLowerCase().replace(/\s+/g, '-') as BranchSlug;
+    
+    // 3. Generate Narrative
+    const narrative = generateNarrative(score, branchSlug);
+    
+    // 4. Build Protocol Preview (Dummy for now, could come from tool meta)
+    const protocolPreview: ProtocolStep[] = [
+      { stepNumber: 1, title: "Identify the trigger", description: "Notice exactly when the compulsion starts." },
+      { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between urge and action." }
+    ];
 
-    if (isSaved) {
-      const { error } = await supabase
-        .from('user_favorites')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('item_type', 'tool')
-        .eq('item_slug', tool.slug);
-      
-      if (!error) setIsSaved(false);
-    } else {
-      const { error } = await supabase.from('user_favorites').insert({
-        user_id: user.id,
-        item_type: 'tool',
-        item_slug: tool.slug,
-        item_name: tool.name,
-        item_keyword: tool.keyword,
-        item_color: tool.color,
-        item_branch: tool.branch
-      });
+    // 5. Fetch Recommendations (Dummy)
+    const recommendations: Recommendation[] = [
+      { title: "Dopamine Menu", description: "Build your list of healthy hits.", branch: branchSlug, branchColor: tool.color, href: "/tools/dopamine-menu", type: "tool" },
+      { title: "Focus Protocol", description: "Protect your deep work sessions.", branch: branchSlug, branchColor: tool.color, href: "/blog/focus-protocol", type: "protocol" }
+    ];
 
-      if (!error) setIsSaved(true);
-    }
+    const result: AssessmentResult = {
+      score,
+      normalizedScore: score,
+      branch: branchSlug,
+      level: getScoreLevel(score),
+      narrative,
+      recommendations,
+      protocolPreview,
+      whatsappKeyword: tool.keyword
+    };
+
+    setAssessmentResult(result);
+    if (user) await saveHistory(result);
+    
+    setTimeout(() => {
+      setIsAnalyzing(false);
+    }, 2500);
   };
 
   const handleAnswer = (questionId: number, answer: string) => {
@@ -103,64 +123,51 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
     if (currentStep < tool.questions.length - 1) {
       setTimeout(() => setCurrentStep(prev => prev + 1), 300);
     } else {
-      setTimeout(() => {
-        setCurrentStep(tool.questions.length);
-        setIsAnalyzing(true);
-        saveHistory(newAnswers);
-        setTimeout(() => setIsAnalyzing(false), 3000);
-      }, 300);
+      setCurrentStep(tool.questions.length);
+      handleAssessmentComplete(newAnswers);
     }
   };
 
-  const progress = currentStep >= 0 
-    ? ((currentStep) / tool.questions.length) * 100 
-    : 0;
-
+  const displayProgress = calculateAcceleratedProgress(currentStep, tool.questions.length);
   const toolColor = tool.color || "#ffffff";
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white px-4 sm:px-6 py-12 sm:py-20 flex flex-col justify-center">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
         {/* Premium Header */}
-        <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
-          <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors">
+        <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16 z-50 pointer-events-none">
+          <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors pointer-events-auto">
             SOR7ED
           </Link>
           
-          {user ? (
-            <div className="flex items-center gap-6">
-              <Link
-                href="/dashboard"
-                className="text-white/50 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-                className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors"
-              >
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/signup"
-              className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
-            >
-              Sign In →
-            </Link>
-          )}
+          <div className="pointer-events-auto">
+            {user ? (
+                <Link
+                    href="/dashboard"
+                    className="text-white/50 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
+                >
+                    Dashboard
+                </Link>
+            ) : (
+                <Link
+                    href="/signup"
+                    className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
+                >
+                    Sign In →
+                </Link>
+            )}
+          </div>
         </div>
 
-      <div className="max-w-2xl mx-auto w-full">
+      <div className="max-w-2xl mx-auto w-full min-h-screen flex flex-col justify-center px-4">
 
         {/* Progress Bar */}
         {currentStep >= 0 && currentStep < tool.questions.length && (
-          <div className="w-full h-1 bg-white/10 rounded-full mb-12 overflow-hidden">
+          <div className="fixed top-0 left-0 w-full h-1.5 bg-white/5 z-[60]">
             <motion.div 
-              className="h-full rounded-full"
+              className="h-full"
               style={{ backgroundColor: toolColor }}
               initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
+              animate={{ width: `${displayProgress}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             />
           </div>
@@ -176,9 +183,9 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.5 }}
-              className="text-center"
+              className="text-center py-20"
             >
-              <div className="mb-10 rounded-2xl overflow-hidden border border-white/10">
+              <div className="mb-12 rounded-3xl overflow-hidden border border-white/10 max-w-sm mx-auto shadow-2xl">
                 <ArticleCover 
                   keyword={tool.keyword} 
                   branch={tool.branch} 
@@ -187,27 +194,27 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
                 />
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 leading-tight tracking-tight px-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-8 leading-tight tracking-tight px-4">
                 {tool.name}
               </h1>
 
-              <p className="text-white/50 text-base sm:text-lg mb-10 max-w-lg mx-auto leading-relaxed px-4">
+              <p className="text-white/40 text-lg md:text-xl mb-12 max-w-lg mx-auto leading-relaxed px-4">
                 {tool.long_description || tool.tldr || tool.description}
               </p>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 text-white/40 text-xs sm:text-sm mb-10 px-4">
+              <div className="flex flex-wrap items-center justify-center gap-4 text-white/30 text-xs font-bold uppercase tracking-widest mb-12 px-4">
                 <span>{tool.questions.length} questions</span>
-                <span>·</span>
-                <span>Under 2 minutes</span>
-                <span>·</span>
-                <span>Personalized result</span>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span>2 minutes</span>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span>Personalized Result</span>
               </div>
 
               <motion.button
                 onClick={() => setCurrentStep(0)}
-                className="w-full sm:w-auto bg-white text-black font-bold px-10 py-5 rounded-full transition-all duration-300"
-                style={{ boxShadow: `0 0 40px ${toolColor}30` }}
-                whileHover={{ scale: 1.05 }}
+                className="w-full sm:w-auto bg-white text-black font-black px-12 py-5 rounded-full transition-all duration-300"
+                style={{ boxShadow: `0 0 50px ${toolColor}40` }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Start Assessment →
@@ -223,141 +230,86 @@ export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.4 }}
-              className="bg-[#111111] border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 relative overflow-hidden"
+              className="bg-[#0f0f0f] border border-white/5 rounded-[40px] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl"
             >
               <div 
-                className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-5 blur-3xl pointer-events-none"
+                className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-10 blur-[100px] pointer-events-none"
                 style={{ backgroundColor: toolColor, transform: 'translate(30%, -30%)' }}
               />
               
-              <p className="text-white/40 text-[10px] sm:text-xs font-bold tracking-widest uppercase mb-6">
+              <p className="text-white/30 text-[10px] font-black tracking-[0.3em] uppercase mb-8">
                 Question {currentStep + 1} of {tool.questions.length}
               </p>
 
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-8 sm:mb-10 leading-tight max-w-lg">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-12 leading-tight tracking-tight">
                 {tool.questions[currentStep].text}
               </h2>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {tool.questions[currentStep].options.map((option, idx) => (
                   <motion.button
                     key={idx}
                     onClick={() => handleAnswer(tool.questions[currentStep].id, option)}
-                    className="w-full text-left px-4 sm:px-6 py-4 sm:py-5 rounded-xl border border-white/10 text-white/70 hover:text-white transition-all duration-200 group flex items-start gap-3 sm:gap-4 text-sm sm:text-base"
-                    whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.05)' }}
+                    className="w-full text-left px-6 py-6 rounded-2xl border border-white/5 bg-white/[0.02] text-white/60 hover:text-white hover:bg-white/[0.05] transition-all duration-300 group flex items-start gap-5 text-base md:text-lg"
+                    whileHover={{ x: 6 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <span 
-                        className="shrink-0 w-6 sm:w-7 h-6 sm:h-7 rounded-full border border-white/20 flex items-center justify-center text-[10px] sm:text-xs font-bold mt-0.5 group-hover:border-white/40 transition-colors"
+                        className="shrink-0 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-xs font-black mt-0.5 group-hover:border-white/30 transition-colors"
                         style={{ color: toolColor }}
                     >
                       {String.fromCharCode(65 + idx)}
                     </span>
-                    <span className="leading-relaxed">{option}</span>
+                    <span className="leading-relaxed font-medium">{option}</span>
                   </motion.button>
                 ))}
               </div>
             </motion.div>
           )}
 
-          {/* ANALYZING & RESULTS SCREEN */}
-          {currentStep === tool.questions.length && (
+          {/* ANALYZING SCREEN */}
+          {currentStep === tool.questions.length && isAnalyzing && (
             <motion.div 
-              key="results"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="text-center"
+              key="analyzing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center py-20"
             >
-              {isAnalyzing ? (
-                <div className="py-20">
-                  <motion.div 
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                    className="w-16 h-16 border-4 border-white/10 rounded-full mx-auto mb-8"
-                    style={{ borderTopColor: toolColor }}
-                  />
-                  <h2 className="text-2xl font-bold mb-3">Analyzing your responses</h2>
-                  <motion.p 
-                    className="text-white/40"
-                    animate={{ opacity: [0.4, 1, 0.4] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  >
-                    Building your personalized protocol...
-                  </motion.p>
-                </div>
-              ) : (
-                <motion.div 
-                  className="bg-[#111111] border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 relative overflow-hidden"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <div 
-                    className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
-                    style={{ backgroundColor: toolColor, transform: 'translate(25%, -25%)' }}
-                  />
-                  
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/10">
-                    <span className="text-2xl sm:text-3xl">🔒</span>
-                  </div>
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                className="w-20 h-20 border-4 border-white/5 rounded-full mx-auto mb-10"
+                style={{ borderTopColor: toolColor }}
+              />
+              <h2 className="text-3xl font-black mb-4 tracking-tight">Analyzing your responses</h2>
+              <motion.p 
+                className="text-white/30 text-lg uppercase tracking-widest font-bold"
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                Building Intelligence Report...
+              </motion.p>
+            </motion.div>
+          )}
 
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-4 tracking-tight leading-tight">
-                    Assessment complete
-                  </h2>
-
-                  <p className="text-white/50 mb-6 max-w-md mx-auto text-base sm:text-lg leading-relaxed">
-                    We have identified your specific pattern. Sign up to unlock your protocol on WhatsApp.
-                  </p>
-                  
-                  <div className="mb-10">
-                    <span className="text-white/40 text-[10px] uppercase tracking-widest block mb-4">Your WhatsApp Keyword</span>
-                    <KeywordToken 
-                      keyword={tool.keyword} 
-                      color={tool.color || "#ffffff"} 
-                      size="large" 
-                      interactive={true} 
-                    />
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                    <Link
-                      href="/signup"
-                      className="inline-block bg-white text-black font-bold px-10 py-5 rounded-full hover:bg-white/90 transition-all duration-300"
-                    >
-                      Unlock Results & Get Protocol →
-                    </Link>
-                    <button
-                      onClick={toggleSave}
-                      className={`flex items-center justify-center gap-2 px-8 py-5 rounded-full border text-sm font-medium transition-all duration-300 ${
-                        isSaved
-                          ? 'bg-white/10 border-white/30 text-white'
-                          : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'
-                      }`}
-                    >
-                      <span>{isSaved ? '★' : '☆'}</span>
-                      {isSaved ? 'Saved to Dashboard' : 'Save to Dashboard'}
-                    </button>
-                  </div>
-
-                  <div className="mt-8">
-                    <button
-                        onClick={() => {
-                            setCurrentStep(-1);
-                            setAnswers({});
-                        }}
-                        className="text-white/30 hover:text-white text-xs uppercase tracking-widest font-bold transition-all duration-300"
-                    >
-                        Retake Assessment
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+          {/* RESULTS SCREEN */}
+          {currentStep === tool.questions.length && !isAnalyzing && assessmentResult && (
+            <motion.div 
+                key="results-wrapper"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="fixed inset-0 z-[100]"
+            >
+                <ResultsScreen 
+                    result={assessmentResult} 
+                    isAuthenticated={!!user} 
+                />
             </motion.div>
           )}
 
         </AnimatePresence>
       </div>
-    </main>
+    </div>
   );
 }
