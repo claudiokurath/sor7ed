@@ -39,30 +39,54 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
+    let mounted = true;
+
     async function loadDashboard() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        router.push('/signup');
-        return;
+      try {
+        // CRITICAL: Check session first for speed/reliability
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError || !session?.user) {
+          console.log('No active session, redirecting to signin');
+          if (mounted) router.replace('/signup?mode=login');
+          return;
+        }
+
+        const currentUser = session.user;
+        if (mounted) setUser(currentUser);
+
+        // Load all member data in parallel
+        const [profileRes, favoritesRes, historyRes] = await Promise.all([
+          supabase.from('users').select('*').eq('email', currentUser.email).single(),
+          supabase.from('user_favorites').select('*').order('saved_at', { ascending: false }),
+          supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(10)
+        ]);
+
+        if (mounted) {
+          setProfile(profileRes.data);
+          setFavorites(favoritesRes.data || []);
+          setHistory(historyRes.data || []);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Dashboard load error:', err);
+        if (mounted) router.replace('/signup?mode=login');
       }
-      
-      setUser(user);
-
-      // Load all member data in parallel
-      const [profileRes, favoritesRes, historyRes] = await Promise.all([
-        supabase.from('users').select('*').eq('email', user.email).single(),
-        supabase.from('user_favorites').select('*').order('saved_at', { ascending: false }),
-        supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(10)
-      ]);
-
-      setProfile(profileRes.data);
-      setFavorites(favoritesRes.data || []);
-      setHistory(historyRes.data || []);
-      setLoading(false);
     }
 
     loadDashboard();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        if (mounted) router.replace('/signup?mode=login');
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [router, supabase]);
 
   const removeFavorite = async (id: string) => {

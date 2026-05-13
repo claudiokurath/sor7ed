@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && user?.email) {
-      console.log('Successfully exchanged code for session for:', user.email);
+      console.log('✅ Successfully exchanged code for session for:', user.email);
       
       // Link the authenticated user to their record in the 'users' table
       // We use the Admin Client here to bypass RLS, as the user isn't linked yet
