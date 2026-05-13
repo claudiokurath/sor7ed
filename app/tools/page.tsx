@@ -10,6 +10,7 @@ export default async function ToolsPage() {
     const { data: tools, error } = await supabase
         .from('tools')
         .select('*')
+        .eq('status', 'Live')
         .order('created_at', { ascending: false });
 
     if (error) {

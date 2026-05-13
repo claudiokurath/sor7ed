@@ -9,6 +9,7 @@ export default async function Home() {
     const { data: tools, error } = await supabase
         .from('tools')
         .select('*')
+        .eq('status', 'Live')
         .order('created_at', { ascending: false })
         .limit(3);
 

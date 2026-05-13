@@ -48,6 +48,7 @@ async function syncProtocols() {
       meta_description: extractText(props['Meta Description']),
       read_time: extractText(props['Read Time']),
       deep_dive: extractText(props['Deep Dive']),
+      status: props.Status?.status?.name || 'Live'
     }
 
     const { error } = await supabase.from('protocols').upsert(data, { onConflict: 'slug' })
@@ -88,6 +89,7 @@ async function syncTools() {
       color: extractText(props.Color) || '#ffffff',
       meta_description: extractText(props['Meta Description']),
       cover_image: props['Cover Image']?.files?.[0]?.file?.url || props['Cover Image']?.files?.[0]?.external?.url || '',
+      status: props.Status?.status?.name || 'Live'
     }
 
     const { error } = await supabase.from('tools').upsert(data, { onConflict: 'slug' })

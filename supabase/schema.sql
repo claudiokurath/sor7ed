@@ -50,3 +50,7 @@ CREATE POLICY "Users own their history" ON assessment_history
 
 CREATE POLICY "Users own their usage data" ON protocol_usage
   FOR ALL USING (auth.uid()::text = user_id::text);
+
+-- Add status column to protocols and tools
+ALTER TABLE protocols ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Live';
+ALTER TABLE tools ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Live';
