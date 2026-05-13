@@ -91,13 +91,21 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "unregistered" });
             }
 
-            const { data: protocol } = await supabase.from('protocols').select('*').eq('keyword', keyword.toUpperCase()).single();
+            const { data: protocol } = await supabase
+                .from('protocols')
+                .select('*')
+                .ilike('keyword', keyword)
+                .single();
             
             if (protocol) {
                 const content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
                 await sendWhatsAppMessage(senderPhone, content);
             } else {
-                const { data: tool } = await supabase.from('tools').select('*').eq('keyword', keyword.toUpperCase()).single();
+                const { data: tool } = await supabase
+                    .from('tools')
+                    .select('*')
+                    .ilike('keyword', keyword)
+                    .single();
                 
                 if (tool) {
                     const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, keyword);

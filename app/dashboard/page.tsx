@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [favorites, setFavorites] = useState<UserFavorite[]>([]);
   const [history, setHistory] = useState<AssessmentHistory[]>([]);
+  const [tools, setTools] = useState<any[]>([]);
   const [activeSection, setActiveSection] = useState<'overview' | 'saved' | 'history'>('overview');
   const [loading, setLoading] = useState(true);
   
@@ -57,16 +58,18 @@ export default function Dashboard() {
         const currentUser = session.user;
         if (mounted) setUser(currentUser);
 
-        const [profileRes, favoritesRes, historyRes] = await Promise.all([
+        const [profileRes, favoritesRes, historyRes, toolsRes] = await Promise.all([
           supabase.from('users').select('*').eq('email', currentUser.email).single(),
           supabase.from('user_favorites').select('*').order('saved_at', { ascending: false }),
-          supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(20)
+          supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(20),
+          supabase.from('tools').select('slug, branch, color')
         ]);
 
         if (mounted) {
           setProfile(profileRes.data);
           setFavorites(favoritesRes.data || []);
           setHistory(historyRes.data || []);
+          setTools(toolsRes.data || []);
           setLoading(false);
         }
       } catch (err) {
@@ -91,17 +94,16 @@ export default function Dashboard() {
 
   const branchCoverage = useMemo(() => {
     const assessedBranches = new Set(history.map(h => {
-        // Find which branch this tool belongs to (might need a mapping or tool search)
-        // For now, we'll try to find it from favorites or assume tool_slug mapping
-        const fav = favorites.find(f => f.item_slug === h.tool_slug);
-        return fav?.item_branch?.toLowerCase().replace(/\s+/g, '-');
+        // Find branch from tools table
+        const tool = tools.find(t => t.slug === h.tool_slug);
+        return tool?.branch?.toLowerCase().replace(/\s+/g, '-');
     }).filter(Boolean));
 
     return branches.map(b => ({
       ...b,
       isAssessed: assessedBranches.has(b.slug)
     }));
-  }, [history, favorites]);
+  }, [history, tools]);
 
   const removeFavorite = async (id: string) => {
     await supabase.from('user_favorites').delete().eq('id', id);

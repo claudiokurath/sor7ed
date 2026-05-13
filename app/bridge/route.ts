@@ -39,13 +39,45 @@ export async function GET(request: NextRequest) {
       .update({ consumed: true })
       .eq('id', sessionData.id);
 
-    // Create redirect URL with session context
-    const targetUrl = new URL(sessionData.target_url, process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sor7ed.com');
-    targetUrl.searchParams.set('wa', '1');
-    targetUrl.searchParams.set('phone', sessionData.phone);
-    targetUrl.searchParams.set('keyword', sessionData.source_keyword || '');
+    // Create the final target URL with context
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sor7ed.com';
+    const toolUrl = new URL(sessionData.target_url, siteUrl);
+    toolUrl.searchParams.set('wa', '1');
+    toolUrl.searchParams.set('phone', sessionData.phone);
+    toolUrl.searchParams.set('keyword', sessionData.source_keyword || '');
 
-    return NextResponse.redirect(targetUrl.toString());
+    // CHECK FOR EXISTING USER TO AUTO-LOGIN
+    try {
+      const { data: userProfile } = await supabaseAdmin
+        .from('users')
+        .select('email')
+        .eq('whatsapp_number', sessionData.phone)
+        .single();
+
+      if (userProfile?.email) {
+        console.log(`Bridge: Found existing user ${userProfile.email}, generating auto-login link.`);
+        
+        const { data: authLink, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+          type: 'magiclink',
+          email: userProfile.email,
+          options: {
+            redirectTo: toolUrl.toString()
+          }
+        });
+
+        if (!linkError && authLink?.properties?.action_link) {
+          // Redirect to the magic link which will handle sign-in then go to tool
+          return NextResponse.redirect(authLink.properties.action_link);
+        } else {
+          console.error('Bridge: Failed to generate magic link:', linkError);
+        }
+      }
+    } catch (userError) {
+      console.log('Bridge: No existing user found for this phone, proceeding as guest.');
+    }
+
+    // FALLBACK: Redirect directly (guest mode)
+    return NextResponse.redirect(toolUrl.toString());
 
   } catch (error) {
     console.error('Bridge error:', error);
