@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         .from('protocols')
         .select('title, problem, description, branch')
         .eq('slug', resolvedParams.slug)
-        .eq('status', 'Live')
+        .in('status', ['Live', 'Published'])
         .single();
         
     if (!article) return { title: 'Article Not Found' };
@@ -32,7 +32,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         .from('protocols')
         .select('*')
         .eq('slug', resolvedParams.slug)
-        .eq('status', 'Live')
+        .in('status', ['Live', 'Published'])
         .single();
 
     if (error || !article) {

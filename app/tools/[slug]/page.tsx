@@ -11,6 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         .from('tools')
         .select('name, description, tldr, branch')
         .eq('slug', resolvedParams.slug)
+        .in('status', ['Live', 'Published'])
         .single();
         
     if (!tool) return { title: 'Assessment Not Found' };
@@ -29,6 +30,7 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
         .from('tools')
         .select('*')
         .eq('slug', resolvedParams.slug)
+        .in('status', ['Live', 'Published'])
         .single();
 
     if (error || !tool) {
