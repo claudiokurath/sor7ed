@@ -127,6 +127,10 @@ async function syncTools() {
 }
 
 async function sync() {
+  console.log('Clearing existing data...')
+  await supabase.from('protocols').delete().neq('slug', 'keep-it-safe-placeholder')
+  await supabase.from('tools').delete().neq('slug', 'keep-it-safe-placeholder')
+  
   await syncProtocols()
   await syncTools()
   console.log('All syncs complete!')
