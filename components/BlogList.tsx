@@ -3,7 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export default function BlogList({ initialPosts }: { initialPosts: any[] }) {
+type Post = {
+  id: string;
+  slug: string;
+  title: string;
+  branch: string;
+  keyword: string;
+  tldr: string;
+  excerpt: string;
+  description: string;
+};
+
+export default function BlogList({ initialPosts }: { initialPosts: Post[] }) {
     const [search, setSearch] = useState("");
 
     const filteredPosts = initialPosts.filter(post => 

@@ -5,19 +5,36 @@ import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 
 import ArticleCover from './ArticleCover';
-import BranchIcon from './BranchIcon';
 
-export default function BlogPostClient({ article }: { article: any }) {
+type Article = {
+  slug: string;
+  title: string;
+  keyword: string;
+  branch: string;
+  color: string;
+  problem: string;
+  description: string;
+  tldr: string;
+  protocol: string;
+  cta: string;
+  cta_headline: string;
+  deep_dive: string;
+  read_time: string;
+};
+
+const supabase = createClient();
+
+export default function BlogPostClient({ article }: { article: Article }) {
     const { scrollYProgress } = useScroll();
     const [isPlaying, setIsPlaying] = useState(false);
     const [showDeepDive, setShowDeepDive] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isSaved, setIsSaved] = useState(false);
-    
-    const supabase = createClient();
+
     const router = useRouter();
 
     useEffect(() => {
@@ -237,58 +254,65 @@ export default function BlogPostClient({ article }: { article: any }) {
                 {article.problem?.split('\n\n').map((paragraph: string, index: number) => (
                     <div key={index}>
                         <p className="max-w-none mb-6">{paragraph}</p>
-                        
-                        {/* Dynamic CTA Section - Injected after first paragraph */}
-                        {index === 0 && (
-                            <motion.div 
-                                className="my-16 bg-[#0f0f0f] border border-white/5 rounded-[40px] p-10 md:p-14 text-center relative overflow-hidden"
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                            >
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 blur-[100px] rounded-full" />
-                                
-                                <h3 className="text-2xl md:text-3xl font-black mb-6 relative z-10">
-                                    {article.cta_headline || "Ready to implement this?"}
-                                </h3>
-                                
-                                <p className="text-white/40 mb-10 max-w-lg mx-auto text-base md:text-lg leading-relaxed relative z-10">
-                                    {article.cta || `This protocol is built for immediate action. Text the keyword below to get the full step-by-step guide on WhatsApp.`}
-                                </p>
-
-                                <div className="flex flex-col items-center gap-6 relative z-10">
-                                    <div className="bg-black/80 border border-white/10 rounded-3xl px-10 py-6 inline-block shadow-2xl">
-                                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-3">TEXT THIS KEYWORD</p>
-                                        <p className="text-4xl md:text-5xl font-black tracking-[0.2em] text-white">
-                                            {article.keyword}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md mt-6">
-                                        <Link
-                                            href={`https://wa.me/447360277713?text=${encodeURIComponent(article.keyword)}`}
-                                            target="_blank"
-                                            className="flex-1 bg-white text-black font-black px-10 py-5 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-widest"
-                                        >
-                                            OPEN WHATSAPP →
-                                        </Link>
-                                        <button
-                                            onClick={toggleSave}
-                                            className={`flex-1 flex items-center justify-center gap-3 px-10 py-5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${
-                                                isSaved
-                                                    ? 'bg-white/10 border-white/20 text-white'
-                                                    : 'bg-transparent border-white/10 text-white/30 hover:border-white/30 hover:text-white'
-                                            }`}
-                                        >
-                                            {isSaved ? 'SAVED TO ARCHIVE' : 'SAVE TO ARCHIVE'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
                     </div>
                 )) || <p>{article.description}</p>}
             </div>
+
+            {/* Separate Dynamic CTA Section */}
+            <motion.div 
+                className="my-20 bg-[#0f0f0f] border border-white/5 rounded-[40px] p-10 md:p-14 text-center relative overflow-hidden"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+            >
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 blur-[100px] rounded-full" />
+                
+                <h3 className="text-2xl md:text-4xl font-black mb-6 relative z-10 leading-tight">
+                    {article.cta_headline || "Get the Protocol"}
+                </h3>
+                
+                <div className="text-white/40 mb-12 max-w-xl mx-auto text-lg md:text-xl leading-relaxed relative z-10 font-medium">
+                    {article.cta ? (
+                        <p>{article.cta}</p>
+                    ) : (
+                        <p>Text the keyword below to get the full step-by-step guide delivered straight to your WhatsApp.</p>
+                    )}
+                </div>
+
+                <div className="flex flex-col items-center gap-8 relative z-10">
+                    {/* Visual Keyword Token */}
+                    <div className="bg-black/80 border border-white/10 rounded-3xl px-12 py-8 inline-block shadow-2xl scale-110 mb-4">
+                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-4">WHATSAPP TRIGGER</p>
+                        <p className="text-5xl md:text-6xl font-black tracking-[0.2em] text-white">
+                            {article.keyword}
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-5 justify-center w-full max-w-lg mt-4">
+                        <Link
+                            href={`https://wa.me/447360277713?text=${encodeURIComponent(article.keyword)}`}
+                            target="_blank"
+                            className="flex-[2] bg-white text-black font-black px-10 py-6 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-[0.1em] flex items-center justify-center gap-3"
+                        >
+                            <span>SEND "{article.keyword}" →</span>
+                        </Link>
+                        <button
+                            onClick={toggleSave}
+                            className={`flex-1 flex items-center justify-center gap-3 px-8 py-6 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${
+                                isSaved
+                                    ? 'bg-white/10 border-white/20 text-white'
+                                    : 'bg-transparent border-white/10 text-white/30 hover:border-white/30 hover:text-white'
+                            }`}
+                        >
+                            {isSaved ? 'SAVED' : 'SAVE'}
+                        </button>
+                    </div>
+                    
+                    <p className="text-white/10 text-[10px] font-bold tracking-widest uppercase">
+                        Requires free SOR7ED account
+                    </p>
+                </div>
+            </motion.div>
 
             {/* Deep Dive Section */}
             {article.deep_dive && (

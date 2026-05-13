@@ -8,7 +8,7 @@ export default async function BlogPage() {
     const { data: posts, error } = await supabase
         .from('protocols')
         .select('*')
-        .in('status', ['Live', 'Published'])
+        .neq('status', 'Draft')
         .order('created_at', { ascending: false });
 
     if (error) {

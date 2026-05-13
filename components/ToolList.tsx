@@ -1,10 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+type Tool = {
+  id: string;
+  slug: string;
+  name: string;
+  branch: string;
+  color: string;
+  keyword: string;
+  tldr: string;
+  description: string;
+  short_description: string;
+  featured: boolean;
+};
 
-export default function ToolList({ initialTools }: { initialTools: any[] }) {
+export default function ToolList({ initialTools }: { initialTools: Tool[] }) {
     const [search, setSearch] = useState("");
 
     const filteredTools = initialTools.filter(tool => 
@@ -56,7 +67,7 @@ export default function ToolList({ initialTools }: { initialTools: any[] }) {
                     
                     {filteredTools.length === 0 && (
                         <div className="col-span-full text-center py-32 border border-dashed border-white/10 rounded-[3rem]">
-                            <p className="text-white/20 italic text-xl">No assessments found for "{search}".</p>
+                            <p className="text-white/20 italic text-xl">No assessments found for &quot;{search}&quot;.</p>
                         </div>
                     )}
                 </div>
@@ -65,7 +76,7 @@ export default function ToolList({ initialTools }: { initialTools: any[] }) {
     );
 }
 
-function ToolCard({ tool, featured }: { tool: any, featured: boolean }) {
+function ToolCard({ tool, featured }: { tool: Tool, featured: boolean }) {
     const color = tool.color || '#3B82F6';
 
     return (
@@ -74,7 +85,7 @@ function ToolCard({ tool, featured }: { tool: any, featured: boolean }) {
             className={`relative flex flex-col p-8 rounded-[2.5rem] bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group ${
                 featured ? 'h-[450px]' : 'h-[400px]'
             }`}
-            style={{ '--glow-color': color } as any}
+            style={{ '--glow-color': color } as CSSProperties}
         >
             {/* Hover glow effect */}
             <div 

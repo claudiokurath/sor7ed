@@ -10,7 +10,9 @@ const getAdminClient = () => createAdminClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function handleSignupOrLogin(prevState: any, formData: FormData) {
+type ActionState = { error: string } | { success: boolean } | null
+
+export async function handleSignupOrLogin(prevState: ActionState, formData: FormData) {
   const adminClient = getAdminClient()
   const supabase = await createServerClient()
   const headerList = await headers()
@@ -55,7 +57,7 @@ export async function handleSignupOrLogin(prevState: any, formData: FormData) {
         }
         return { error: `Database error: ${dbError.message}` }
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Signup DB Critical Error:', err)
       return { error: 'Something went wrong saving your details.' }
     }
@@ -76,7 +78,7 @@ export async function handleSignupOrLogin(prevState: any, formData: FormData) {
     }
 
     return { success: true }
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Auth Critical Error:', err)
     return { error: 'Failed to send magic link. Please try again.' }
   }

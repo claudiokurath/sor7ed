@@ -56,7 +56,7 @@ export default function SiteFooter() {
             © 2026 SOR7ED. Built for minds that work differently.
           </p>
           <p className="text-white/30 text-xs">
-            Questions? We're here to help: hello@sor7ed.com
+            Questions? We&apos;re here to help: hello@sor7ed.com
           </p>
         </div>
       </div>

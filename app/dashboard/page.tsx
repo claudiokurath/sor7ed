@@ -10,6 +10,20 @@ import KeywordToken from '@/components/KeywordToken';
 import { getBranchColor } from '@/lib/branch-config';
 import { ScoreLevel } from '@/types/assessment';
 
+type Profile = {
+  first_name: string | null;
+  whatsapp_number: string | null;
+  email: string | null;
+};
+
+type ToolSummary = {
+  slug: string;
+  branch: string;
+  color: string;
+};
+
+type ActiveSection = 'overview' | 'saved' | 'history';
+
 type UserFavorite = {
   id: string;
   item_type: 'tool' | 'protocol';
@@ -33,12 +47,11 @@ type AssessmentHistory = {
 const supabase = createClient();
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [favorites, setFavorites] = useState<UserFavorite[]>([]);
   const [history, setHistory] = useState<AssessmentHistory[]>([]);
-  const [tools, setTools] = useState<any[]>([]);
-  const [activeSection, setActiveSection] = useState<'overview' | 'saved' | 'history'>('overview');
+  const [tools, setTools] = useState<ToolSummary[]>([]);
+  const [activeSection, setActiveSection] = useState<ActiveSection>('overview');
   const [loading, setLoading] = useState(true);
   
   const router = useRouter();
@@ -56,7 +69,6 @@ export default function Dashboard() {
         }
 
         const currentUser = session.user;
-        if (mounted) setUser(currentUser);
 
         const [profileRes, favoritesRes, historyRes, toolsRes] = await Promise.all([
           supabase.from('users').select('*').eq('email', currentUser.email).single(),
@@ -182,7 +194,7 @@ export default function Dashboard() {
             ].map(section => (
               <button
                 key={section.key}
-                onClick={() => setActiveSection(section.key as any)}
+                onClick={() => setActiveSection(section.key as ActiveSection)}
                 className={`pb-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative ${
                   activeSection === section.key
                     ? 'text-white'

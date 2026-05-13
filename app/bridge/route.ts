@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
           console.error('Bridge: Failed to generate magic link:', linkError);
         }
       }
-    } catch (userError) {
+    } catch {
       console.log('Bridge: No existing user found for this phone, proceeding as guest.');
     }
 

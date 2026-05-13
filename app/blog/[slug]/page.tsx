@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import BlogPostClient from "@/components/BlogPostClient";
@@ -13,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         .from('protocols')
         .select('title, problem, description, branch')
         .eq('slug', resolvedParams.slug)
-        .in('status', ['Live', 'Published'])
+        .neq('status', 'Draft')
         .single();
         
     if (!article) return { title: 'Article Not Found' };
@@ -32,7 +31,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         .from('protocols')
         .select('*')
         .eq('slug', resolvedParams.slug)
-        .in('status', ['Live', 'Published'])
+        .neq('status', 'Draft')
         .single();
 
     if (error || !article) {

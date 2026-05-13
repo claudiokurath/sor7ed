@@ -9,7 +9,7 @@ type ArticleCoverProps = {
   title: string;
 };
 
-export default function ArticleCover({ keyword, branch, color, title }: ArticleCoverProps) {
+export default function ArticleCover({ keyword, branch, color }: ArticleCoverProps) {
   return (
     <div 
       className="relative h-48 sm:h-64 w-full overflow-hidden rounded-t-2xl flex items-center justify-center"

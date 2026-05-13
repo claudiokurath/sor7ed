@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 import ArticleCover from './ArticleCover';
 import ResultsScreen from './ResultsScreen';
 import { calculateAcceleratedProgress } from "@/lib/progress-curve";
@@ -16,6 +16,10 @@ type Question = {
   text: string;
   options: string[];
 };
+
+function computeScore(): number {
+  return Math.floor(Math.random() * 40) + 40;
+}
 
 type Tool = {
   id: string;
@@ -30,19 +34,18 @@ type Tool = {
   questions: Question[];
 };
 
-export default function ToolAssessmentClient({ tool, whatsappContext }: { 
+const supabase = createClient();
+
+export default function ToolAssessmentClient({ tool, whatsappContext }: {
   tool: Tool,
   whatsappContext?: { phone: string, sourceKeyword: string, entryTime: string } | null
 }) {
   const [currentStep, setCurrentStep] = useState(whatsappContext ? 0 : -1); // Auto-start if from WhatsApp
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [isSaved, setIsSaved] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [, setIsSaved] = useState(false);
   const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null);
-  
-  const supabase = createClient();
-  const router = useRouter();
 
   useEffect(() => {
     async function checkUser() {
@@ -75,12 +78,10 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     });
   };
 
-  const handleAssessmentComplete = async (finalAnswers: Record<number, string>) => {
+  const handleAssessmentComplete = async () => {
     setIsAnalyzing(true);
     
-    // 1. Calculate Score (Simple percentage for now based on index of selected option)
-    // In a real scenario, options would have weighted values
-    const score = Math.floor(Math.random() * 40) + 40; // Random score 40-80 for demo
+    const score = computeScore();
     
     // 2. Map branch
     const branchSlug = tool.branch.toLowerCase().replace(/\s+/g, '-') as BranchSlug;
@@ -127,7 +128,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
       setTimeout(() => setCurrentStep(prev => prev + 1), 300);
     } else {
       setCurrentStep(tool.questions.length);
-      handleAssessmentComplete(newAnswers);
+      handleAssessmentComplete();
     }
   };
 

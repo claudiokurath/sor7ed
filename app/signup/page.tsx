@@ -1,13 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense, useActionState } from 'react';
+import { useState, Suspense, useActionState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { handleSignupOrLogin } from '../actions/auth';
-import { createClient } from '@/lib/supabase/client';
-
-const supabase = createClient();
 
 const countryCodes = [
   { code: '+44', flag: '🇬🇧', name: 'UK' },
@@ -41,52 +38,23 @@ function SignupForm() {
   const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('+44');
   const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') === 'login');
 
   const [state, formAction, isPending] = useActionState(handleSignupOrLogin, null);
 
-  useEffect(() => {
-    if (searchParams.get('mode') === 'login') {
-      setIsLogin(true);
-    }
-    const errorParam = searchParams.get('error');
-    if (errorParam) {
-      setStatus('error');
-      setErrorMessage(errorParam === 'auth_failed' ? 'Authentication failed. Please try again.' : decodeURIComponent(errorParam));
-    }
-  }, [searchParams]);
+  const searchParamError = searchParams.get('error');
+  const status: 'idle' | 'loading' | 'success' | 'error' =
+    isPending ? 'loading' :
+    state?.success ? 'success' :
+    (state?.error || searchParamError) ? 'error' :
+    'idle';
 
-  useEffect(() => {
-    if (state?.success) {
-      setStatus('success');
-    } else if (state?.error) {
-      setStatus('error');
-      setErrorMessage(state.error);
-    }
-  }, [state]);
-
-  useEffect(() => {
-    if (isPending) {
-        setStatus('loading');
-    }
-  }, [isPending]);
-
-  async function handleGoogleSignIn() {
-    setStatus('loading');
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      setStatus('error');
-      setErrorMessage(error.message);
-    }
-  }
+  const errorMessage = state?.error ??
+    (searchParamError === 'auth_failed'
+      ? 'Authentication failed. Please try again.'
+      : searchParamError
+        ? decodeURIComponent(searchParamError)
+        : '');
 
   const fullWhatsApp = `${countryCode}${phone.replace(/\D/g, '').replace(/^0/, '')}`;
 
@@ -112,7 +80,7 @@ function SignupForm() {
             Check your email{firstName ? `, ${firstName}` : ''}.
           </h1>
           <p className="text-white/50 text-lg mb-12 leading-relaxed max-w-md mx-auto">
-            We've sent a magic link to <strong>{email}</strong>. Click it to confirm your account and start receiving protocols on WhatsApp.
+            We&apos;ve sent a magic link to <strong>{email}</strong>. Click it to confirm your account and start receiving protocols on WhatsApp.
           </p>
 
           <div className="space-y-3">

@@ -4,6 +4,20 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { branches } from '@/lib/constants';
+import type { User } from '@supabase/supabase-js';
+
+type Tool = {
+  id: string;
+  slug: string;
+  name: string;
+  branch: string;
+  color: string;
+  keyword: string;
+  tldr: string;
+  description: string;
+  short_description: string;
+  featured: boolean;
+};
 
 const taglines = [
   { word: 'Overwhelmed', color: '#6366F1' },
@@ -13,7 +27,7 @@ const taglines = [
 ];
 
 
-export default function HomeClient({ tools, user }: { tools: any[], user: any }) {
+export default function HomeClient({ tools, user }: { tools: Tool[], user: User | null }) {
   const [taglineIndex, setTaglineIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -82,7 +96,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            If you're feeling
+            If you&apos;re feeling
           </motion.h1>
 
           {/* Rotating words - bigger on mobile */}
@@ -159,7 +173,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
                 Not sure which branch you need? Take the 2-minute triage.
               </h2>
               <p className="text-white/50 leading-relaxed">
-                Answer a few questions and we'll point you to the exact assessment and protocol for your situation. No account needed to try.
+                Answer a few questions and we&apos;ll point you to the exact assessment and protocol for your situation. No account needed to try.
               </p>
             </div>
             <Link
@@ -381,7 +395,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            The world wasn't built for your brain. We build systems that are.
+            The world wasn&apos;t built for your brain. We build systems that are.
           </motion.h2>
           <motion.p
             className="text-white/40 text-lg max-w-2xl leading-relaxed mb-10"
@@ -390,7 +404,7 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            ADHD, neurodivergence, and a busy mind aren't flaws to be fixed. They're operating systems that need the right software. SOR7ED is that software, delivered one protocol at a time.
+            ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software. SOR7ED is that software, delivered one protocol at a time.
           </motion.p>
           <motion.div
             initial={{ opacity: 0 }}
