@@ -15,5 +15,5 @@ export async function POST(req: Request) {
     and Level Up (Growth). Keep responses concise, supportive, and structured.`,
   });
 
-  return result.toDataStreamResponse();
+  return result.toTextStreamResponse();
 }
