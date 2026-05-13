@@ -24,6 +24,33 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Forbidden", { status: 403 });
 }
 
+async function createWhatsAppSession(phone: string, toolSlug: string, keyword: string) {
+    const supabase = getSupabase();
+    // Generate cryptographically secure token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    
+    const targetUrl = `/tools/${toolSlug}`;
+    
+    const { error } = await supabase
+        .from('whatsapp_sessions')
+        .insert({
+            phone,
+            token,
+            tool_slug: toolSlug,
+            expires_at: expiresAt.toISOString(),
+            source_keyword: keyword,
+            target_url: targetUrl
+        });
+
+    if (error) {
+        console.error('Failed to create WhatsApp session:', error);
+        throw new Error('Session creation failed');
+    }
+
+    return { token, targetUrl };
+}
+
 // Meta Message Handler (POST)
 export async function POST(req: NextRequest) {
     try {
@@ -39,8 +66,6 @@ export async function POST(req: NextRequest) {
                 console.error("Webhook signature verification failed");
                 return new NextResponse("Unauthorized", { status: 401 });
             }
-        } else if (!process.env.META_APP_SECRET) {
-            console.warn("META_APP_SECRET is not set. Webhook is vulnerable to spoofing.");
         }
 
         const body = JSON.parse(rawBody);
@@ -54,10 +79,7 @@ export async function POST(req: NextRequest) {
 
             console.log(`Received WhatsApp keyword: ${text} from ${senderPhone}`);
 
-            // 1. Verify membership
             const supabase = getSupabase();
-            
-            // Normalize phone number (Meta often sends it without the '+' prefix)
             const normalizedPhone = senderPhone.startsWith('+') ? senderPhone : `+${senderPhone}`;
             
             const { data: user } = await supabase
@@ -67,47 +89,31 @@ export async function POST(req: NextRequest) {
                 .single();
 
             if (!user) {
-                const signupPrompt = "Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at https://sor7ed.com/signup to unlock your protocols.";
+                const signupPrompt = "Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at https://www.sor7ed.com/signup to unlock your protocols.";
                 await sendWhatsAppMessage(senderPhone, signupPrompt);
                 return NextResponse.json({ status: "unregistered" });
             }
 
-            console.log(`Verified member: ${user.first_name} (${senderPhone})`);
-
-            // 2. Search for a matching protocol
-            const { data: protocol } = await supabase
-                .from('protocols')
-                .select('*')
-                .eq('keyword', text)
-                .single();
-
-            // 2. Search for a matching tool if no protocol found
-            let content = "";
-            let title = "";
-
+            // Search for content
+            const { data: protocol } = await supabase.from('protocols').select('*').eq('keyword', text).single();
+            
             if (protocol) {
-                title = protocol.title;
-                content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
-            } else {
-                const { data: tool } = await supabase
-                    .from('tools')
-                    .select('*')
-                    .eq('keyword', text)
-                    .single();
-                
-                if (tool) {
-                    title = tool.name;
-                    content = `Hi ${user.first_name}, here is the link for *${tool.name}*:\n\n${tool.tldr}\n\n*ACCESS TOOL:*\n${tool.description}\n\n(Keyword: ${tool.keyword})`;
-                }
-            }
-
-            if (content) {
-                // Send the protocol back via Meta API
+                const content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
                 await sendWhatsAppMessage(senderPhone, content);
             } else {
-                // Handle unknown keyword
-                const helpText = "Sorry, I don't recognize that keyword. Check SOR7ED.com for the list of available protocols!";
-                await sendWhatsAppMessage(senderPhone, helpText);
+                const { data: tool } = await supabase.from('tools').select('*').eq('keyword', text).single();
+                
+                if (tool) {
+                    // Create secure bridge session
+                    const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, text);
+                    const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
+                    
+                    const content = `Hi ${user.first_name}, I've prepared your assessment for *${tool.name}*.\n\n${tool.tldr}\n\n*START ASSESSMENT:*\n${bridgeUrl}\n\n(This link expires in 30 minutes)`;
+                    await sendWhatsAppMessage(senderPhone, content);
+                } else {
+                    const helpText = "Sorry, I don't recognize that keyword. Check SOR7ED.com for the list of available protocols!";
+                    await sendWhatsAppMessage(senderPhone, helpText);
+                }
             }
         }
 

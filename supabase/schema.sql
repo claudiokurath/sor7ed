@@ -54,3 +54,19 @@ CREATE POLICY "Users own their usage data" ON protocol_usage
 -- Add status column to protocols and tools
 ALTER TABLE protocols ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Live';
 ALTER TABLE tools ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'Live';
+
+-- WhatsApp Bridge Sessions
+CREATE TABLE IF NOT EXISTS whatsapp_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  phone TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  tool_slug TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  consumed BOOLEAN NOT NULL DEFAULT FALSE,
+  source_keyword TEXT,
+  target_url TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_whatsapp_sessions_token ON whatsapp_sessions(token);
+CREATE INDEX IF NOT EXISTS idx_whatsapp_sessions_phone ON whatsapp_sessions(phone);

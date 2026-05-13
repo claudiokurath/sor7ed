@@ -30,8 +30,11 @@ type Tool = {
   questions: Question[];
 };
 
-export default function ToolAssessmentClient({ tool }: { tool: Tool }) {
-  const [currentStep, setCurrentStep] = useState(-1); // -1 is intro
+export default function ToolAssessmentClient({ tool, whatsappContext }: { 
+  tool: Tool,
+  whatsappContext?: { phone: string, sourceKeyword: string, entryTime: string } | null
+}) {
+  const [currentStep, setCurrentStep] = useState(whatsappContext ? 0 : -1); // Auto-start if from WhatsApp
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [user, setUser] = useState<any>(null);

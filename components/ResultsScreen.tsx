@@ -119,7 +119,7 @@ export default function ResultsScreen({ result, onWhatsAppCTA, isAuthenticated }
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="sticky bottom-0 p-6 bg-gradient-to-t from-black via-black/95 to-transparent z-50"
+            className="sticky bottom-0 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-black via-black/95 to-transparent z-50"
           >
             <WhatsAppCTA
               result={result}

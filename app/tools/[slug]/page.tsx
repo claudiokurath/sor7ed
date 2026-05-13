@@ -22,8 +22,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
 }
 
-export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ToolPage({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ wa?: string, phone?: string, keyword?: string }> }) {
     const resolvedParams = await params;
+    const resolvedSearchParams = await searchParams;
     const supabase = await createClient();
 
     const { data: tool, error } = await supabase
@@ -37,9 +38,18 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
         notFound();
     }
 
+    const whatsappContext = resolvedSearchParams.wa === '1' ? {
+        phone: resolvedSearchParams.phone || '',
+        sourceKeyword: resolvedSearchParams.keyword || '',
+        entryTime: new Date().toISOString()
+    } : null;
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white px-6 py-20 flex flex-col justify-center">
-            <ToolAssessmentClient tool={tool} />
+            <ToolAssessmentClient 
+                tool={tool} 
+                whatsappContext={whatsappContext}
+            />
         </main>
     );
 }
