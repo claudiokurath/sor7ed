@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import { TEMPLATE_LIBRARY, getTemplateByKeyword } from "@/lib/whatsapp-templates";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +27,8 @@ export async function GET(req: NextRequest) {
 
 async function createWhatsAppSession(phone: string, toolSlug: string, keyword: string) {
     const supabase = getSupabase();
-    // Generate cryptographically secure token
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); 
     
     const targetUrl = `/tools/${toolSlug}`;
     
@@ -57,7 +57,6 @@ export async function POST(req: NextRequest) {
         const rawBody = await req.text();
         const signature = req.headers.get("x-hub-signature-256");
 
-        // Verify signature (Security Hardening)
         if (process.env.META_APP_SECRET && signature) {
             const hmac = crypto.createHmac("sha256", process.env.META_APP_SECRET);
             const digest = "sha256=" + hmac.update(rawBody).digest("hex");
@@ -69,15 +68,13 @@ export async function POST(req: NextRequest) {
         }
 
         const body = JSON.parse(rawBody);
-
-        // Check if it's a message event
         const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
         
         if (message && message.type === "text") {
             const senderPhone = message.from;
-            const text = message.text.body.trim().toUpperCase();
+            const keyword = message.text.body.trim().toLowerCase();
 
-            console.log(`Received WhatsApp keyword: ${text} from ${senderPhone}`);
+            console.log(`Received WhatsApp keyword: ${keyword} from ${senderPhone}`);
 
             const supabase = getSupabase();
             const normalizedPhone = senderPhone.startsWith('+') ? senderPhone : `+${senderPhone}`;
@@ -94,22 +91,25 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "unregistered" });
             }
 
-            // Search for content
-            const { data: protocol } = await supabase.from('protocols').select('*').eq('keyword', text).single();
+            const { data: protocol } = await supabase.from('protocols').select('*').eq('keyword', keyword.toUpperCase()).single();
             
             if (protocol) {
                 const content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
                 await sendWhatsAppMessage(senderPhone, content);
             } else {
-                const { data: tool } = await supabase.from('tools').select('*').eq('keyword', text).single();
+                const { data: tool } = await supabase.from('tools').select('*').eq('keyword', keyword.toUpperCase()).single();
                 
                 if (tool) {
-                    // Create secure bridge session
-                    const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, text);
-                    const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
+                    const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, keyword);
+                    const template = getTemplateByKeyword(keyword);
                     
-                    const content = `Hi ${user.first_name}, I've prepared your assessment for *${tool.name}*.\n\n${tool.tldr}\n\n*START ASSESSMENT:*\n${bridgeUrl}\n\n(This link expires in 30 minutes)`;
-                    await sendWhatsAppMessage(senderPhone, content);
+                    if (template) {
+                        await sendWhatsAppTemplate(senderPhone, keyword, token);
+                    } else {
+                        const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
+                        const content = `Hi ${user.first_name}, I've prepared your assessment for *${tool.name}*.\n\n${tool.tldr}\n\n*START ASSESSMENT:*\n${bridgeUrl}\n\n(This link expires in 30 minutes)`;
+                        await sendWhatsAppMessage(senderPhone, content);
+                    }
                 } else {
                     const helpText = "Sorry, I don't recognize that keyword. Check SOR7ED.com for the list of available protocols!";
                     await sendWhatsAppMessage(senderPhone, helpText);
@@ -122,6 +122,56 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+async function sendWhatsAppTemplate(to: string, keyword: string, token: string) {
+    const templateName = `sor7ed_${keyword.toLowerCase()}_entry_v1`;
+    const url = `https://graph.facebook.com/v18.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+    
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: to,
+            type: "template",
+            template: {
+                name: templateName,
+                language: { code: "en" },
+                components: [
+                    {
+                        type: "button",
+                        sub_type: "url",
+                        index: "0",
+                        parameters: [
+                            {
+                                type: "text",
+                                text: token
+                            }
+                        ]
+                    }
+                ]
+            }
+        }),
+    });
+
+    if (!response.ok) {
+        console.warn(`Template ${templateName} failed or not approved. Falling back to plain text.`);
+        await sendFallbackMessage(to, keyword, token);
+    }
+}
+
+async function sendFallbackMessage(to: string, keyword: string, token: string) {
+    const content = getTemplateByKeyword(keyword);
+    if (!content) return;
+
+    const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
+    const fallbackText = `\`\`\`SYSTEM: ${content.systemAlert}\`\`\`\n\n${content.hookLine}\n\n*${content.assessmentName}*\nTime required: ${content.duration}.\n\n*START ASSESSMENT:*\n${bridgeUrl}`;
+
+    await sendWhatsAppMessage(to, fallbackText);
 }
 
 async function sendWhatsAppMessage(to: string, text: string) {
@@ -142,9 +192,5 @@ async function sendWhatsAppMessage(to: string, text: string) {
         }),
     });
 
-    const result = await response.json();
-    if (!response.ok) {
-        console.error("Error sending WhatsApp message:", result);
-    }
-    return result;
+    return await response.json();
 }
