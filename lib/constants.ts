@@ -62,4 +62,5 @@ export const siteConfig = {
   description: "Practical protocols for neurodivergent adults delivered via WhatsApp.",
   url: "https://sor7ed.com",
   email: "hello@sor7ed.com",
+  whatsappNumber: "447360277713",
 };

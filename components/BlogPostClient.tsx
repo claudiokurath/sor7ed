@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import { siteConfig } from '@/lib/constants';
 
 import ArticleCover from './ArticleCover';
 
@@ -290,7 +291,7 @@ export default function BlogPostClient({ article }: { article: Article }) {
 
                     <div className="flex flex-col sm:flex-row gap-5 justify-center w-full max-w-lg mt-4">
                         <Link
-                            href={`https://wa.me/447360277713?text=${encodeURIComponent(article.keyword)}`}
+                            href={`https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(article.keyword)}`}
                             target="_blank"
                             className="flex-[2] bg-white text-black font-black px-10 py-6 rounded-full hover:scale-105 transition-all text-xl uppercase tracking-[0.2em] flex items-center justify-center"
                         >

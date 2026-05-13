@@ -7,6 +7,8 @@ import { AssessmentResult, ScoreLevel, ProtocolStep, Recommendation } from '@/ty
 import { getBranchColor } from '@/lib/branch-config';
 import KeywordToken from './KeywordToken';
 
+import { siteConfig } from '@/lib/constants';
+
 interface ResultsScreenProps {
   result: AssessmentResult;
   onWhatsAppCTA?: () => void;
@@ -313,8 +315,7 @@ function WhatsAppCTA({ result, onCTA, branchColor, isAuthenticated }: {
   branchColor: string;
   isAuthenticated: boolean;
 }) {
-  const whatsappNumber = "447360277713"; // Based on vault
-  const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(result.whatsappKeyword)}`;
+  const whatsappURL = `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(result.whatsappKeyword)}`;
 
   return (
     <div className="max-w-md mx-auto w-full space-y-6">
@@ -335,14 +336,13 @@ function WhatsAppCTA({ result, onCTA, branchColor, isAuthenticated }: {
         target="_blank"
         rel="noopener noreferrer"
         onClick={onCTA}
-        className="flex items-center justify-center gap-3 w-full py-5 px-8 
-                   rounded-full font-black text-lg text-black
-                   hover:brightness-110 active:scale-[0.98] transition-all duration-300"
+        className="flex items-center justify-center gap-3 w-full py-6 px-8 
+                   rounded-full font-black text-2xl text-black
+                   hover:brightness-110 active:scale-[0.98] transition-all duration-300 uppercase tracking-[0.2em]"
         style={{ backgroundColor: branchColor, boxShadow: `0 0 50px ${branchColor}40` }}
         whileHover={{ y: -2 }}
       >
-        <WhatsAppIcon />
-        <span>Open WhatsApp</span>
+        {result.whatsappKeyword}
       </motion.a>
 
       {!isAuthenticated && (
