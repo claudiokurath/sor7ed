@@ -9,7 +9,7 @@ export default async function Home() {
     const { data: tools, error } = await supabase
         .from('tools')
         .select('*')
-        .in('status', ['Live', 'Published'])
+        .neq('status', 'Draft')
         .order('created_at', { ascending: false })
         .limit(3);
 
