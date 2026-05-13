@@ -292,9 +292,9 @@ export default function BlogPostClient({ article }: { article: Article }) {
                         <Link
                             href={`https://wa.me/447360277713?text=${encodeURIComponent(article.keyword)}`}
                             target="_blank"
-                            className="flex-[2] bg-white text-black font-black px-10 py-6 rounded-full hover:scale-105 transition-all text-sm uppercase tracking-[0.1em] flex items-center justify-center gap-3"
+                            className="flex-[2] bg-white text-black font-black px-10 py-6 rounded-full hover:scale-105 transition-all text-xl uppercase tracking-[0.2em] flex items-center justify-center"
                         >
-                            <span>SEND "{article.keyword}" →</span>
+                            {article.keyword}
                         </Link>
                         <button
                             onClick={toggleSave}
