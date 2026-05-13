@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import BranchIcon from '@/components/BranchIcon';
+import { branches } from '@/lib/constants';
 import KeywordToken from '@/components/KeywordToken';
+import { getBranchColor } from '@/lib/branch-config';
+import { ScoreLevel } from '@/types/assessment';
 
 type UserFavorite = {
   id: string;
@@ -23,6 +25,8 @@ type AssessmentHistory = {
   id: string;
   tool_slug: string;
   tool_name: string;
+  score: number;
+  level: ScoreLevel;
   completed_at: string;
 };
 
@@ -43,11 +47,9 @@ export default function Dashboard() {
 
     async function loadDashboard() {
       try {
-        // CRITICAL: Check session first for speed/reliability
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError || !session?.user) {
-          console.log('No active session, redirecting to signin');
           if (mounted) router.replace('/signup?mode=login');
           return;
         }
@@ -55,11 +57,10 @@ export default function Dashboard() {
         const currentUser = session.user;
         if (mounted) setUser(currentUser);
 
-        // Load all member data in parallel
         const [profileRes, favoritesRes, historyRes] = await Promise.all([
           supabase.from('users').select('*').eq('email', currentUser.email).single(),
           supabase.from('user_favorites').select('*').order('saved_at', { ascending: false }),
-          supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(10)
+          supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(20)
         ]);
 
         if (mounted) {
@@ -76,7 +77,6 @@ export default function Dashboard() {
 
     loadDashboard();
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
         if (mounted) router.replace('/signup?mode=login');
@@ -87,7 +87,21 @@ export default function Dashboard() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [router, supabase]);
+  }, [router]);
+
+  const branchCoverage = useMemo(() => {
+    const assessedBranches = new Set(history.map(h => {
+        // Find which branch this tool belongs to (might need a mapping or tool search)
+        // For now, we'll try to find it from favorites or assume tool_slug mapping
+        const fav = favorites.find(f => f.item_slug === h.tool_slug);
+        return fav?.item_branch?.toLowerCase().replace(/\s+/g, '-');
+    }).filter(Boolean));
+
+    return branches.map(b => ({
+      ...b,
+      isAssessed: assessedBranches.has(b.slug)
+    }));
+  }, [history, favorites]);
 
   const removeFavorite = async (id: string) => {
     await supabase.from('user_favorites').delete().eq('id', id);
@@ -96,173 +110,240 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <main className="min-h-screen bg-black flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-          className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full"
+          className="w-10 h-10 border-2 border-white/5 border-t-white/40 rounded-full"
         />
       </main>
     );
   }
 
-  const savedTools = favorites.filter(f => f.item_type === 'tool');
-  const savedProtocols = favorites.filter(f => f.item_type === 'protocol');
-
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
+    <main className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
       
-      {/* Mobile-First Header */}
-      <div className="border-b border-white/10 px-4 sm:px-6 md:px-16 py-8">
-        <div className="max-w-5xl mx-auto">
-          <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors block mb-4">
-            ← Back to SOR7ED
-          </Link>
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      {/* Premium Noir Header */}
+      <div className="border-b border-white/5 px-6 sm:px-12 md:px-16 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-                {profile?.first_name ? `Hey, ${profile.first_name}` : 'Your Dashboard'}
+              <div className="flex items-center gap-3 mb-6">
+                <Link href="/" className="text-white/20 text-[10px] tracking-[0.3em] uppercase font-bold hover:text-white/40 transition-colors">
+                    SOR7ED
+                </Link>
+                <span className="text-white/10">/</span>
+                <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase font-bold">INTELLIGENCE PROFILE</span>
+              </div>
+              
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4">
+                {profile?.first_name ? `${profile.first_name}` : 'Archive'}
               </h1>
-              <p className="text-white/50 mt-2">
-                WhatsApp ready: <span className="font-mono text-white/70">{profile?.whatsapp_number}</span>
-              </p>
+              
+              <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/30">
+                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
+                    ID: {profile?.whatsapp_number || 'PENDING'}
+                </span>
+                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
+                    STATUS: ACTIVE
+                </span>
+              </div>
             </div>
-            <form action="/auth/signout" method="post">
+
+            <div className="flex items-center gap-4">
+              <Link
+                href="/tools"
+                className="bg-white text-black px-8 py-4 rounded-full text-sm font-black transition-all hover:scale-105 active:scale-95"
+              >
+                + NEW ASSESSMENT
+              </Link>
+              <form action="/auth/signout" method="post">
                 <button
-                type="submit"
-                className="text-white/30 hover:text-white text-sm transition-colors border border-white/10 px-4 py-2 rounded-full hover:border-white/30 self-start sm:self-auto"
+                  type="submit"
+                  className="p-4 rounded-full border border-white/10 hover:bg-white/5 transition-all group"
                 >
-                Sign Out
+                  <span className="sr-only">Sign Out</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/30 group-hover:text-white transition-colors">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                  </svg>
                 </button>
-            </form>
+              </form>
+            </div>
           </div>
 
           {/* Section Navigation */}
-          <div className="flex gap-2 mt-8 overflow-x-auto pb-2">
+          <nav className="flex gap-8 mt-16 border-b border-white/5">
             {[
               { key: 'overview', label: 'Overview' },
-              { key: 'saved', label: `Saved (${favorites.length})` },
+              { key: 'saved', label: 'Library' },
               { key: 'history', label: 'History' }
             ].map(section => (
               <button
                 key={section.key}
                 onClick={() => setActiveSection(section.key as any)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                className={`pb-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative ${
                   activeSection === section.key
-                    ? 'bg-white text-black'
-                    : 'text-white/50 hover:text-white hover:bg-white/5'
+                    ? 'text-white'
+                    : 'text-white/20 hover:text-white/40'
                 }`}
               >
                 {section.label}
+                {activeSection === section.key && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                  />
+                )}
               </button>
             ))}
-          </div>
+          </nav>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-16 py-12">
+      <div className="max-w-6xl mx-auto px-6 sm:px-12 md:px-16 py-16">
         <AnimatePresence mode="wait">
 
           {/* OVERVIEW SECTION */}
           {activeSection === 'overview' && (
             <motion.div
               key="overview"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
+              exit={{ opacity: 0, y: -10 }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-12"
             >
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { label: 'Saved Items', value: favorites.length, color: '#3B82F6' },
-                  { label: 'Assessments', value: history.length, color: '#A855F7' },
-                  { label: 'Keywords Ready', value: favorites.length, color: '#10B981' },
-                  { label: 'Branches Explored', value: new Set(favorites.map(f => f.item_branch)).size, color: '#F59E0B' }
-                ].map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="bg-[#111111] border border-white/10 rounded-2xl p-6"
-                  >
-                    <p className="text-3xl font-black mb-1" style={{ color: stat.color }}>
-                      {stat.value}
-                    </p>
-                    <p className="text-white/50 text-sm">{stat.label}</p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Quick Keywords Panel */}
-              <div className="bg-[#111111] border border-white/10 rounded-3xl p-8">
-                <h2 className="text-xl font-bold mb-2">Your WhatsApp Keywords</h2>
-                <p className="text-white/50 text-sm mb-6">
-                  Text any of these to your SOR7ED WhatsApp number for instant protocols.
-                </p>
-                
-                {favorites.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-white/30 mb-4">No saved keywords yet.</p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Link href="/tools" className="text-white underline text-sm">
-                        Try an assessment →
-                      </Link>
-                      <Link href="/blog" className="text-white underline text-sm">
-                        Browse articles →
-                      </Link>
+              {/* Branch Coverage Visualization */}
+              <div className="lg:col-span-2 space-y-12">
+                <section>
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Branch Coverage</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
+                        {branchCoverage.map((branch, i) => (
+                            <motion.div 
+                                key={branch.slug}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.05 }}
+                                className={`aspect-square rounded-3xl p-6 flex flex-col justify-between border transition-all duration-500 ${
+                                    branch.isAssessed 
+                                        ? 'bg-[#0f0f0f] border-white/10' 
+                                        : 'bg-transparent border-white/5 grayscale opacity-30'
+                                }`}
+                            >
+                                <span className="text-2xl">{branch.icon}</span>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: branch.isAssessed ? branch.color : 'inherit' }}>
+                                        {branch.name}
+                                    </p>
+                                    <p className="text-[8px] font-bold text-white/20 uppercase tracking-tighter">
+                                        {branch.isAssessed ? 'CALIBRATED' : 'UNTOUCHED'}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                        <div className="aspect-square rounded-3xl p-6 flex flex-col items-center justify-center border border-dashed border-white/10 opacity-20">
+                            <span className="text-xl font-black">+</span>
+                        </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {favorites.slice(0, 6).map((item) => (
-                      <div
-                        key={item.id}
-                        className="bg-black/50 border border-white/10 rounded-2xl p-4 text-center"
-                        style={{ borderColor: `${item.item_color}30` }}
-                      >
-                        <p 
-                          className="font-mono font-bold text-lg tracking-widest mb-2"
-                          style={{ color: item.item_color }}
+                </section>
+
+                {/* Intelligence Feed (Recent History) */}
+                <section>
+                    <div className="flex justify-between items-end mb-8">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Intelligence Feed</h2>
+                        <button 
+                            onClick={() => setActiveSection('history')}
+                            className="text-[10px] font-bold text-white/20 hover:text-white transition-colors"
                         >
-                          {item.item_keyword}
-                        </p>
-                        <p className="text-white/40 text-xs">{item.item_name}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                            VIEW ALL →
+                        </button>
+                    </div>
+                    <div className="space-y-4">
+                        {history.length === 0 ? (
+                            <div className="py-12 text-center border border-dashed border-white/5 rounded-3xl">
+                                <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No transmissions recorded.</p>
+                            </div>
+                        ) : (
+                            history.slice(0, 3).map((item) => (
+                                <div 
+                                    key={item.id} 
+                                    className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-6 flex items-center justify-between group hover:border-white/10 transition-all"
+                                >
+                                    <div className="flex items-center gap-6">
+                                        <div 
+                                            className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-sm font-black"
+                                            style={{ color: getBranchColor(favorites.find(f => f.item_slug === item.tool_slug)?.item_branch || '') }}
+                                        >
+                                            {item.score}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-base group-hover:text-white/90 transition-colors">{item.tool_name}</h3>
+                                            <p className="text-white/30 text-[10px] font-black uppercase tracking-widest mt-1">
+                                                {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Link 
+                                        href={`/tools/${item.tool_slug}`}
+                                        className="text-white/20 group-hover:text-white transition-colors"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                        </svg>
+                                    </Link>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </section>
               </div>
 
-              {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Link
-                  href="/tools"
-                  className="group bg-gradient-to-br from-[#111111] to-blue-900/20 border border-white/10 rounded-3xl p-8 hover:border-blue-500/30 transition-all duration-300"
-                >
-                  <div className="text-3xl mb-4">🧠</div>
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
-                    Take an Assessment
-                  </h3>
-                  <p className="text-white/50 text-sm leading-relaxed">
-                    Complete any of our 7 flagship assessments and save the results.
-                  </p>
-                </Link>
-                
-                <Link
-                  href="/blog"
-                  className="group bg-gradient-to-br from-[#111111] to-purple-900/20 border border-white/10 rounded-3xl p-8 hover:border-purple-500/30 transition-all duration-300"
-                >
-                  <div className="text-3xl mb-4">📖</div>
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-purple-400 transition-colors">
-                    Browse Protocols
-                  </h3>
-                  <p className="text-white/50 text-sm leading-relaxed">
-                    Find articles that match your situation and save their keywords.
-                  </p>
-                </Link>
+              {/* Sidebar Stats & Keywords */}
+              <div className="space-y-12">
+                <section>
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">System Stats</h2>
+                    <div className="space-y-4">
+                        {[
+                            { label: 'Saved Protocols', value: favorites.length, color: '#fff' },
+                            { label: 'Assessments', value: history.length, color: '#fff' },
+                            { label: 'Coverage', value: `${Math.round((branchCoverage.filter(b => b.isAssessed).length / 7) * 100)}%`, color: '#fff' }
+                        ].map((stat) => (
+                            <div key={stat.label} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-6 flex justify-between items-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{stat.label}</span>
+                                <span className="text-xl font-black">{stat.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section>
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Active Keywords</h2>
+                    <div className="bg-[#0f0f0f] border border-white/5 rounded-3xl p-8">
+                        {favorites.length === 0 ? (
+                            <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest text-center py-4">No active keywords.</p>
+                        ) : (
+                            <div className="space-y-6">
+                                {favorites.slice(0, 5).map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between gap-4">
+                                        <KeywordToken 
+                                            keyword={item.item_keyword} 
+                                            color={item.item_color} 
+                                            size="small" 
+                                        />
+                                        <span className="text-[10px] text-white/20 font-bold uppercase tracking-tighter truncate max-w-[100px]">
+                                            {item.item_name}
+                                        </span>
+                                    </div>
+                                ))}
+                                <button 
+                                    onClick={() => setActiveSection('saved')}
+                                    className="w-full text-center py-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/20 hover:text-white transition-colors mt-4"
+                                >
+                                    VIEW ALL →
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </section>
               </div>
             </motion.div>
           )}
@@ -271,131 +352,62 @@ export default function Dashboard() {
           {activeSection === 'saved' && (
             <motion.div
               key="saved"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-16"
             >
               {favorites.length === 0 ? (
-                <div className="text-center py-20 border border-white/10 rounded-3xl">
-                  <div className="text-4xl mb-4">🔖</div>
-                  <h3 className="text-xl font-bold mb-3">Nothing saved yet</h3>
-                  <p className="text-white/50 mb-8 max-w-md mx-auto">
-                    Complete assessments or browse articles to start building your personal protocol library.
+                <div className="text-center py-32 border border-dashed border-white/5 rounded-[40px]">
+                  <div className="text-4xl mb-8">🔖</div>
+                  <h3 className="text-2xl font-black mb-4">Library Empty</h3>
+                  <p className="text-white/30 mb-12 max-w-sm mx-auto text-sm leading-relaxed">
+                    Build your intelligence archive by saving tools and protocols.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link
-                      href="/tools"
-                      className="inline-block bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-white/90 transition-all"
-                    >
-                      Explore Assessments →
-                    </Link>
-                    <Link
-                      href="/blog"
-                      className="inline-block border border-white/10 text-white/70 font-semibold px-8 py-4 rounded-full hover:border-white/30 hover:text-white transition-all"
-                    >
-                      Browse Articles
-                    </Link>
-                  </div>
+                  <Link
+                    href="/tools"
+                    className="inline-block bg-white text-black font-black px-10 py-5 rounded-full hover:scale-105 transition-all"
+                  >
+                    INITIATE DISCOVERY →
+                  </Link>
                 </div>
               ) : (
-                <>
-                  {/* Saved Tools */}
-                  {savedTools.length > 0 && (
-                    <div>
-                      <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                        <span>🛠️</span> Saved Assessments ({savedTools.length})
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {savedTools.map((tool) => (
-                          <div
-                            key={tool.id}
-                            className="relative bg-[#111111] border border-white/10 rounded-3xl p-8 overflow-hidden"
-                          >
-                            <div 
-                              className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl"
-                              style={{ backgroundColor: tool.item_color, transform: 'translate(25%, -25%)' }}
-                            />
-                            
-                            <div className="flex justify-between items-start mb-6">
-                              <div 
-                                className="bg-black/50 border rounded-xl px-4 py-2"
-                                style={{ borderColor: `${tool.item_color}40` }}
-                              >
-                                <p className="text-white/40 text-xs uppercase mb-1">Keyword</p>
-                                <p 
-                                  className="font-mono font-bold text-lg tracking-widest"
-                                  style={{ color: tool.item_color }}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {favorites.map((item) => (
+                        <div
+                            key={item.id}
+                            className="bg-[#0f0f0f] border border-white/5 rounded-[32px] p-8 group transition-all hover:border-white/10"
+                        >
+                            <div className="flex justify-between items-start mb-8">
+                                <KeywordToken 
+                                    keyword={item.item_keyword} 
+                                    color={item.item_color} 
+                                    size="medium" 
+                                />
+                                <button
+                                    onClick={() => removeFavorite(item.id)}
+                                    className="p-3 rounded-full hover:bg-red-500/10 text-white/10 hover:text-red-500 transition-all"
                                 >
-                                  {tool.item_keyword}
-                                </p>
-                              </div>
-                              <button
-                                onClick={() => removeFavorite(tool.id)}
-                                className="text-white/20 hover:text-red-400 transition-colors text-sm"
-                              >
-                                Remove
-                              </button>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
+                                </button>
                             </div>
-
-                            <h3 className="text-xl font-bold mb-6 relative z-10">{tool.item_name}</h3>
+                            
+                            <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{item.item_name}</h3>
+                            <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+                                {item.item_branch} · {item.item_type}
+                            </p>
 
                             <Link
-                              href={`/tools/${tool.item_slug}`}
-                              className="block w-full text-center py-3 rounded-xl border border-white/10 text-white/70 hover:bg-white/5 hover:text-white transition-all text-sm font-medium relative z-10"
+                                href={item.item_type === 'tool' ? `/tools/${item.item_slug}` : `/blog/${item.item_slug}`}
+                                className="block w-full text-center py-4 rounded-2xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
                             >
-                              Retake Assessment
+                                {item.item_type === 'tool' ? 'RETAKE ASSESSMENT' : 'READ PROTOCOL'}
                             </Link>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Saved Protocols */}
-                  {savedProtocols.length > 0 && (
-                    <div>
-                      <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                        <span>📚</span> Saved Protocols ({savedProtocols.length})
-                      </h2>
-                      <div className="space-y-4">
-                        {savedProtocols.map((protocol) => (
-                          <div
-                            key={protocol.id}
-                            className="bg-[#111111] border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-center shrink-0">
-                                <p className="font-mono font-bold text-lg tracking-widest text-white">
-                                  {protocol.item_keyword}
-                                </p>
-                              </div>
-                              <div>
-                                <h3 className="font-bold text-white">{protocol.item_name}</h3>
-                                <p className="text-white/40 text-sm">{protocol.item_branch}</p>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                              <Link
-                                href={`/blog/${protocol.item_slug}`}
-                                className="text-white/50 hover:text-white text-sm transition-colors underline whitespace-nowrap"
-                              >
-                                Read Article
-                              </Link>
-                              <button
-                                onClick={() => removeFavorite(protocol.id)}
-                                className="text-white/20 hover:text-red-400 transition-colors text-sm whitespace-nowrap"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </>
+                        </div>
+                    ))}
+                </div>
               )}
             </motion.div>
           )}
@@ -404,31 +416,44 @@ export default function Dashboard() {
           {activeSection === 'history' && (
             <motion.div
               key="history"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-8"
             >
-              <h2 className="text-xl font-bold mb-6">Recent Assessments</h2>
+              <div className="flex justify-between items-center mb-12">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Transmission History</h2>
+                <span className="text-[10px] font-bold text-white/20 uppercase">Showing {history.length} events</span>
+              </div>
+              
               {history.length === 0 ? (
-                <div className="text-center py-12 border border-white/10 rounded-2xl">
-                    <p className="text-white/30">No history found.</p>
+                <div className="text-center py-32 border border-dashed border-white/5 rounded-[40px]">
+                    <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No transmissions recorded.</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {history.map((item) => (
-                        <div key={item.id} className="bg-[#111111] border border-white/10 rounded-xl p-6 flex justify-between items-center">
-                            <div>
-                                <h3 className="font-bold">{item.tool_name}</h3>
-                                <p className="text-white/40 text-sm">
-                                    {new Date(item.completed_at).toLocaleDateString()}
-                                </p>
+                        <div 
+                            key={item.id} 
+                            className="bg-[#0f0f0f] border border-white/5 rounded-[24px] p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:border-white/10 transition-all group"
+                        >
+                            <div className="flex items-center gap-8">
+                                <div className="text-center shrink-0">
+                                    <p className="text-2xl font-black mb-1">{item.score}</p>
+                                    <p className="text-[8px] font-bold text-white/20 uppercase tracking-widest">SCORE</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold group-hover:text-white transition-colors">{item.tool_name}</h3>
+                                    <p className="text-white/30 text-[10px] font-black uppercase tracking-widest mt-2">
+                                        {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
+                                    </p>
+                                </div>
                             </div>
                             <Link 
                                 href={`/tools/${item.tool_slug}`}
-                                className="text-white/50 hover:text-white text-sm transition-colors"
+                                className="px-6 py-3 rounded-full border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/30 hover:bg-white hover:text-black hover:border-white transition-all text-center"
                             >
-                                View results →
+                                VIEW REPORT →
                             </Link>
                         </div>
                     ))}
