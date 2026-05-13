@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { branches } from '@/lib/constants';
@@ -15,6 +15,17 @@ const taglines = [
 
 export default function HomeClient({ tools, user }: { tools: any[], user: any }) {
   const [taglineIndex, setTaglineIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = 340; // Card width + gap
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -198,58 +209,78 @@ export default function HomeClient({ tools, user }: { tools: any[], user: any })
             </motion.p>
           </div>
 
-        {/* Enhanced carousel with mobile-optimized cards */}
-        <div 
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-12 w-full"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          <style jsx>{`
-            div::-webkit-scrollbar { display: none; }
-          `}</style>
-          
-          {branches.map((branch, i) => (
-            <motion.div
-              key={branch.slug}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              style={{ scrollSnapAlign: 'start' }}
-              className="shrink-0"
-            >
-              <Link 
-                href={`/${branch.slug}`}
-                className="relative flex flex-col justify-between h-[50vh] min-h-[360px] max-h-[420px] w-[85vw] sm:w-[320px] p-6 sm:p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
+        {/* Enhanced carousel with navigation for PC */}
+        <div className="relative group">
+          <div 
+            ref={carouselRef}
+            className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-12 w-full no-scrollbar scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <style jsx>{`
+              .no-scrollbar::-webkit-scrollbar { display: none; }
+            `}</style>
+            
+            {branches.map((branch, i) => (
+              <motion.div
+                key={branch.slug}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                style={{ scrollSnapAlign: 'start' }}
+                className="shrink-0"
               >
-                {/* Card glow effect */}
-                <div 
-                  className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
-                  style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
-                />
-                
-                {/* Large number in top-left */}
-                <div 
-                  className="text-6xl sm:text-7xl md:text-8xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none" 
-                  style={{ color: branch.color }}
+                <Link 
+                  href={`/${branch.slug}`}
+                  className="relative flex flex-col justify-between h-[50vh] min-h-[360px] max-h-[420px] w-[85vw] sm:w-[320px] p-6 sm:p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
                 >
-                  {branch.num}
-                </div>
-
-                {/* Bottom content */}
-                <div className="relative z-10 mt-auto">
-                  <h3 
-                    className="text-xl sm:text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:brightness-110"
+                  {/* Card glow effect */}
+                  <div 
+                    className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
+                    style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
+                  />
+                  
+                  {/* Large number in top-left */}
+                  <div 
+                    className="text-6xl sm:text-7xl md:text-8xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none" 
                     style={{ color: branch.color }}
                   >
-                    {branch.name}
-                  </h3>
-                  <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors">
-                    {branch.description}
-                  </p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                    {branch.num}
+                  </div>
+
+                  {/* Bottom content */}
+                  <div className="relative z-10 mt-auto">
+                    <h3 
+                      className="text-xl sm:text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:brightness-110"
+                      style={{ color: branch.color }}
+                    >
+                      {branch.name}
+                    </h3>
+                    <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors">
+                      {branch.description}
+                    </p>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Navigation Arrows for Desktop */}
+          <button 
+            onClick={() => scrollCarousel('left')}
+            className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all z-20 backdrop-blur-md opacity-0 group-hover:opacity-100"
+            aria-label="Previous branch"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          
+          <button 
+            onClick={() => scrollCarousel('right')}
+            className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all z-20 backdrop-blur-md opacity-0 group-hover:opacity-100"
+            aria-label="Next branch"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
         </div>
       </section>
 
