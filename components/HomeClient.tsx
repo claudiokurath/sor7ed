@@ -62,17 +62,17 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
 
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
           <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">SOR7ED</span>
-          <div className="flex gap-8">
+          <div className="flex gap-4 sm:gap-8 items-center">
             {user ? (
               <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
                 Dashboard
               </Link>
             ) : (
               <>
-                <Link href="/signup?mode=login" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                <Link href="/signup?mode=login" className="hidden sm:block text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
                   Sign In
                 </Link>
-                <Link href="/signup" className="px-6 py-2 bg-white text-black text-xs tracking-widest uppercase font-black rounded-full hover:scale-105 transition-all">
+                <Link href="/signup" className="px-5 py-2.5 bg-white text-black text-xs tracking-widest uppercase font-black rounded-full hover:scale-105 transition-all">
                   Sign Up
                 </Link>
               </>

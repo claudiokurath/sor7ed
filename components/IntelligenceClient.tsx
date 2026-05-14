@@ -262,19 +262,19 @@ export default function IntelligenceClient({ article }: { article: Article }) {
             </div>
 
             {/* Separate Dynamic CTA Section */}
-            <motion.div 
-                className="my-20 bg-[#0f0f0f] border border-white/5 rounded-[40px] p-10 md:p-14 text-center relative overflow-hidden"
+            <motion.div
+                className="my-16 bg-[#0f0f0f] border border-white/5 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 md:p-14 text-center relative overflow-hidden"
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
             >
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 blur-[100px] rounded-full" />
                 
-                <h3 className="text-2xl md:text-4xl font-black mb-6 relative z-10 leading-tight">
+                <h3 className="text-xl sm:text-2xl md:text-4xl font-black mb-4 sm:mb-6 relative z-10 leading-tight">
                     {article.cta_headline || "Get the Protocol"}
                 </h3>
-                
-                <div className="text-white/40 mb-12 max-w-xl mx-auto text-lg md:text-xl leading-relaxed relative z-10 font-medium">
+
+                <div className="text-white/40 mb-8 sm:mb-12 max-w-xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed relative z-10 font-medium">
                     {article.cta ? (
                         <p>{article.cta}</p>
                     ) : (
@@ -284,18 +284,18 @@ export default function IntelligenceClient({ article }: { article: Article }) {
 
                 <div className="flex flex-col items-center gap-8 relative z-10">
                     {/* Visual Keyword Token */}
-                    <div className="bg-black/80 border border-white/10 rounded-3xl px-12 py-8 inline-block shadow-2xl scale-110 mb-4">
-                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-4">WHATSAPP TRIGGER</p>
-                        <p className="text-5xl md:text-6xl font-black tracking-[0.2em] text-white">
+                    <div className="bg-black/80 border border-white/10 rounded-2xl sm:rounded-3xl px-6 sm:px-12 py-5 sm:py-8 inline-block shadow-2xl mb-4 w-full sm:w-auto">
+                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-3 sm:mb-4">WHATSAPP TRIGGER</p>
+                        <p className="text-3xl sm:text-5xl md:text-6xl font-black tracking-[0.15em] sm:tracking-[0.2em] text-white">
                             {article.keyword}
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-5 justify-center w-full max-w-lg mt-4">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-lg">
                         <Link
                             href={`https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(article.keyword)}`}
                             target="_blank"
-                            className="flex-[2] bg-white text-black font-black px-10 py-6 rounded-full hover:scale-105 transition-all text-xl uppercase tracking-[0.2em] flex items-center justify-center"
+                            className="flex-[2] bg-white text-black font-black px-6 sm:px-10 py-5 sm:py-6 rounded-full hover:scale-105 transition-all text-base sm:text-xl uppercase tracking-[0.15em] sm:tracking-[0.2em] flex items-center justify-center"
                         >
                             {article.keyword}
                         </Link>

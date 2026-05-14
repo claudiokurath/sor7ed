@@ -40,7 +40,7 @@ export default async function IntelligenceBriefing({ params }: { params: Promise
     }
 
     return (
-        <main className="min-h-screen bg-black text-white px-6 py-20">
+        <main className="min-h-screen bg-black text-white px-4 sm:px-6 py-16 sm:py-20">
             <div className="max-w-3xl mx-auto pt-16">
                 {/* Interactive Field Intelligence Client */}
                 <IntelligenceClient article={article} />

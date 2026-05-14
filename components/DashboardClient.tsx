@@ -81,7 +81,7 @@ export default function DashboardClient({
     <main className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
 
       {/* Header */}
-      <div className="border-b border-white/5 px-6 sm:px-12 md:px-16 py-12">
+      <div className="border-b border-white/5 px-4 sm:px-12 md:px-16 py-8 sm:py-12">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div>
@@ -105,12 +105,12 @@ export default function DashboardClient({
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link
                 href="/tools"
-                className="bg-white text-black px-8 py-4 rounded-full text-sm font-black transition-all hover:scale-105 active:scale-95"
+                className="bg-white text-black px-5 sm:px-8 py-3 sm:py-4 rounded-full text-xs sm:text-sm font-black transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
               >
-                + NEW ASSESSMENT
+                + Assessment
               </Link>
               <form action="/auth/signout" method="post">
                 <button type="submit" className="p-4 rounded-full border border-white/10 hover:bg-white/5 transition-all group">
@@ -123,7 +123,7 @@ export default function DashboardClient({
             </div>
           </div>
 
-          <nav className="flex gap-8 mt-16 border-b border-white/5">
+          <nav className="flex gap-6 sm:gap-8 mt-10 sm:mt-16 border-b border-white/5">
             {([
               { key: 'overview', label: 'Overview' },
               { key: 'saved', label: 'Library' },
@@ -146,7 +146,7 @@ export default function DashboardClient({
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-12 md:px-16 py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16 py-10 sm:py-16">
         <AnimatePresence mode="wait">
 
           {activeSection === 'overview' && (
