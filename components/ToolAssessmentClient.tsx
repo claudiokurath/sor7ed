@@ -100,7 +100,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     // 5. Fetch Recommendations (Dummy)
     const recommendations: Recommendation[] = [
       { title: "Dopamine Menu", description: "Build your list of healthy hits.", branch: branchSlug, branchColor: tool.color, href: "/tools/dopamine-menu", type: "tool" },
-      { title: "Focus Protocol", description: "Protect your deep work sessions.", branch: branchSlug, branchColor: tool.color, href: "/blog/focus-protocol", type: "protocol" }
+      { title: "Focus Protocol", description: "Protect your deep work sessions.", branch: branchSlug, branchColor: tool.color, href: "/intelligence", type: "protocol" }
     ];
 
     const result: AssessmentResult = {

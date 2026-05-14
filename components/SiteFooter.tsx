@@ -19,7 +19,7 @@ export default function SiteFooter() {
               <Link href="/tools" className="text-white/40 hover:text-white text-sm transition-colors">
                 Assessments
               </Link>
-              <Link href="/blog" className="text-white/40 hover:text-white text-sm transition-colors">
+              <Link href="/intelligence" className="text-white/40 hover:text-white text-sm transition-colors">
                 Articles
               </Link>
               <Link href="/signup?mode=login" className="text-white/40 hover:text-white text-sm transition-colors">

@@ -93,7 +93,7 @@ async function syncProtocols() {
       level: getSelect(props.Level) || 'primer',
       summary: getText(props.Summary),
       featured: getCheckbox(props.Featured),
-      cover_image: getCover(page) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
+      cover_image: getCover(page) || getUrl(props['Cover Image 1']) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
       related_assessments: getText(props['Related Assessments']) ? JSON.parse(getText(props['Related Assessments'])) : []
     }
 

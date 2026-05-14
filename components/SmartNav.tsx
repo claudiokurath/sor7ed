@@ -52,7 +52,7 @@ export default function SmartNav() {
               <Link href="/tools" className="text-white/60 hover:text-white transition-colors">
                 Assessments
               </Link>
-              <Link href="/blog" className="text-white/60 hover:text-white transition-colors">
+              <Link href="/intelligence" className="text-white/60 hover:text-white transition-colors">
                 Articles
               </Link>
             </div>
