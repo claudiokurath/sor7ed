@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardClient from "@/components/DashboardClient";
+import { getBranches } from "@/lib/getBranches";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -10,11 +11,12 @@ export default async function Dashboard() {
     redirect('/signup?mode=login');
   }
 
-  const [profileRes, favoritesRes, historyRes, toolsRes] = await Promise.all([
+  const [profileRes, favoritesRes, historyRes, toolsRes, branches] = await Promise.all([
     supabase.from('users').select('*').eq('email', user.email).single(),
     supabase.from('user_favorites').select('*').eq('user_id', user.id).order('saved_at', { ascending: false }),
     supabase.from('assessment_history').select('*').eq('user_id', user.id).order('completed_at', { ascending: false }).limit(20),
     supabase.from('tools').select('slug, branch, color'),
+    getBranches(),
   ]);
 
   return (
@@ -23,6 +25,7 @@ export default async function Dashboard() {
       initialFavorites={favoritesRes.data || []}
       initialHistory={historyRes.data || []}
       tools={toolsRes.data || []}
+      branches={branches}
     />
   );
 }

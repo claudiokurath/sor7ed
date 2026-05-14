@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import HomeClient from "@/components/HomeClient";
+import { getBranches } from "@/lib/getBranches";
 
 export default async function Home() {
     const supabase = await createClient();
@@ -20,9 +21,11 @@ export default async function Home() {
         .order('created_at', { ascending: false })
         .limit(3);
 
+    const branches = await getBranches();
+
     return (
         <div className="bg-[#0a0a0a]">
-            <HomeClient tools={tools || []} user={user} articles={articles || []} />
+            <HomeClient tools={tools || []} user={user} articles={articles || []} branches={branches} />
         </div>
     );
 }

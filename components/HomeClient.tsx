@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { branches } from '@/lib/constants';
+import type { Branch } from '@/lib/getBranches';
 import type { User } from '@supabase/supabase-js';
 import IntelligenceStrip from '@/components/IntelligenceStrip';
 
@@ -35,7 +35,7 @@ type IntelligenceBriefing = {
   level: string;
 };
 
-export default function HomeClient({ tools, user, articles }: { tools: Tool[], user: User | null, articles: IntelligenceBriefing[] }) {
+export default function HomeClient({ tools, user, articles, branches }: { tools: Tool[], user: User | null, articles: IntelligenceBriefing[], branches: Branch[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const toolsRef = useRef<HTMLDivElement>(null);
 

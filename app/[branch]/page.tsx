@@ -2,14 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import AmbientBackground from '@/components/AmbientBackground';
-
-import { branches } from "@/lib/constants";
+import { getBranches } from "@/lib/getBranches";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ branch: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
+    const branches = await getBranches();
     const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
-    
+
     if (!branchInfo) return { title: 'Branch Not Found' };
 
     return {
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ branch: s
 
 export default async function BranchPage({ params }: { params: Promise<{ branch: string }> }) {
     const resolvedParams = await params;
+    const branches = await getBranches();
     const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
 
     if (!branchInfo) notFound();

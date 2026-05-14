@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import IntelligenceGrid from "@/components/IntelligenceGrid";
+import { getBranches } from "@/lib/getBranches";
 
 export default async function IntelligencePage() {
     const supabase = await createClient();
@@ -15,6 +16,7 @@ export default async function IntelligencePage() {
     if (error) console.error('Error fetching protocols:', error);
 
     const allPosts = posts || [];
+    const branches = await getBranches();
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white">
@@ -53,7 +55,7 @@ export default async function IntelligencePage() {
                         <div className="h-px flex-1 bg-white/5" />
                         <span className="text-[9px] text-white/15 font-bold uppercase shrink-0">{allPosts.length}</span>
                     </div>
-                    <IntelligenceGrid posts={allPosts} />
+                    <IntelligenceGrid posts={allPosts} branches={branches} />
                 </section>
             )}
 

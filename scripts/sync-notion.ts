@@ -144,13 +144,40 @@ async function syncTools() {
   }
 }
 
+async function syncBranches() {
+  console.log('Fetching branches from Notion...')
+  const BRANCHES_DB_ID = 'bf1e89a5167e484b9fc85376031f72e3'
+  const response = await notion.databases.query({ database_id: BRANCHES_DB_ID })
+
+  console.log(`Found ${response.results.length} branches. Syncing to Supabase...`)
+
+  for (const page of response.results as NotionPage[]) {
+    const props = page.properties
+    const data = {
+      notion_id: page.id,
+      num: getText(props.Number),
+      name: getText(props.Name),
+      slug: getText(props.Slug),
+      color: getText(props.Color) || '#ffffff',
+      icon: getText(props.Icon),
+      description: getText(props.Description),
+      cover_image: getCover(page) || getUrl(props['Cover Image']),
+    }
+
+    const { error } = await supabase.from('branches').upsert(data, { onConflict: 'slug' })
+    if (error) console.error(`Error syncing branch "${data.name}":`, error.message)
+    else console.log(`Synced branch: ${data.name}`)
+  }
+}
+
 async function sync() {
   console.log('Clearing existing data...')
   await supabase.from('protocols').delete().neq('slug', 'keep-it-safe-placeholder')
   await supabase.from('tools').delete().neq('slug', 'keep-it-safe-placeholder')
-  
+
   await syncProtocols()
   await syncTools()
+  await syncBranches()
   console.log('All syncs complete!')
 }
 

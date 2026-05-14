@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { branches } from '@/lib/constants';
+import type { Branch } from '@/lib/getBranches';
 import KeywordToken from '@/components/KeywordToken';
 import { getBranchColor } from '@/lib/branch-config';
 import { ScoreLevel } from '@/types/assessment';
@@ -51,11 +51,13 @@ export default function DashboardClient({
   initialFavorites,
   initialHistory,
   tools,
+  branches,
 }: {
   profile: Profile | null;
   initialFavorites: UserFavorite[];
   initialHistory: AssessmentHistory[];
   tools: ToolSummary[];
+  branches: Branch[];
 }) {
   const [favorites, setFavorites] = useState<UserFavorite[]>(initialFavorites);
   const [history] = useState<AssessmentHistory[]>(initialHistory);
