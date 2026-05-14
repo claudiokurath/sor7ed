@@ -105,7 +105,7 @@ function SignupForm() {
           ← Back to home
         </Link>
 
-        <div className="mb-5"><Image src="/Images/Logo2026.png" alt="SOR7ED" width={80} height={32} className="h-7 w-auto opacity-30" /></div>
+        <div className="mb-5"><Image src="/Images/Logo2026.png" alt="SOR7ED" width={240} height={96} className="h-20 w-auto opacity-30" /></div>
         <h1 className="text-4xl font-black mb-3 tracking-tight">
             {isLogin ? 'Welcome back' : 'Sign up for free'}
         </h1>

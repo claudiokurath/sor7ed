@@ -29,7 +29,7 @@ export default async function IntelligencePage() {
             <div className="px-5 pt-8 pb-0 flex justify-between items-center max-w-6xl mx-auto">
                 <Link href="/" className="flex items-center gap-2 opacity-25 hover:opacity-60 transition-opacity">
                     <span className="text-white text-sm">←</span>
-                    <Image src="/Images/Logo2026.png" alt="SOR7ED" width={60} height={24} className="h-5 w-auto" />
+                    <Image src="/Images/Logo2026.png" alt="SOR7ED" width={180} height={72} className="h-16 w-auto" />
                 </Link>
                 <Link href="/signup" className="text-white/30 text-[10px] tracking-widest uppercase font-medium hover:text-white transition-colors">
                     Sign In

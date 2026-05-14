@@ -88,7 +88,7 @@ export default function DashboardClient({
             <div>
               <div className="flex items-center gap-3 mb-6">
                 <Link href="/">
-                  <Image src="/Images/Logo2026.png" alt="SOR7ED" width={60} height={24} className="h-5 w-auto opacity-20 hover:opacity-50 transition-opacity" />
+                  <Image src="/Images/Logo2026.png" alt="SOR7ED" width={180} height={72} className="h-16 w-auto opacity-20 hover:opacity-50 transition-opacity" />
                 </Link>
                 <span className="text-white/10">/</span>
                 <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase font-bold">INTELLIGENCE PROFILE</span>

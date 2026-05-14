@@ -45,7 +45,7 @@ export default function SmartNav() {
         >
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link href="/">
-              <Image src="/Images/Logo2026.png" alt="SOR7ED" width={80} height={32} className="h-7 w-auto" />
+              <Image src="/Images/Logo2026.png" alt="SOR7ED" width={240} height={96} className="h-20 w-auto" />
             </Link>
             
             <div className="hidden md:flex items-center gap-6 text-sm">

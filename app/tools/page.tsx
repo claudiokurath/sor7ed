@@ -25,7 +25,7 @@ export default async function ToolsPage() {
                 {/* Premium Header */}
                 <div className="flex justify-between items-center mb-16 pt-4">
                     <Link href="/">
-                        <Image src="/Images/Logo2026.png" alt="SOR7ED" width={72} height={28} className="h-6 w-auto opacity-20 hover:opacity-50 transition-opacity" />
+                        <Image src="/Images/Logo2026.png" alt="SOR7ED" width={216} height={84} className="h-20 w-auto opacity-20 hover:opacity-50 transition-opacity" />
                     </Link>
                     
                     <div className="flex items-center gap-6">

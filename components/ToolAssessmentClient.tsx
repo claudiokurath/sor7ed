@@ -142,7 +142,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
         {/* Premium Header */}
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16 z-50 pointer-events-none">
           <Link href="/" className="pointer-events-auto">
-            <Image src="/Images/Logo2026.png" alt="SOR7ED" width={72} height={28} className="h-6 w-auto opacity-20 hover:opacity-50 transition-opacity" />
+            <Image src="/Images/Logo2026.png" alt="SOR7ED" width={216} height={84} className="h-20 w-auto opacity-20 hover:opacity-50 transition-opacity" />
           </Link>
           
           <div className="pointer-events-auto">

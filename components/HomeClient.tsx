@@ -72,7 +72,7 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
         </div>
 
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
-          <Link href="/"><Image src="/Images/Logo2026.png" alt="SOR7ED" width={72} height={28} className="h-6 w-auto opacity-25 hover:opacity-50 transition-opacity" /></Link>
+          <Link href="/"><Image src="/Images/Logo2026.png" alt="SOR7ED" width={216} height={84} className="h-20 w-auto opacity-25 hover:opacity-50 transition-opacity" /></Link>
           <div className="flex gap-4 sm:gap-8 items-center">
             {user ? (
               <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">

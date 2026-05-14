@@ -9,7 +9,7 @@ export default function SiteFooter() {
           
           <div className="md:col-span-2">
             <div className="mb-5">
-              <Image src="/Images/Logo2026.png" alt="SOR7ED" width={120} height={48} className="h-10 w-auto" />
+              <Image src="/Images/Logo2026.png" alt="SOR7ED" width={360} height={144} className="h-28 w-auto" />
             </div>
             <p className="text-white/50 leading-relaxed mb-6 max-w-md">
               Practical protocols for neurodivergent adults. We build the systems and tools 
