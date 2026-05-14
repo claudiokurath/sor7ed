@@ -1,12 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import HomeClient from "@/components/HomeClient";
-import IntelligenceStrip from "@/components/IntelligenceStrip";
 
 export default async function Home() {
     const supabase = await createClient();
-    
+
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     const { data: tools } = await supabase
         .from('tools')
         .select('*')
@@ -23,8 +22,7 @@ export default async function Home() {
 
     return (
         <div className="bg-[#0a0a0a]">
-            <HomeClient tools={tools || []} user={user} />
-            <IntelligenceStrip articles={articles || []} />
+            <HomeClient tools={tools || []} user={user} articles={articles || []} />
         </div>
     );
 }

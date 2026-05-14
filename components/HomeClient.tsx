@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { branches } from '@/lib/constants';
 import type { User } from '@supabase/supabase-js';
+import IntelligenceStrip from '@/components/IntelligenceStrip';
 
 type Tool = {
   id: string;
@@ -21,16 +22,20 @@ type Tool = {
   featured: boolean;
 };
 
-const taglines = [
-  { word: 'Overwhelmed', color: '#6366F1' },
-  { word: 'Scattered', color: '#A855F7' },
-  { word: 'Exhausted', color: '#FB7185' },
-  { word: 'Wired differently', color: '#06B6D4' },
-];
+type IntelligenceBriefing = {
+  slug: string;
+  title: string;
+  branch: string;
+  color: string;
+  cover_image: string;
+  summary: string;
+  tldr?: string;
+  excerpt?: string;
+  read_time: string;
+  level: string;
+};
 
-
-export default function HomeClient({ tools, user }: { tools: Tool[], user: User | null }) {
-  const [taglineIndex, setTaglineIndex] = useState(0);
+export default function HomeClient({ tools, user, articles }: { tools: Tool[], user: User | null, articles: IntelligenceBriefing[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const toolsRef = useRef<HTMLDivElement>(null);
 
@@ -51,13 +56,6 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
       });
     }
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex(i => (i + 1) % taglines.length);
-    }, 2200);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] overflow-y-scroll overflow-x-hidden scroll-smooth sm:snap-y sm:snap-mandatory">
@@ -102,38 +100,14 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
           </motion.p>
 
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 leading-[1.0] tracking-tight"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-[1.0] tracking-tight"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            If you&apos;re feeling
+            Practical protocols<br />
+            <span className="text-white/40">for neurodivergent minds.</span>
           </motion.h1>
-
-          {/* Rotating words - bigger on mobile */}
-          <div className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-[1.0] h-[1.2em] overflow-hidden tracking-tight">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={taglineIndex}
-                initial={{ y: 60, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -60, opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                style={{ color: taglines[taglineIndex].color, display: 'block' }}
-              >
-                {taglines[taglineIndex].word}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-
-          <motion.p
-            className="text-white/40 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            SOR7ED delivers practical protocols and tools for neurodivergent adults via WhatsApp — organised into 7 branches of life.
-          </motion.p>
 
           {/* Full-width buttons on mobile */}
           <motion.div
@@ -317,6 +291,9 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
           </motion.div>
         </div>
       </section>
+
+      {/* INTELLIGENCE STRIP */}
+      <IntelligenceStrip articles={articles} />
 
       {/* TOOLS GALLERY SECTION */}
       <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center sm:snap-start border-t border-white/5 overflow-hidden">
