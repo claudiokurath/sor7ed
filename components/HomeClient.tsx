@@ -307,7 +307,7 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
               </p>
             </div>
             <Link
-              href="/tools/friction-finder"
+              href="/tools"
               className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-sm bg-white text-black hover:scale-105 transition-all duration-300 whitespace-nowrap"
               style={{ boxShadow: '0 0 40px rgba(255,255,255,0.1)' }}
             >
