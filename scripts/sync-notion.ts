@@ -52,7 +52,7 @@ async function syncProtocols() {
     filter: {
       property: 'Status',
       status: {
-        does_not_equal: 'Draft'
+        equals: 'Published'
       }
     }
   })
@@ -76,7 +76,11 @@ async function syncProtocols() {
       meta_description: getText(props['Meta Description']),
       read_time: getText(props['Read Time']),
       deep_dive: getText(props['Deep Dive']),
-      status: getStatus(props.Status) || 'Live'
+      status: getStatus(props.Status) || 'Live',
+      level: getSelect(props.Level) || 'primer',
+      summary: getText(props.Summary),
+      featured: getCheckbox(props.Featured),
+      related_assessments: getText(props['Related Assessments']) ? JSON.parse(getText(props['Related Assessments'])) : []
     }
 
     const { error } = await supabase.from('protocols').upsert(data, { onConflict: 'slug' })

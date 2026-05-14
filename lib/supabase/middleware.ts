@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { branches } from '@/lib/constants'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -35,24 +36,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    request.nextUrl.pathname !== '/' &&
-    request.nextUrl.pathname !== '/signup' &&
-    !request.nextUrl.pathname.startsWith('/blog') &&
-    !request.nextUrl.pathname.startsWith('/tools') &&
-    !request.nextUrl.pathname.startsWith('/bridge') &&
-    !request.nextUrl.pathname.startsWith('/api') &&
-    !request.nextUrl.pathname.startsWith('/keep-going') &&
-    !request.nextUrl.pathname.startsWith('/feel-good') &&
-    !request.nextUrl.pathname.startsWith('/spend-smart') &&
-    !request.nextUrl.pathname.startsWith('/be-connected') &&
-    !request.nextUrl.pathname.startsWith('/plan-ahead') &&
-    !request.nextUrl.pathname.startsWith('/be-yourself') &&
-    !request.nextUrl.pathname.startsWith('/level-up')
-  ) {
+  const publicPaths = ['/login', '/auth', '/tools', '/bridge', '/api', '/intelligence', ...branches.map(b => `/${b.slug}`)];
+  const isPublic =
+    request.nextUrl.pathname === '/' ||
+    request.nextUrl.pathname === '/signup' ||
+    publicPaths.some(p => request.nextUrl.pathname.startsWith(p));
+
+  if (!user && !isPublic) {
     // no user, redirect to signup page
     const url = request.nextUrl.clone()
     url.pathname = '/signup'

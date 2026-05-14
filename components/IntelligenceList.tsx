@@ -14,7 +14,7 @@ type Post = {
   description: string;
 };
 
-export default function BlogList({ initialPosts }: { initialPosts: Post[] }) {
+export default function IntelligenceList({ initialPosts }: { initialPosts: Post[] }) {
     const [search, setSearch] = useState("");
 
     const filteredPosts = initialPosts.filter(post => 
@@ -51,7 +51,7 @@ export default function BlogList({ initialPosts }: { initialPosts: Post[] }) {
                 {filteredPosts.map((post) => (
                     <Link
                         key={post.slug}
-                        href={`/blog/${post.slug}`}
+                        href={`/intelligence/${post.slug}`}
                         className="block border border-white/10 rounded-2xl p-6 hover:bg-white/5 transition-all duration-300 group"
                     >
                         <div className="flex justify-between items-start mb-3">

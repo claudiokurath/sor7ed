@@ -22,7 +22,7 @@ export interface Recommendation {
   branch: BranchSlug;
   branchColor: string;
   href: string;
-  type: 'tool' | 'protocol';
+  type: 'tool' | 'protocol' | 'intelligence';
 }
 
 export interface NarrativeLayer {

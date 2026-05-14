@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import BlogPostClient from "@/components/BlogPostClient";
+import IntelligenceClient from "@/components/IntelligenceClient";
 
 import { Metadata } from "next";
 
@@ -12,18 +12,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         .from('protocols')
         .select('title, problem, description, branch')
         .eq('slug', resolvedParams.slug)
-        .neq('status', 'Draft')
+        .eq('status', 'Published')
         .single();
         
-    if (!article) return { title: 'Article Not Found' };
+    if (!article) return { title: 'Intelligence Not Found' };
 
     return {
-        title: `${article.title} | SOR7ED`,
-        description: article.problem || article.description || `Read about ${article.title} in the ${article.branch} branch.`,
+        title: `${article.title} | Field Intelligence`,
+        description: article.problem || article.description || `Field Intelligence briefing on ${article.title}.`,
     };
 }
 
-export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+export default async function IntelligenceBriefing({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
     const supabase = await createClient();
 
@@ -31,7 +31,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         .from('protocols')
         .select('*')
         .eq('slug', resolvedParams.slug)
-        .neq('status', 'Draft')
+        .eq('status', 'Published')
         .single();
 
     if (error || !article) {
@@ -42,8 +42,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     return (
         <main className="min-h-screen bg-black text-white px-6 py-20">
             <div className="max-w-3xl mx-auto pt-16">
-                {/* Interactive Client Content (Read Aloud + Deep Dive + Dynamic CTA) */}
-                <BlogPostClient article={article} />
+                {/* Interactive Field Intelligence Client */}
+                <IntelligenceClient article={article} />
             </div>
         </main>
     );

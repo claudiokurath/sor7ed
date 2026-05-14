@@ -57,14 +57,19 @@ export async function POST(req: NextRequest) {
         const rawBody = await req.text();
         const signature = req.headers.get("x-hub-signature-256");
 
-        if (process.env.META_APP_SECRET && signature) {
-            const hmac = crypto.createHmac("sha256", process.env.META_APP_SECRET);
-            const digest = "sha256=" + hmac.update(rawBody).digest("hex");
-            
-            if (signature !== digest) {
-                console.error("Webhook signature verification failed");
-                return new NextResponse("Unauthorized", { status: 401 });
-            }
+        if (!process.env.META_APP_SECRET) {
+            console.error("META_APP_SECRET is not set — rejecting webhook");
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+        if (!signature) {
+            console.error("Webhook received without signature");
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+        const hmac = crypto.createHmac("sha256", process.env.META_APP_SECRET);
+        const digest = "sha256=" + hmac.update(rawBody).digest("hex");
+        if (signature !== digest) {
+            console.error("Webhook signature verification failed");
+            return new NextResponse("Unauthorized", { status: 401 });
         }
 
         const body = JSON.parse(rawBody);

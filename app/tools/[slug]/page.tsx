@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import ToolAssessmentClient from "@/components/ToolAssessmentClient";
 import { Metadata } from "next";
+import { ConciergeWaitlistCTA } from "@/components/assessment/ConciergeWaitlistCTA";
+import { branches } from "@/lib/constants";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
@@ -44,11 +46,19 @@ export default async function ToolPage({ params, searchParams }: { params: Promi
         entryTime: new Date().toISOString()
     } : null;
 
+    const branchInfo = branches.find(b => b.name === tool.branch);
+    const branchColor = branchInfo?.color || '#ffffff';
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white px-6 py-20 flex flex-col justify-center">
-            <ToolAssessmentClient 
-                tool={tool} 
+            <ToolAssessmentClient
+                tool={tool}
                 whatsappContext={whatsappContext}
+            />
+            <ConciergeWaitlistCTA
+                branch={tool.branch}
+                sourceToolSlug={resolvedParams.slug}
+                branchColor={branchColor}
             />
         </main>
     );

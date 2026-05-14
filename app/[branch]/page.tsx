@@ -30,6 +30,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
         .from('protocols')
         .select('*')
         .eq('branch', branchInfo.name)
+        .eq('status', 'Published')
         .order('created_at', { ascending: false })
         .limit(10);
 
@@ -56,7 +57,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                         {posts?.map((post) => (
                             <Link
                                 key={post.slug}
-                                href={`/blog/${post.slug}`}
+                                href={`/intelligence/${post.slug}`}
                                 className="border border-white/10 rounded-2xl p-6 flex justify-between items-center hover:bg-white/5 transition-all group"
                             >
                                 <div>

@@ -61,19 +61,19 @@ export default function Dashboard() {
 
     async function loadDashboard() {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError || !session?.user) {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
           if (mounted) router.replace('/signup?mode=login');
           return;
         }
 
-        const currentUser = session.user;
+        const currentUser = user;
 
         const [profileRes, favoritesRes, historyRes, toolsRes] = await Promise.all([
           supabase.from('users').select('*').eq('email', currentUser.email).single(),
-          supabase.from('user_favorites').select('*').order('saved_at', { ascending: false }),
-          supabase.from('assessment_history').select('*').order('completed_at', { ascending: false }).limit(20),
+          supabase.from('user_favorites').select('*').eq('user_id', currentUser.id).order('saved_at', { ascending: false }),
+          supabase.from('assessment_history').select('*').eq('user_id', currentUser.id).order('completed_at', { ascending: false }).limit(20),
           supabase.from('tools').select('slug, branch, color')
         ]);
 
@@ -414,7 +414,7 @@ export default function Dashboard() {
                             </p>
 
                             <Link
-                                href={item.item_type === 'tool' ? `/tools/${item.item_slug}` : `/blog/${item.item_slug}`}
+                                href={item.item_type === 'tool' ? `/tools/${item.item_slug}` : `/intelligence/${item.item_slug}`}
                                 className="block w-full text-center py-4 rounded-2xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
                             >
                                 {item.item_type === 'tool' ? 'RETAKE ASSESSMENT' : 'READ PROTOCOL'}

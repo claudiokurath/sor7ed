@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import BlogList from "@/components/BlogList";
+import IntelligenceList from "@/components/IntelligenceList";
 
-export default async function BlogPage() {
+export default async function IntelligencePage() {
     const supabase = await createClient();
     
     const { data: posts, error } = await supabase
         .from('protocols')
         .select('*')
-        .neq('status', 'Draft')
+        .eq('status', 'Published')
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -30,14 +30,14 @@ export default async function BlogPage() {
 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                     <div>
-                        <h1 className="text-4xl md:text-6xl font-black mb-4">Articles</h1>
-                        <p className="text-white/50 text-lg max-w-xl">
-                            Practical protocols for neurodivergent minds. Read the context, then text the keyword for the step-by-step guide.
+                        <h1 className="text-4xl md:text-6xl font-black mb-4 uppercase tracking-tighter">Field Intelligence</h1>
+                        <p className="text-white/50 text-lg max-w-xl leading-relaxed">
+                            Context, theory, and systems for neurodivergent minds. Deep dives to support your tactical protocols.
                         </p>
                     </div>
                 </div>
 
-                <BlogList initialPosts={posts || []} />
+                <IntelligenceList initialPosts={posts || []} />
 
                 <div className="border-t border-white/10 mt-16 pt-12 text-center">
                     <h2 className="text-2xl font-bold mb-4">Want these protocols on WhatsApp?</h2>

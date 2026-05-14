@@ -28,7 +28,7 @@ type Article = {
 
 const supabase = createClient();
 
-export default function BlogPostClient({ article }: { article: Article }) {
+export default function IntelligenceClient({ article }: { article: Article }) {
     const { scrollYProgress } = useScroll();
     const [isPlaying, setIsPlaying] = useState(false);
     const [showDeepDive, setShowDeepDive] = useState(false);

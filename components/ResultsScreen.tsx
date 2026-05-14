@@ -266,6 +266,9 @@ function RecommendationGrid({ recommendations, isVisible }: {
   recommendations: Recommendation[];
   isVisible: boolean;
 }) {
+  const tools = recommendations.filter(r => r.type === 'tool');
+  const intelligence = recommendations.filter(r => r.type === 'intelligence' || r.type === 'protocol');
+
   return (
     <AnimatePresence>
       {isVisible && recommendations.length > 0 && (
@@ -275,37 +278,92 @@ function RecommendationGrid({ recommendations, isVisible }: {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 mb-6">
-            Related Intelligence
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {recommendations.map((rec, index) => (
-              <motion.a
-                key={index}
-                href={rec.href}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-3xl bg-[#0f0f0f] border border-white/5 
-                           hover:bg-white/[0.03] transition-all group"
-                style={{ borderLeftColor: rec.branchColor, borderLeftWidth: '4px' }}
-              >
-                <span
-                  className="text-[10px] font-black uppercase tracking-[0.2em] block mb-3"
-                  style={{ color: rec.branchColor }}
-                >
-                  {rec.branch}
-                </span>
-                <p className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-white/90 transition-colors">{rec.title}</p>
-                <p className="text-sm text-white/30 leading-relaxed line-clamp-2">
-                  {rec.description}
-                </p>
-              </motion.a>
-            ))}
-          </div>
+          {/* Tools Section */}
+          {tools.length > 0 && (
+            <div className="mb-10">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 mb-6">
+                Tactical Tools
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {tools.map((rec, index) => (
+                  <RecommendationCard key={index} rec={rec} index={index} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Intelligence Section */}
+          {intelligence.length > 0 && (
+            <div>
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30 mb-6">
+                Context & Theory
+              </h2>
+              <div className="space-y-4">
+                {intelligence.map((rec, index) => (
+                  <motion.a
+                    key={index}
+                    href={rec.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (tools.length * 0.1) + (index * 0.1) }}
+                    className="block p-6 rounded-3xl bg-[#0f0f0f] border border-white/5 
+                               hover:bg-white/[0.03] transition-all group relative overflow-hidden"
+                    style={{ borderLeftColor: rec.branchColor, borderLeftWidth: '4px' }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <span
+                          className="text-[10px] font-black uppercase tracking-[0.2em] block mb-2"
+                          style={{ color: rec.branchColor }}
+                        >
+                          Field Notes • {rec.branch}
+                        </span>
+                        <p className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-white/90 transition-colors">
+                          {rec.title}
+                        </p>
+                        <p className="text-sm text-white/30 leading-relaxed line-clamp-2">
+                          {rec.description}
+                        </p>
+                      </div>
+                      <div className="text-white/20 group-hover:text-white/40 transition-colors mt-1">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function RecommendationCard({ rec, index }: { rec: Recommendation, index: number }) {
+  return (
+    <motion.a
+      href={rec.href}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.1 }}
+      className="p-6 rounded-3xl bg-[#0f0f0f] border border-white/5 
+                 hover:bg-white/[0.03] transition-all group"
+      style={{ borderLeftColor: rec.branchColor, borderLeftWidth: '4px' }}
+    >
+      <span
+        className="text-[10px] font-black uppercase tracking-[0.2em] block mb-3"
+        style={{ color: rec.branchColor }}
+      >
+        {rec.branch}
+      </span>
+      <p className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-white/90 transition-colors">{rec.title}</p>
+      <p className="text-sm text-white/30 leading-relaxed line-clamp-2">
+        {rec.description}
+      </p>
+    </motion.a>
   );
 }
 
