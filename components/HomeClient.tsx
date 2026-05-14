@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { branches } from '@/lib/constants';
 import type { User } from '@supabase/supabase-js';
 
@@ -71,7 +72,7 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
         </div>
 
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
-          <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">SOR7ED</span>
+          <Link href="/"><Image src="/Images/Logo2026.png" alt="SOR7ED" width={72} height={28} className="h-6 w-auto opacity-25 hover:opacity-50 transition-opacity" /></Link>
           <div className="flex gap-4 sm:gap-8 items-center">
             {user ? (
               <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">

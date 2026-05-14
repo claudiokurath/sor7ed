@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import ToolList from "@/components/ToolList";
 
@@ -23,8 +24,8 @@ export default async function ToolsPage() {
                 
                 {/* Premium Header */}
                 <div className="flex justify-between items-center mb-16 pt-4">
-                    <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors">
-                        SOR7ED
+                    <Link href="/">
+                        <Image src="/Images/Logo2026.png" alt="SOR7ED" width={72} height={28} className="h-6 w-auto opacity-20 hover:opacity-50 transition-opacity" />
                     </Link>
                     
                     <div className="flex items-center gap-6">

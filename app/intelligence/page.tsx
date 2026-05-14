@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { branches } from "@/lib/constants";
 import IntelligenceGrid from "@/components/IntelligenceGrid";
@@ -26,8 +27,9 @@ export default async function IntelligencePage() {
 
             {/* NAV */}
             <div className="px-5 pt-8 pb-0 flex justify-between items-center max-w-6xl mx-auto">
-                <Link href="/" className="text-white/20 text-[10px] tracking-[0.3em] uppercase font-bold hover:text-white/40 transition-colors">
-                    ← SOR7ED
+                <Link href="/" className="flex items-center gap-2 opacity-25 hover:opacity-60 transition-opacity">
+                    <span className="text-white text-sm">←</span>
+                    <Image src="/Images/Logo2026.png" alt="SOR7ED" width={60} height={24} className="h-5 w-auto" />
                 </Link>
                 <Link href="/signup" className="text-white/30 text-[10px] tracking-widest uppercase font-medium hover:text-white transition-colors">
                     Sign In

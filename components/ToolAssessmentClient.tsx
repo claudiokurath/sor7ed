@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import ArticleCover from './ArticleCover';
@@ -140,8 +141,8 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     <div className="min-h-screen bg-[#0a0a0a] text-white">
         {/* Premium Header */}
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16 z-50 pointer-events-none">
-          <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors pointer-events-auto">
-            SOR7ED
+          <Link href="/" className="pointer-events-auto">
+            <Image src="/Images/Logo2026.png" alt="SOR7ED" width={72} height={28} className="h-6 w-auto opacity-20 hover:opacity-50 transition-opacity" />
           </Link>
           
           <div className="pointer-events-auto">

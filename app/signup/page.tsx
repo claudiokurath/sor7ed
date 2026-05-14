@@ -2,6 +2,7 @@
 
 import { useState, Suspense, useActionState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { handleSignupOrLogin } from '../actions/auth';
@@ -104,7 +105,7 @@ function SignupForm() {
           ← Back to home
         </Link>
 
-        <p className="text-white/30 text-xs tracking-widest uppercase mb-4 font-medium">SOR7ED</p>
+        <div className="mb-5"><Image src="/Images/Logo2026.png" alt="SOR7ED" width={80} height={32} className="h-7 w-auto opacity-30" /></div>
         <h1 className="text-4xl font-black mb-3 tracking-tight">
             {isLogin ? 'Welcome back' : 'Sign up for free'}
         </h1>

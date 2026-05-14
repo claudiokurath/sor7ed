@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -43,8 +44,8 @@ export default function SmartNav() {
           className="fixed top-0 inset-x-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/10"
         >
           <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="text-white font-black text-lg tracking-tight">
-              SOR7ED
+            <Link href="/">
+              <Image src="/Images/Logo2026.png" alt="SOR7ED" width={80} height={32} className="h-7 w-auto" />
             </Link>
             
             <div className="hidden md:flex items-center gap-6 text-sm">
