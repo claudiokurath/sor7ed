@@ -88,7 +88,7 @@ async function syncProtocols() {
       level: getSelect(props.Level) || 'primer',
       summary: getText(props.Summary),
       featured: getCheckbox(props.Featured),
-      cover_image: getCover(page),
+      cover_image: getCover(page) || getText(props['Cover Image URL']) || getText(props['Cover Image']),
       related_assessments: getText(props['Related Assessments']) ? JSON.parse(getText(props['Related Assessments'])) : []
     }
 
@@ -129,7 +129,7 @@ async function syncTools() {
       questions: rawQuestions ? JSON.parse(rawQuestions) : [],
       color: getText(props.Color) || '#ffffff',
       meta_description: getText(props['Meta Description']),
-      cover_image: getCover(page) || getFiles(props['Cover Image']),
+      cover_image: getCover(page) || getText(props['Cover Image URL']) || getText(props['Cover Image']) || getFiles(props['Cover Image']),
       status: getStatus(props.Status) || 'Live'
     }
 
