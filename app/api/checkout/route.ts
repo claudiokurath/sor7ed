@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { CONCIERGE_CREDIT_PACKS, CreditPackType } from '@/lib/stripe-config';
 import { createClient } from '@/lib/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-04-22.dahlia' });
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-04-22.dahlia' });
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
     }
 
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const checkoutSession = await getStripe().checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{ price: pack.price_id, quantity: 1 }],
       mode: 'payment',
