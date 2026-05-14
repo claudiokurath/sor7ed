@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import IntelligenceList from "@/components/IntelligenceList";
 import { branches } from "@/lib/constants";
+import IntelligenceGrid from "@/components/IntelligenceGrid";
 
 export default async function IntelligencePage() {
     const supabase = await createClient();
@@ -12,23 +12,20 @@ export default async function IntelligencePage() {
         .eq('status', 'Published')
         .order('created_at', { ascending: false });
 
-    if (error) {
-        console.error('Error fetching protocols:', error);
-    }
+    if (error) console.error('Error fetching protocols:', error);
 
     const allPosts = posts || [];
     const featured = allPosts[0] ?? null;
     const rest = allPosts.slice(1);
 
-    const featuredBranch = featured
-        ? branches.find(b => b.name === featured.branch)
-        : null;
+    const featuredBranch = featured ? branches.find(b => b.name === featured.branch) : null;
+    const featuredColor = featuredBranch?.color ?? '#3B82F6';
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white">
 
             {/* NAV */}
-            <div className="px-6 sm:px-12 md:px-16 pt-10 pb-0 flex justify-between items-center">
+            <div className="px-5 pt-8 pb-0 flex justify-between items-center max-w-6xl mx-auto">
                 <Link href="/" className="text-white/20 text-[10px] tracking-[0.3em] uppercase font-bold hover:text-white/40 transition-colors">
                     ← SOR7ED
                 </Link>
@@ -38,80 +35,95 @@ export default async function IntelligencePage() {
             </div>
 
             {/* HERO */}
-            <section className="px-6 sm:px-12 md:px-16 pt-20 pb-16 border-b border-white/5">
-                <div className="max-w-5xl">
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-white/20 mb-6 font-black">
+            <section className="px-5 pt-14 pb-14 max-w-6xl mx-auto">
+                <div className="max-w-2xl mx-auto text-center mb-12">
+                    <p className="text-[9px] uppercase tracking-[0.4em] text-white/20 mb-4 font-black">
                         Field Intelligence
                     </p>
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.95] mb-6 uppercase">
+                    <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[0.92] mb-5 uppercase">
                         The context<br />behind the protocol.
                     </h1>
-                    <p className="text-white/40 text-lg max-w-xl leading-relaxed mb-10">
-                        Every protocol in SOR7ED is backed by research and lived experience. These briefings explain the why — so you understand your brain, not just manage it.
+                    <p className="text-white/40 text-base sm:text-lg leading-relaxed">
+                        These briefings explain the <em>why</em> behind your friction — so you understand your brain, not just manage it.
                     </p>
+                </div>
 
-                    {/* HOW IT WORKS — 3 steps */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
-                        {[
-                            { num: '01', label: 'Read the briefing', desc: 'Understand the friction' },
-                            { num: '02', label: 'Text the keyword', desc: 'Get the protocol on WhatsApp' },
-                            { num: '03', label: 'Run it today', desc: 'Two minutes, real results' },
-                        ].map(step => (
-                            <div key={step.num} className="bg-white/[0.03] border border-white/5 rounded-2xl p-5">
-                                <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">{step.num}</p>
-                                <p className="text-sm font-bold text-white mb-1">{step.label}</p>
-                                <p className="text-[11px] text-white/30">{step.desc}</p>
+                {/* HOW IT WORKS — stacked on mobile, row on sm+ */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-lg mx-auto">
+                    {[
+                        { num: '01', label: 'Read the briefing', desc: 'Understand the friction' },
+                        { num: '02', label: 'Text the keyword', desc: 'Get the protocol instantly' },
+                        { num: '03', label: 'Run it today', desc: '2 minutes. Real results.' },
+                    ].map(step => (
+                        <div key={step.num} className="flex sm:flex-col items-start sm:items-center sm:text-center gap-4 sm:gap-0 bg-white/[0.03] border border-white/5 rounded-2xl p-5">
+                            <p className="text-[10px] font-black text-white/20 uppercase tracking-widest sm:mb-3 shrink-0">{step.num}</p>
+                            <div>
+                                <p className="text-xs font-bold text-white sm:mb-1 leading-snug">{step.label}</p>
+                                <p className="text-[10px] text-white/30 leading-snug">{step.desc}</p>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
             </section>
 
+            <div className="border-t border-white/5" />
+
             {/* FEATURED ARTICLE */}
             {featured && (
-                <section className="px-6 sm:px-12 md:px-16 py-16 border-b border-white/5">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/20 mb-8 font-black">Latest Briefing</p>
-                    <Link
-                        href={`/intelligence/${featured.slug}`}
-                        className="group block max-w-5xl"
-                    >
+                <section className="px-5 py-12 max-w-6xl mx-auto">
+                    <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-6 font-black">Latest Briefing</p>
+                    <Link href={`/intelligence/${featured.slug}`} className="group block">
                         <div
-                            className="rounded-3xl border border-white/10 p-8 md:p-12 hover:border-white/20 transition-all duration-500 relative overflow-hidden"
-                            style={{
-                                background: `radial-gradient(ellipse at 80% 20%, ${featuredBranch?.color ?? '#3B82F6'}10, transparent 60%)`
-                            }}
+                            className="rounded-3xl border border-white/10 p-6 sm:p-10 md:p-14 hover:border-white/20 transition-all duration-500 relative overflow-hidden"
+                            style={{ background: `radial-gradient(ellipse at 80% 0%, ${featuredColor}12, transparent 60%)` }}
                         >
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                                <div className="flex-1">
-                                    <span
-                                        className="inline-block text-[10px] px-3 py-1 rounded-full tracking-[0.2em] uppercase font-black border mb-6"
-                                        style={{
-                                            backgroundColor: `${featuredBranch?.color ?? '#3B82F6'}15`,
-                                            color: featuredBranch?.color ?? '#3B82F6',
-                                            borderColor: `${featuredBranch?.color ?? '#3B82F6'}30`,
-                                        }}
-                                    >
-                                        {featured.branch}
-                                    </span>
-                                    <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight mb-4 group-hover:text-white/80 transition-colors">
-                                        {featured.title}
-                                    </h2>
-                                    <p className="text-white/40 text-base leading-relaxed max-w-xl">
-                                        {featured.summary || featured.tldr || featured.excerpt}
-                                    </p>
-                                </div>
-                                <div className="shrink-0">
-                                    <div className="bg-black/50 border border-white/20 rounded-2xl px-6 py-4 font-mono mb-4">
-                                        <span className="text-[10px] text-white/40 uppercase tracking-widest block mb-2">Text this keyword →</span>
-                                        <div className="flex items-center gap-2">
-                                            <span>⚡</span>
-                                            <span className="font-black tracking-widest text-lg" style={{ color: featuredBranch?.color ?? '#fff' }}>
-                                                {featured.keyword}
+                            {/* Ambient glow — desktop only */}
+                            <div
+                                className="hidden md:block absolute top-0 right-0 w-80 h-80 rounded-full blur-[120px] opacity-15 pointer-events-none"
+                                style={{ background: featuredColor }}
+                            />
+
+                            <div className="relative z-10">
+                                {/* Branch tag */}
+                                <span
+                                    className="inline-block text-[9px] px-3 py-1.5 rounded-full tracking-[0.25em] uppercase font-black border mb-5"
+                                    style={{
+                                        backgroundColor: `${featuredColor}18`,
+                                        color: featuredColor,
+                                        borderColor: `${featuredColor}35`,
+                                    }}
+                                >
+                                    {featured.branch}
+                                </span>
+
+                                {/* Title */}
+                                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.05] mb-4 group-hover:text-white/80 transition-colors">
+                                    {featured.title}
+                                </h2>
+
+                                {/* Excerpt */}
+                                <p className="text-white/40 text-sm sm:text-base leading-relaxed max-w-xl mb-8">
+                                    {featured.summary || featured.tldr || featured.excerpt}
+                                </p>
+
+                                {/* Footer row */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-sm font-black uppercase tracking-widest transition-colors" style={{ color: featuredColor }}>
+                                            Read Briefing →
+                                        </span>
+                                        {featured.read_time && (
+                                            <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
+                                                · {featured.read_time} read
                                             </span>
-                                        </div>
+                                        )}
                                     </div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-white/20 group-hover:text-white/50 transition-colors text-right">
-                                        Read Briefing →
+                                    {/* Keyword token */}
+                                    <div className="bg-black/60 border border-white/15 rounded-xl px-5 py-3 font-mono flex items-center gap-2 self-start sm:self-auto">
+                                        <span>⚡</span>
+                                        <span className="font-black tracking-widest text-base" style={{ color: featuredColor }}>
+                                            {featured.keyword}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -120,31 +132,39 @@ export default async function IntelligencePage() {
                 </section>
             )}
 
-            {/* ALL ARTICLES */}
-            <section className="px-6 sm:px-12 md:px-16 py-16">
-                <div className="max-w-5xl mx-auto">
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-white/20 mb-10 font-black">
-                        {rest.length > 0 ? 'All Briefings' : 'All Briefings'}
-                    </p>
-                    <IntelligenceList initialPosts={rest.length > 0 ? rest : allPosts} />
-                </div>
-            </section>
+            {/* ARTICLE GRID */}
+            {rest.length > 0 && (
+                <section className="px-5 pb-20 max-w-6xl mx-auto">
+                    <div className="flex items-center gap-4 mb-8">
+                        <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 font-black shrink-0">All Briefings</p>
+                        <div className="h-px flex-1 bg-white/5" />
+                        <span className="text-[9px] text-white/15 font-bold uppercase shrink-0">{rest.length}</span>
+                    </div>
+                    <IntelligenceGrid posts={rest} />
+                </section>
+            )}
 
-            {/* CTA FOOTER */}
-            <section className="border-t border-white/5 px-6 sm:px-12 md:px-16 py-20 text-center">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-white/20 mb-6 font-black">Get them on WhatsApp</p>
-                <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
-                    Read it here.<br />Run it on WhatsApp.
-                </h2>
-                <p className="text-white/40 max-w-md mx-auto mb-10 leading-relaxed">
-                    Sign up free. Text any keyword to receive the full step-by-step protocol instantly — no app, no login, no friction.
-                </p>
-                <Link
-                    href="/signup"
-                    className="inline-flex items-center gap-2 px-10 py-5 rounded-full font-black text-black bg-white hover:scale-105 transition-all duration-300 text-sm"
-                >
-                    Sign up free →
-                </Link>
+            {/* CTA */}
+            <section className="border-t border-white/5">
+                <div className="max-w-6xl mx-auto px-5 py-20">
+                    <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-8 sm:p-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+                        <div>
+                            <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-4 font-black">Get them on WhatsApp</p>
+                            <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-3">
+                                Read it here.<br />Run it on WhatsApp.
+                            </h2>
+                            <p className="text-white/40 text-sm leading-relaxed max-w-sm">
+                                Text any keyword to get the full step-by-step protocol instantly. No app, no login, no friction.
+                            </p>
+                        </div>
+                        <Link
+                            href="/signup"
+                            className="shrink-0 inline-flex items-center px-8 py-4 rounded-full font-black text-black bg-white hover:scale-105 transition-all duration-300 text-sm whitespace-nowrap"
+                        >
+                            Sign up free →
+                        </Link>
+                    </div>
+                </div>
             </section>
 
         </main>
