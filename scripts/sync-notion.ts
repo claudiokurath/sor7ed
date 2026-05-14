@@ -53,6 +53,11 @@ const getFiles = (prop: unknown): string => {
   return p.files?.[0]?.file?.url || p.files?.[0]?.external?.url || '';
 };
 
+const getUrl = (prop: unknown): string => {
+  if (typeof prop !== 'object' || prop === null) return '';
+  return (prop as { url?: string }).url || '';
+};
+
 async function syncProtocols() {
   console.log('Fetching articles from Notion...')
   const response = await notion.databases.query({
@@ -88,7 +93,7 @@ async function syncProtocols() {
       level: getSelect(props.Level) || 'primer',
       summary: getText(props.Summary),
       featured: getCheckbox(props.Featured),
-      cover_image: getCover(page) || getText(props['Cover Image URL']) || getText(props['Cover Image']),
+      cover_image: getCover(page) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
       related_assessments: getText(props['Related Assessments']) ? JSON.parse(getText(props['Related Assessments'])) : []
     }
 
@@ -129,7 +134,7 @@ async function syncTools() {
       questions: rawQuestions ? JSON.parse(rawQuestions) : [],
       color: getText(props.Color) || '#ffffff',
       meta_description: getText(props['Meta Description']),
-      cover_image: getCover(page) || getText(props['Cover Image URL']) || getText(props['Cover Image']) || getFiles(props['Cover Image']),
+      cover_image: getCover(page) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
       status: getStatus(props.Status) || 'Live'
     }
 
