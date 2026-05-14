@@ -23,6 +23,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 17px;
   overflow-x: hidden;
   transition: background-color 0.5s ease;
 }

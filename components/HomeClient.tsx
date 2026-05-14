@@ -16,6 +16,7 @@ type Tool = {
   tldr: string;
   description: string;
   short_description: string;
+  cover_image: string;
   featured: boolean;
 };
 
@@ -30,12 +31,21 @@ const taglines = [
 export default function HomeClient({ tools, user }: { tools: Tool[], user: User | null }) {
   const [taglineIndex, setTaglineIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const toolsRef = useRef<HTMLDivElement>(null);
 
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
-      const scrollAmount = 340; // Card width + gap
       carouselRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        left: direction === 'left' ? -360 : 360,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollTools = (direction: 'left' | 'right') => {
+    if (toolsRef.current) {
+      toolsRef.current.scrollBy({
+        left: direction === 'left' ? -360 : 360,
         behavior: 'smooth'
       });
     }
@@ -308,82 +318,108 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
       </section>
 
       {/* TOOLS GALLERY SECTION */}
-      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start border-t border-white/5">
-        <div className="flex justify-between items-end mb-12">
+      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center sm:snap-start border-t border-white/5 overflow-hidden">
+        <div className="flex justify-between items-end mb-10 px-4 sm:px-6 md:px-16">
           <div>
-            <span className="text-xs tracking-[0.35em] uppercase text-white/20 mb-4 font-medium block">The Toolbox</span>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">Featured Tools</h2>
+            <span className="text-xs tracking-[0.35em] uppercase text-white/20 mb-3 font-medium block">The Toolbox</span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">Featured Tools</h2>
           </div>
-          <Link href="/tools" className="text-white/40 hover:text-white transition-colors text-sm uppercase tracking-widest font-bold">
-            View all tools →
-          </Link>
+          <div className="flex items-center gap-3">
+            <button onClick={() => scrollTools('left')} className="hidden md:flex w-11 h-11 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all" aria-label="Previous tool">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button onClick={() => scrollTools('right')} className="hidden md:flex w-11 h-11 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all" aria-label="Next tool">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <Link href="/tools" className="text-white/40 hover:text-white transition-colors text-xs uppercase tracking-widest font-bold border-b border-white/10 hover:border-white pb-0.5">
+              View all →
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {tools.slice(0, 3).map((tool, i) => {
+        <div
+          ref={toolsRef}
+          className="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-8 scroll-smooth"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {tools.length === 0 ? (
+            <div className="shrink-0 w-full py-20 text-center border border-dashed border-white/5 rounded-3xl">
+              <p className="text-white/20 italic text-sm">No tools synced yet. Check back soon.</p>
+            </div>
+          ) : tools.map((tool, i) => {
             const color = tool.color || '#3B82F6';
             return (
               <motion.div
                 key={tool.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="h-full"
+                transition={{ delay: i * 0.08 }}
+                className="shrink-0"
+                style={{ scrollSnapAlign: 'start' }}
               >
                 <Link
                   href={`/tools/${tool.slug}`}
-                  className="group relative bg-[#0f0f0f] border border-white/5 rounded-3xl p-8 hover:border-transparent transition-all duration-500 h-full flex flex-col overflow-hidden"
+                  className="group flex flex-col w-[80vw] sm:w-[340px] bg-[#0f0f0f] border border-white/5 rounded-3xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
                 >
-                  {/* Hover glow effect */}
-                  <div 
-                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                    style={{ 
-                      border: `1.5px solid ${color}`,
-                      boxShadow: `
-                        0 0 20px ${color}40,
-                        inset 0 0 20px ${color}10,
-                        0 0 40px ${color}20
-                      `,
-                      background: `radial-gradient(circle at 70% 30%, ${color}08, transparent 70%)`
+                  {/* Hover glow */}
+                  <div
+                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+                    style={{
+                      border: `1.5px solid ${color}45`,
+                      boxShadow: `0 0 40px ${color}20`,
+                      background: `radial-gradient(circle at 60% 0%, ${color}08, transparent 70%)`
                     }}
                   />
 
-                   <div className="flex justify-between items-start mb-6 relative z-10">
-                      <span 
-                        className="text-[10px] px-3 py-1 rounded-full tracking-[0.2em] uppercase font-bold border"
-                        style={{ 
-                            backgroundColor: `${color}20`, 
-                            color: color,
-                            borderColor: `${color}40`
-                        }}
+                  {/* Cover image */}
+                  <div className="w-full h-52 shrink-0 overflow-hidden rounded-t-3xl">
+                    {tool.cover_image ? (
+                      <img
+                        src={tool.cover_image}
+                        alt=""
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center"
+                        style={{ background: `linear-gradient(135deg, ${color}28 0%, #0a0a0a 100%)` }}
                       >
-                        {tool.branch}
-                      </span>
-                   </div>
-                   <h3 className="text-xl font-black text-white mb-3 group-hover:text-white/80 transition-colors relative z-10 tracking-tight">{tool.name}</h3>
-                   <p className="text-white/40 text-sm leading-relaxed mb-8 relative z-10 line-clamp-2">{tool.short_description || tool.tldr || tool.description}</p>
-                   
-                   <div className="mt-auto relative z-10">
-                      <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
-                          <span className="text-[10px] text-white/40 uppercase tracking-widest block mb-1">Text this →</span>
-                          <div className="flex items-center gap-2">
-                              <span className="text-sm">⚡</span>
-                              <span className="font-bold tracking-widest text-sm" style={{ color: tool.color || '#ffffff' }}>
-                                {tool.keyword}
-                              </span>
-                          </div>
+                        <span className="text-7xl font-black opacity-10 tracking-tight" style={{ color }}>
+                          {tool.branch?.charAt(0)}
+                        </span>
                       </div>
-                   </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex flex-col flex-1 p-6 sm:p-7 relative z-10">
+                    <span
+                      className="text-xs px-3 py-1.5 rounded-full tracking-widest uppercase font-bold border mb-4 self-start"
+                      style={{
+                        backgroundColor: `${color}20`,
+                        color,
+                        borderColor: `${color}40`
+                      }}
+                    >
+                      {tool.branch}
+                    </span>
+                    <h3 className="text-xl font-black text-white mb-3 group-hover:text-white/80 transition-colors tracking-tight leading-tight">
+                      {tool.name}
+                    </h3>
+                    <p className="text-white/40 text-sm leading-relaxed line-clamp-2 flex-1">
+                      {tool.short_description || tool.tldr || tool.description}
+                    </p>
+                    <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-end">
+                      <span className="text-xs font-black uppercase tracking-widest text-white/20 group-hover:text-white/50 transition-colors">
+                        Start Assessment →
+                      </span>
+                    </div>
+                  </div>
                 </Link>
               </motion.div>
             );
           })}
-          {tools.length === 0 && (
-            <div className="col-span-3 py-20 text-center border border-dashed border-white/5 rounded-3xl">
-                <p className="text-white/20 italic">No tools synced yet. Check back soon.</p>
-            </div>
-          )}
         </div>
       </section>
 
