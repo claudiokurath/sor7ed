@@ -31,6 +31,7 @@ type Tool = {
   tldr: string;
   description: string;
   long_description: string;
+  cover_image: string;
   questions: Question[];
 };
 
@@ -190,11 +191,12 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
               className="text-center py-20"
             >
               <div className="mb-12 rounded-3xl overflow-hidden border border-white/10 max-w-sm mx-auto shadow-2xl">
-                <ArticleCover 
-                  keyword={tool.keyword} 
-                  branch={tool.branch} 
-                  color={tool.color || "#ffffff"} 
-                  title={tool.name} 
+                <ArticleCover
+                  keyword={tool.keyword}
+                  branch={tool.branch}
+                  color={tool.color || "#ffffff"}
+                  title={tool.name}
+                  imageUrl={tool.cover_image || undefined}
                 />
               </div>
 

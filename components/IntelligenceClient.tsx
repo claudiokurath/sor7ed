@@ -16,6 +16,7 @@ type Article = {
   keyword: string;
   branch: string;
   color: string;
+  cover_image: string;
   problem: string;
   description: string;
   tldr: string;
@@ -174,11 +175,12 @@ export default function IntelligenceClient({ article }: { article: Article }) {
 
             {/* Article Cover Visual */}
             <div className="mb-12">
-              <ArticleCover 
-                keyword={article.keyword} 
-                branch={article.branch} 
-                color={article.color || "#3B82F6"} 
-                title={article.title} 
+              <ArticleCover
+                keyword={article.keyword}
+                branch={article.branch}
+                color={article.color || "#3B82F6"}
+                title={article.title}
+                imageUrl={article.cover_image || undefined}
               />
             </div>
 

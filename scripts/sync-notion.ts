@@ -16,7 +16,15 @@ const supabase = createClient(
   env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-type NotionPage = { id: string; properties: Record<string, unknown> };
+type NotionCover = { type: 'file'; file: { url: string } } | { type: 'external'; external: { url: string } } | null;
+type NotionPage = { id: string; properties: Record<string, unknown>; cover?: NotionCover };
+
+const getCover = (page: NotionPage): string => {
+  if (!page.cover) return '';
+  if (page.cover.type === 'external') return page.cover.external.url;
+  if (page.cover.type === 'file') return page.cover.file.url;
+  return '';
+};
 
 const getText = (prop: unknown): string => {
   if (typeof prop !== 'object' || prop === null) return '';
@@ -80,6 +88,7 @@ async function syncProtocols() {
       level: getSelect(props.Level) || 'primer',
       summary: getText(props.Summary),
       featured: getCheckbox(props.Featured),
+      cover_image: getCover(page),
       related_assessments: getText(props['Related Assessments']) ? JSON.parse(getText(props['Related Assessments'])) : []
     }
 
@@ -120,7 +129,7 @@ async function syncTools() {
       questions: rawQuestions ? JSON.parse(rawQuestions) : [],
       color: getText(props.Color) || '#ffffff',
       meta_description: getText(props['Meta Description']),
-      cover_image: getFiles(props['Cover Image']),
+      cover_image: getCover(page) || getFiles(props['Cover Image']),
       status: getStatus(props.Status) || 'Live'
     }
 

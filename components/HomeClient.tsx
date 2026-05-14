@@ -138,12 +138,21 @@ export default function HomeClient({ tools, user }: { tools: Tool[], user: User 
             >
               Explore Your Branches
             </a>
-            <Link
-              href="/signup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
-            >
-              Sign up for free protocols
-            </Link>
+            {user ? (
+              <Link
+                href="/intelligence"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+              >
+                Browse Intelligence →
+              </Link>
+            ) : (
+              <Link
+                href="/signup"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+              >
+                Sign up for free protocols
+              </Link>
+            )}
           </motion.div>
         </div>
 

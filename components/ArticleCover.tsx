@@ -7,11 +7,26 @@ type ArticleCoverProps = {
   branch: string;
   color: string;
   title: string;
+  imageUrl?: string;
 };
 
-export default function ArticleCover({ keyword, branch, color }: ArticleCoverProps) {
+export default function ArticleCover({ keyword, branch, color, imageUrl }: ArticleCoverProps) {
+  if (imageUrl) {
+    return (
+      <div className="relative h-48 sm:h-72 w-full overflow-hidden rounded-t-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageUrl}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      </div>
+    );
+  }
+
   return (
-    <div 
+    <div
       className="relative h-48 sm:h-64 w-full overflow-hidden rounded-t-2xl flex items-center justify-center"
       style={{ backgroundColor: `${color}08` }}
     >
