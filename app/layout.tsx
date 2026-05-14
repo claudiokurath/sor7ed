@@ -24,6 +24,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "SOR7ED | Practical Protocols for Neurodivergent Minds",
   description: "Organize your life across 7 branches with practical protocols delivered via WhatsApp.",
+  icons: {
+    icon: '/Images/Favicon.jpg',
+    apple: '/Images/Favicon.jpg',
+  },
 };
 
 export function TextureOverlay() {
