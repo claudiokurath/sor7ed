@@ -103,8 +103,12 @@ export async function POST(req: NextRequest) {
                 .single();
             
             if (protocol) {
-                const content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
-                await sendWhatsAppMessage(senderPhone, content);
+                if (protocol.pdf_url) {
+                    await sendWhatsAppDocument(senderPhone, protocol.pdf_url, protocol.title, protocol.tldr);
+                } else {
+                    const content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
+                    await sendWhatsAppMessage(senderPhone, content);
+                }
             } else {
                 const { data: tool } = await supabase
                     .from('tools')
@@ -139,7 +143,7 @@ export async function POST(req: NextRequest) {
 
 async function sendWhatsAppTemplate(to: string, keyword: string, token: string) {
     const templateName = `sor7ed_${keyword.toLowerCase()}_entry_v1`;
-    const url = `https://graph.facebook.com/v18.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+    const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
     
     const response = await fetch(url, {
         method: "POST",
@@ -187,8 +191,33 @@ async function sendFallbackMessage(to: string, keyword: string, token: string) {
     await sendWhatsAppMessage(to, fallbackText);
 }
 
+async function sendWhatsAppDocument(to: string, pdfUrl: string, filename: string, caption: string) {
+    const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to,
+            type: "document",
+            document: {
+                link: pdfUrl,
+                filename: `${filename}.pdf`,
+                caption,
+            },
+        }),
+    });
+
+    return await response.json();
+}
+
 async function sendWhatsAppMessage(to: string, text: string) {
-    const url = `https://graph.facebook.com/v18.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+    const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
     
     const response = await fetch(url, {
         method: "POST",
