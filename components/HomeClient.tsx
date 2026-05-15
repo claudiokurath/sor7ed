@@ -77,20 +77,41 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
           />
         </div>
 
-        <div className="flex flex-col items-center text-center max-w-5xl mx-auto">
-          {/* Logo in the middle of hero content */}
-          <div className="mb-16">
+        <div className="absolute top-8 left-0 right-0 flex items-center px-4 sm:px-6 md:px-16 z-50">
+          {/* Logo Centered */}
+          <div className="absolute left-1/2 -translate-x-1/2">
             <Link href="/">
               <Image 
                 src="/Images/Logo2026.png" 
                 alt="SOR7ED" 
-                width={280} 
-                height={108} 
-                className="h-32 w-auto opacity-100" 
+                width={216} 
+                height={84} 
+                className="h-20 w-auto opacity-100" 
               />
             </Link>
           </div>
 
+          <div className="flex-1" />
+
+          <div className="flex gap-4 sm:gap-8 items-center relative z-10">
+            {user ? (
+              <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href="/signup?mode=login" className="hidden sm:block text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
+                  Sign In
+                </Link>
+                <Link href="/signup" className="px-5 py-2.5 bg-white text-black text-xs tracking-widest uppercase font-black rounded-full hover:scale-105 transition-all">
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="relative z-10 max-w-5xl flex flex-col items-start text-left">
           <motion.p
             className="text-sm md:text-xs tracking-[0.35em] uppercase text-white/30 mb-8 font-medium"
             initial={{ opacity: 0, y: 10 }}
@@ -101,12 +122,27 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
           </motion.p>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-anton tracking-wider leading-[1.1] mb-8 uppercase">
-            <span className="text-white block mb-2">The world wasn&apos;t built for your brain.</span>
-            <span className="text-[#ffd107] block">We build systems that are.</span>
+            <span className="text-white block mb-2">If you&apos;re feeling</span>
+            <div className="h-[1.1em] relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={taglineIndex}
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -40, opacity: 0 }}
+                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  className="block"
+                  style={{ color: taglines[taglineIndex].color }}
+                >
+                  {taglines[taglineIndex].word}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+            <span className="text-white block mt-2">We build systems that work.</span>
           </h1>
 
           <motion.p
-            className="text-white/40 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed mx-auto mb-10 font-roboto font-thin"
+            className="text-white/40 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed mb-10 font-roboto font-thin"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -114,9 +150,9 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
           </motion.p>
 
-          {/* Full-width buttons on mobile */}
+          {/* Buttons aligned left */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto justify-center"
+            className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
