@@ -1,279 +1,275 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import { branches } from '@/lib/constants';
 
-const ROTATING_WORDS = [
-    { text: 'Overwhelmed', color: '#E94560' },
-    { text: 'Exhausted', color: '#FF6B6B' },
-    { text: 'Wired differently', color: '#4ECDC4' },
-    { text: 'Scattered', color: '#A855F7' },
-    { text: 'Behind', color: '#F4A261' },
-    { text: 'Stuck', color: '#E9C46A' },
+const WHATSAPP_LINK = `https://wa.me/447591922247?text=SOR7ED`;
+
+const taglines = [
+    { word: 'Overwhelmed', color: '#E94560' },
+    { word: 'Scattered',   color: '#A855F7' },
+    { word: 'Exhausted',   color: '#FF6B6B' },
+    { word: 'Wired differently', color: '#4ECDC4' },
+    { word: 'Behind',      color: '#F4A261' },
+    { word: 'Stuck',       color: '#E9C46A' },
 ];
 
-const WHATSAPP_NUMBER = "+44 7591 922247";
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=SOR7ED`;
-
-type Tool = {
-    slug: string;
-    name: string;
-    tldr: string;
-    cover_image: string | null;
-    color: string | null;
-    branch: string;
-};
-
-type Article = {
-    slug: string;
-    title: string;
-    excerpt: string | null;
-    summary: string | null;
-    cover_image: string | null;
-    read_time: string | null;
-    branch: string;
-};
-
-function Hero() {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
+export default function HomeClient() {
+    const [taglineIndex, setTaglineIndex] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll();
+    const backgroundOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setIsAnimating(true);
-            setTimeout(() => {
-                setCurrentIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
-                setIsAnimating(false);
-            }, 300);
-        }, 3000);
+            setTaglineIndex(i => (i + 1) % taglines.length);
+        }, 2400);
         return () => clearInterval(interval);
     }, []);
 
-    const current = ROTATING_WORDS[currentIndex];
+    const current = taglines[taglineIndex];
 
     return (
-        <section className="min-h-screen flex items-center relative overflow-hidden pt-20">
-            <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-20 blur-3xl transition-colors duration-1000"
-                style={{ backgroundColor: current.color }}
-            />
-            <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
-                <span className="text-xs uppercase tracking-[0.3em] text-white/40 mb-8 block">
-                    Practical protocols via WhatsApp
-                </span>
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8">
-                    <span className="block">If you&apos;re feeling</span>
-                    <span
-                        className="block transition-all duration-500 ease-out"
-                        style={{
-                            color: current.color,
-                            opacity: isAnimating ? 0 : 1,
-                            transform: isAnimating ? 'translateY(20px)' : 'translateY(0)',
-                            filter: isAnimating ? 'blur(4px)' : 'blur(0)',
-                        }}
-                    >
-                        {current.text}
-                    </span>
-                </h1>
-                <p className="text-lg text-white/50 max-w-md mb-10 leading-relaxed">
-                    SOR7ED delivers practical protocols and tools for neurodivergent adults via WhatsApp — organised into 7 branches of life.
-                </p>
-                <div className="flex flex-wrap gap-4 mb-12">
-                    <Link
-                        href="/explore"
-                        className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white px-8 py-4 rounded-full font-semibold transition inline-flex items-center gap-2"
-                    >
-                        Explore Your Branches
-                    </Link>
-                    <Link
-                        href="/signup"
-                        className="border border-white/20 hover:bg-white/5 text-white px-8 py-4 rounded-full font-semibold transition"
-                    >
-                        Sign up free
-                    </Link>
-                </div>
-                <p className="text-sm text-white/30">
-                    Text <span className="text-white/50 font-mono">SOR7ED</span> to{' '}
-                    <a href={WHATSAPP_LINK} className="text-white/50 hover:text-white underline">
-                        {WHATSAPP_NUMBER}
-                    </a>
-                </p>
-            </div>
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-                <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent" />
-            </div>
-        </section>
-    );
-}
+        <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
 
-function AssessmentsSection({ tools }: { tools: Tool[] }) {
-    if (tools.length === 0) return null;
-    return (
-        <section className="py-24 px-6 border-t border-white/5">
-            <div className="max-w-5xl mx-auto">
-                <div className="mb-12">
-                    <span className="text-xs uppercase tracking-[0.3em] text-white/30 block mb-3">Interactive</span>
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight">Assessments.</h2>
-                    <p className="text-white/40 mt-3 max-w-md">Find out exactly where you stand — and what to do about it.</p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {tools.map((tool) => (
-                        <Link
-                            key={tool.slug}
-                            href={`/tools/${tool.slug}`}
-                            className="group rounded-3xl overflow-hidden border border-white/5 hover:border-white/15 bg-[#0f0f0f] transition-all duration-300"
-                        >
-                            <div className="h-40 overflow-hidden bg-white/5">
-                                {tool.cover_image ? (
-                                    <img
-                                        src={tool.cover_image}
-                                        alt=""
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                ) : (
-                                    <div
-                                        className="w-full h-full"
-                                        style={{ background: `linear-gradient(135deg, ${tool.color || '#ffffff'}15, transparent)` }}
-                                    />
-                                )}
-                            </div>
-                            <div className="p-6">
-                                <span
-                                    className="text-xs uppercase tracking-widest font-bold px-3 py-1 rounded-full mb-4 inline-block"
-                                    style={{ backgroundColor: `${tool.color || '#ffffff'}20`, color: tool.color || '#ffffff' }}
-                                >
-                                    {tool.branch}
-                                </span>
-                                <h3 className="text-lg font-black mb-2 leading-tight">{tool.name}</h3>
-                                <p className="text-white/40 text-sm leading-relaxed line-clamp-2">{tool.tldr}</p>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-                <div className="mt-10 text-center">
-                    <Link href="/explore" className="text-sm text-white/30 hover:text-white transition-colors font-bold uppercase tracking-widest">
-                        Browse all branches →
-                    </Link>
-                </div>
-            </div>
-        </section>
-    );
-}
+            {/* ── HERO ── */}
+            <section className="relative min-h-[92vh] flex flex-col justify-center px-6 md:px-16 pt-20 overflow-hidden">
 
-function BlogSection({ articles }: { articles: Article[] }) {
-    if (articles.length === 0) return null;
-    return (
-        <section className="py-24 px-6 border-t border-white/5">
-            <div className="max-w-5xl mx-auto">
-                <div className="mb-12">
-                    <span className="text-xs uppercase tracking-[0.3em] text-white/30 block mb-3">Intelligence</span>
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight">Protocols & Briefings.</h2>
-                    <p className="text-white/40 mt-3 max-w-md">Practical reads for the way your brain actually works.</p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {articles.map((article) => (
-                        <Link
-                            key={article.slug}
-                            href={`/intelligence/${article.slug}`}
-                            className="group rounded-3xl overflow-hidden border border-white/5 hover:border-white/15 bg-[#0f0f0f] transition-all duration-300"
-                        >
-                            <div className="h-40 overflow-hidden bg-white/5">
-                                {article.cover_image ? (
-                                    <img
-                                        src={article.cover_image}
-                                        alt=""
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-white/[0.02]" />
-                                )}
-                            </div>
-                            <div className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-xs uppercase tracking-widest font-bold text-white/25">{article.branch}</span>
-                                    {article.read_time && (
-                                        <span className="text-xs text-white/25 font-bold uppercase tracking-widest">{article.read_time}</span>
-                                    )}
-                                </div>
-                                <h3 className="text-lg font-black mb-2 leading-tight group-hover:text-white/80 transition-colors">{article.title}</h3>
-                                <p className="text-white/40 text-sm leading-relaxed line-clamp-2">
-                                    {article.excerpt || article.summary}
-                                </p>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function AboutSection() {
-    return (
-        <section className="py-24 px-6 border-t border-white/5">
-            <div className="max-w-5xl mx-auto">
-                <div className="grid md:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <span className="text-xs uppercase tracking-[0.3em] text-white/30 block mb-3">Who we are</span>
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">Built for brains that don&apos;t fit the mould.</h2>
-                        <p className="text-white/50 leading-relaxed mb-6">
-                            SOR7ED was built by and for neurodivergent adults who are tired of advice that was never designed for them. No fluff, no toxic positivity — just practical protocols that work with your brain, not against it.
-                        </p>
-                        <p className="text-white/50 leading-relaxed">
-                            Seven branches of life. Delivered to your WhatsApp. Start free, go deeper when you&apos;re ready.
-                        </p>
-                    </div>
-                    <div className="space-y-5">
-                        {[
-                            { label: '7', desc: 'Branches of life covered' },
-                            { label: '50+', desc: 'Protocols and tools' },
-                            { label: '1', desc: 'WhatsApp number to remember' },
-                        ].map((stat) => (
-                            <div key={stat.label} className="flex items-center gap-6 border border-white/5 rounded-2xl p-6">
-                                <span className="text-4xl font-black text-white/80 w-20 shrink-0">{stat.label}</span>
-                                <span className="text-white/40">{stat.desc}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function WhatsAppCTA() {
-    return (
-        <section className="py-24 px-6 border-t border-white/5">
-            <div className="max-w-xl mx-auto text-center">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-4">Get sorted today.</h2>
-                <p className="text-white/40 mb-10">Free protocols on WhatsApp. No credit card. No waiting.</p>
-                <a
-                    href={WHATSAPP_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-4 rounded-full font-semibold text-lg transition"
+                <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ opacity: backgroundOpacity }}
                 >
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                    </svg>
-                    Message {WHATSAPP_NUMBER}
-                </a>
-                <p className="text-xs text-white/20 mt-6">
-                    Or text <span className="text-white/40 font-mono">SOR7ED</span> to get started
-                </p>
-            </div>
-        </section>
-    );
-}
+                    <div
+                        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-[0.07] blur-3xl"
+                        style={{ background: 'radial-gradient(circle, #2E5BFF 0%, transparent 70%)' }}
+                    />
+                </motion.div>
 
-export default function HomeClient({ tools, articles }: { tools: Tool[]; articles: Article[] }) {
-    return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
-            <Hero />
-            <AssessmentsSection tools={tools} />
-            <BlogSection articles={articles} />
-            <AboutSection />
-            <WhatsAppCTA />
+                <div className="relative z-10 max-w-5xl">
+                    <motion.p
+                        className="text-xs tracking-[0.35em] uppercase text-white/25 mb-8 font-bold"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        Practical protocols via WhatsApp
+                    </motion.p>
+
+                    <motion.h1
+                        className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-2 leading-[1.0] tracking-tight"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.1 }}
+                    >
+                        If you&apos;re feeling
+                    </motion.h1>
+
+                    <motion.div
+                        className="text-5xl md:text-7xl lg:text-8xl font-black mb-10 leading-[1.0] h-[1.1em] overflow-hidden"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                    >
+                        <AnimatePresence mode="wait">
+                            <motion.span
+                                key={taglineIndex}
+                                initial={{ y: 70, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -70, opacity: 0 }}
+                                transition={{ duration: 0.4, ease: 'easeOut' }}
+                                style={{ color: current.color, display: 'block', trackingTight: true }}
+                                className="tracking-tight"
+                            >
+                                {current.word}
+                            </motion.span>
+                        </AnimatePresence>
+                    </motion.div>
+
+                    <motion.p
+                        className="text-white/40 text-lg md:text-xl max-w-lg leading-relaxed"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.5 }}
+                    >
+                        SOR7ED delivers practical protocols and tools for neurodivergent adults via WhatsApp — organised into 7 branches of life.
+                    </motion.p>
+
+                    <motion.div
+                        className="flex flex-col sm:flex-row gap-4 mt-10"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.7 }}
+                    >
+                        <Link
+                            href="/signup"
+                            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-white text-sm bg-[#2563EB] hover:bg-[#1d4ed8] transition-all duration-300 hover:scale-105"
+                        >
+                            Sign up — it&apos;s free
+                        </Link>
+                        <a
+                            href="#branches"
+                            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-white/50 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+                        >
+                            Explore the 7 branches
+                        </a>
+                    </motion.div>
+                </div>
+
+                <motion.div
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                >
+                    <div className="w-px h-10 bg-gradient-to-b from-transparent to-white/20" />
+                </motion.div>
+            </section>
+
+            {/* ── 7 BRANCHES DIVIDER ── */}
+            <section className="px-6 md:px-16 pt-16 pb-8" id="branches">
+                <motion.div
+                    className="flex items-center gap-4 mb-8"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                >
+                    <div className="h-px flex-1 bg-white/5" />
+                    <span className="text-white/20 text-xs tracking-[0.35em] uppercase font-bold">
+                        7 Branches of Life
+                    </span>
+                    <div className="h-px flex-1 bg-white/5" />
+                </motion.div>
+
+                <motion.h2
+                    className="text-3xl md:text-5xl font-black text-white mt-2 mb-3 tracking-tight leading-[1.0]"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                >
+                    Every part of your life,<br />simplified.
+                </motion.h2>
+                <motion.p
+                    className="text-white/30 text-base max-w-lg leading-relaxed"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                >
+                    Each branch contains articles and tools that come with step-by-step protocols. Find what matches your problem here, then get the protocol on WhatsApp.
+                </motion.p>
+            </section>
+
+            {/* ── BRANCH CAROUSEL ── */}
+            <section className="pb-24">
+                <div
+                    ref={containerRef}
+                    className="flex gap-5 px-6 md:px-16 overflow-x-auto pb-4"
+                    style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
+                >
+                    {branches.map((branch, i) => (
+                        <motion.div
+                            key={branch.slug}
+                            style={{ scrollSnapAlign: 'start' }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.07 }}
+                            whileHover={{ y: -4 }}
+                        >
+                            <Link
+                                href={`/${branch.slug}`}
+                                className="block min-w-[280px] md:min-w-[320px] p-8 rounded-3xl border border-white/8 bg-[#0f0f0f] hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 group"
+                            >
+                                <div className="flex items-start justify-between mb-6">
+                                    <span className="text-3xl">{branch.icon}</span>
+                                    <span className="text-white/15 font-mono text-xs font-bold">{branch.num}</span>
+                                </div>
+                                <h3
+                                    className="text-2xl font-black mb-3 tracking-tight"
+                                    style={{ color: branch.color }}
+                                >
+                                    {branch.name}
+                                </h3>
+                                <p className="text-white/35 text-sm leading-relaxed">
+                                    {branch.description}
+                                </p>
+                                <div className="mt-6">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 group-hover:text-white/40 transition-colors">
+                                        Explore →
+                                    </span>
+                                </div>
+                            </Link>
+                        </motion.div>
+                    ))}
+
+                    <motion.div style={{ scrollSnapAlign: 'start' }}>
+                        <Link
+                            href="/explore"
+                            className="flex min-w-[180px] h-full items-center justify-center rounded-3xl border border-dashed border-white/10 hover:border-white/25 transition-all duration-300 group px-8"
+                        >
+                            <span className="text-white/25 group-hover:text-white/50 text-sm font-bold uppercase tracking-widest transition-colors">
+                                See all →
+                            </span>
+                        </Link>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* ── MISSION STRIP ── */}
+            <section className="px-6 md:px-16 py-28 border-t border-white/5">
+                <div className="max-w-4xl">
+                    <motion.p
+                        className="text-xs tracking-[0.35em] uppercase text-white/20 mb-8 font-bold"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        Our mission
+                    </motion.p>
+                    <motion.h2
+                        className="text-4xl md:text-6xl font-black text-white leading-[1.0] tracking-tight mb-10"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        The world wasn&apos;t built for your brain.<br />
+                        <span className="text-white/30">We build systems that are.</span>
+                    </motion.h2>
+                    <motion.p
+                        className="text-white/40 text-lg max-w-2xl leading-relaxed mb-12"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software. SOR7ED is that software, delivered one protocol at a time.
+                    </motion.p>
+                    <motion.div
+                        className="flex flex-wrap gap-4"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <Link
+                            href="/signup"
+                            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-white text-sm bg-[#2563EB] hover:bg-[#1d4ed8] transition-all duration-300 hover:scale-105"
+                        >
+                            Get started free
+                        </Link>
+                        <a
+                            href={WHATSAPP_LINK}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-white/40 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+                        >
+                            Text SOR7ED on WhatsApp
+                        </a>
+                    </motion.div>
+                </div>
+            </section>
+
         </div>
     );
 }
