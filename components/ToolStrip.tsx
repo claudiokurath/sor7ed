@@ -39,10 +39,10 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
           <div className="max-w-xl text-left">
             <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
-              <span className="text-white block">{title}</span>
+              <span className="text-white block">Take the 2-minute<br />triage.</span>
               {subtitle && (
                 <span className="text-[#ffd107] block mt-1">
-                  {subtitle}
+                  We&apos;ll find your highest-<br />friction branch.
                 </span>
               )}
             </h2>

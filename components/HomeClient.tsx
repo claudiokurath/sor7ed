@@ -201,8 +201,8 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
           <div className="flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="max-w-xl text-left">
               <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
-                <span className="text-white block">Every part of your life.</span>
-                <span className="text-[#ffd107] block mt-1">Simplified into 7 branches.</span>
+                <span className="text-white block">Every part of your<br />life.</span>
+                <span className="text-[#ffd107] block mt-1">Simplified into 7<br />branches.</span>
               </h2>
               <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed">
                 Practical protocols and tactical tools designed for busy, distracted, and neurodivergent minds. Delivered one micro-action at a time.
@@ -291,8 +291,8 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         <div className="px-4 sm:px-6 md:px-16 max-w-7xl">
           <div className="max-w-xl mb-16 text-left">
             <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
-              <span className="text-white block">SOR7ED is software for the brain.</span>
-              <span className="text-[#ffd107] block mt-1">Delivered one protocol at a time.</span>
+              <span className="text-white block">SOR7ED is software for<br />the brain.</span>
+              <span className="text-[#ffd107] block mt-1">Delivered one protocol at<br />a time.</span>
             </h2>
             <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed">
               We built this for the late-diagnosed, the hyper-focused, and the chronically overwhelmed. No apps, no logins, no friction. Just what works.

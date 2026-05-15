@@ -33,8 +33,8 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
           <div className="max-w-xl text-left">
             <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
-              <span className="text-white block">The world wasn&apos;t built for your brain.</span>
-              <span className="text-[#ffd107] block mt-1">We build systems that are.</span>
+              <span className="text-white block">The world wasn&apos;t built for<br />your brain.</span>
+              <span className="text-[#ffd107] block mt-1">We build systems that<br />are.</span>
             </h2>
             <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed">
               ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
