@@ -190,8 +190,18 @@ export async function POST(req: NextRequest) {
                         await sendWhatsAppMessage(senderPhone, content);
                     }
                 } else {
-                    const helpText = "Sorry, I don't recognize that keyword. Check SOR7ED.com for the list of available protocols!";
-                    await sendWhatsAppMessage(senderPhone, helpText);
+                    // Unknown input — treat as "show me the menu"
+                    await sendWhatsAppMessage(senderPhone,
+                        `Hey ${user.first_name ?? 'there'} — here's what you can do:\n\n` +
+                        `*MENU* — your 7 branch dashboard\n` +
+                        `*1–7* — open a specific branch\n` +
+                        `*STATUS* — your progress file\n` +
+                        `*NEW* — latest protocol\n` +
+                        `*HISTORY* — past diagnostics\n` +
+                        `*DASHBOARD* — full web view\n` +
+                        `*PARK* — pause without guilt\n\n` +
+                        `_Or text any protocol keyword (e.g. SPEND, MOMENTUM) to get it delivered here._`
+                    );
                 }
             }
         }
