@@ -205,19 +205,8 @@ export async function POST(req: NextRequest) {
 
 async function sendBranchMenu(to: string) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
-
-    await sendWhatsAppMessage(to,
-        `*Your 7 branches — tap to explore:*\n\n` +
-        branches.map((b, i) => `${i + 1}. ${b.icon} *${b.name}* — ${b.description}`).join('\n') +
-        `\n\n_Or text a number (1–7) to open a specific branch._`
-    );
-
-    await new Promise(r => setTimeout(r, 600));
-
-    for (const branch of branches) {
-        await sendWhatsAppMessage(to, `${siteUrl}/${branch.slug}`, true);
-        await new Promise(r => setTimeout(r, 500));
-    }
+    // Single message — all 7 branches on one page
+    await sendWhatsAppMessage(to, `${siteUrl}/explore`, true);
 }
 
 async function handleHelpCommand(to: string) {
@@ -245,30 +234,14 @@ async function handleOnboarding(
     // Message 1: Welcome
     await sendWhatsAppMessage(to,
         `Hey ${firstName}. You just made it into SOR7ED. 🤍\n\n` +
-        `This thread is your intelligence file. Every protocol, every deep dive — delivered here. ` +
-        `No apps. No dashboards. Just this.\n\n` +
-        `SOR7ED is organised into 7 branches of life. Tap the ones that feel relevant right now and look around:`
+        `This thread is your intelligence file. Protocols, deep dives, tools — delivered here. No app needed.\n\n` +
+        `Start by browsing the 7 branches below. Tap whatever feels relevant, look around, and text any keyword you find to get that protocol delivered here.`
     );
 
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 700));
 
-    // Messages 2–8: One link per branch, each renders as a rich preview card
-    for (const branch of branches) {
-        await sendWhatsAppMessage(to, `${siteUrl}/${branch.slug}`, true);
-        await new Promise(r => setTimeout(r, 500));
-    }
-
-    // Message 9: Instructions
-    await new Promise(r => setTimeout(r, 600));
-    await sendWhatsAppMessage(to,
-        `Once you find something useful, tap a keyword inside the page to get the protocol delivered here.\n\n` +
-        `━━━━━━━━\n\n` +
-        `*Commands you can use any time:*\n` +
-        `STATUS — your progress file\n` +
-        `NEW — latest protocol\n` +
-        `PARK — pause without guilt\n` +
-        `AUDIO [keyword] — listen instead of read`
-    );
+    // Message 2: Single explore link (all 7 branches on one page)
+    await sendWhatsAppMessage(to, `${siteUrl}/explore`, true);
 }
 
 async function handleStatusCommand(
