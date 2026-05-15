@@ -39,13 +39,16 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
           <div className="max-w-xl text-left">
             <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
-              <span className="text-white block">Take the 2-minute<br />triage.</span>
+              <span className="text-white block">Take the 2-minute triage.</span>
               {subtitle && (
                 <span className="text-[#ffd107] block mt-1">
-                  We&apos;ll find your highest-<br />friction branch.
+                  We&apos;ll find your highest-friction branch.
                 </span>
               )}
             </h2>
+            <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
+              Answer a few questions to get the exact assessments and protocols for your situation. No account needed.
+            </p>
           </div>
           
           <div className="flex items-center gap-6 shrink-0 mb-2">
