@@ -99,6 +99,13 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "unregistered" });
             }
 
+            // Handle AUDIO [keyword] requests
+            if (keyword.startsWith('audio ')) {
+                const baseKeyword = keyword.slice(6).trim();
+                await handleAudioRequest(senderPhone, normalizedPhone, baseKeyword, user.first_name, supabase);
+                return NextResponse.json({ status: "ok" });
+            }
+
             // 1. Look up keyword in Notion BLOG database (WhatsApp Trigger field)
             const notionArticle = await lookupNotionArticle(keyword);
 
@@ -143,6 +150,60 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+async function handleAudioRequest(
+    senderPhone: string,
+    normalizedPhone: string,
+    keyword: string,
+    firstName: string,
+    supabase: ReturnType<typeof getSupabase>
+) {
+    const { data: protocol } = await supabase
+        .from('protocols')
+        .select('title, slug, audio_url, audio_status')
+        .ilike('slug', keyword)
+        .single();
+
+    if (!protocol) {
+        await sendWhatsAppMessage(senderPhone,
+            `Couldn't find audio for "${keyword}". Text HELP for available options.`);
+        return;
+    }
+
+    if (protocol.audio_status === 'ready' && protocol.audio_url) {
+        await sendWhatsAppAudio(senderPhone, protocol.audio_url);
+        return;
+    }
+
+    // Log the request for demand intelligence
+    await supabase.from('audio_requests').insert({
+        phone: normalizedPhone,
+        protocol_slug: protocol.slug,
+    });
+
+    await sendWhatsAppMessage(senderPhone,
+        `🎧 *Audio requested: ${protocol.title}*\n\nI haven't recorded this one yet, but I'll prioritise it. You'll receive it in this thread when it's ready.`
+    );
+}
+
+async function sendWhatsAppAudio(to: string, audioUrl: string) {
+    const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+
+    await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to,
+            type: "audio",
+            audio: { link: audioUrl },
+        }),
+    });
 }
 
 async function lookupNotionArticle(keyword: string): Promise<{ title: string; excerpt: string; pdfUrl: string | null; gammaUrl: string | null } | null> {
