@@ -31,7 +31,7 @@ export default async function IntelligencePage() {
   const branches = await getBranches();
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white pt-20 font-roboto font-thin">
+    <main className="min-h-screen bg-black text-white pt-20 font-roboto font-thin">
       {/* ─── HERO WITH MIDJOURNEY TEXTURE ─── */}
       <section className="relative px-5 py-20 max-w-6xl mx-auto overflow-hidden rounded-[32px] mb-14 border border-white/5">
         {/* Midjourney texture layer */}
@@ -47,8 +47,8 @@ export default async function IntelligencePage() {
         </div>
         
         {/* Premium Noir overlay system */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/85 to-transparent" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]/40" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#000000] via-[#000000]/85 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#000000] via-transparent to-[#000000]/40" />
 
         <div className="relative z-20 max-w-4xl">
           {/* Founder authenticity badge */}

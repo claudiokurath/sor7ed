@@ -118,7 +118,7 @@ export default function IntelligenceGrid({ posts, branches }: { posts: Post[], b
               >
                 <Link
                   href={`/intelligence/${post.slug}`}
-                  className="group flex flex-col bg-[#0f0f0f] border border-white/5 rounded-[1.75rem] hover:border-transparent transition-all duration-500 relative overflow-hidden"
+                  className="group flex flex-col bg-black border border-white/5 rounded-[1.75rem] hover:border-transparent transition-all duration-500 relative overflow-hidden"
                 >
                   {/* Hover glow */}
                   <div
@@ -141,7 +141,7 @@ export default function IntelligenceGrid({ posts, branches }: { posts: Post[], b
                     ) : (
                       <div
                         className="w-full h-full flex items-center justify-center"
-                        style={{ background: `linear-gradient(135deg, ${color}28 0%, #0a0a0a 100%)` }}
+                        style={{ background: `linear-gradient(135deg, ${color}28 0%, #000000 100%)` }}
                       >
                         <span className="text-6xl font-black opacity-10 tracking-tight" style={{ color }}>
                           {post.branch?.charAt(0)}
@@ -149,7 +149,7 @@ export default function IntelligenceGrid({ posts, branches }: { posts: Post[], b
                       </div>
                     )}
                     {/* Gradient overlay at bottom of image */}
-                    <div className="absolute top-0 left-0 right-0 h-48 sm:h-52 bg-gradient-to-b from-transparent via-transparent to-[#0f0f0f]/70 pointer-events-none" />
+                    <div className="absolute top-0 left-0 right-0 h-48 sm:h-52 bg-gradient-to-b from-transparent via-transparent to-[#000000]/70 pointer-events-none" />
                   </div>
 
                   {/* Content */}

@@ -167,7 +167,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   const toolColor = tool.color || "#ffffff";
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-black text-white">
         {/* Premium Header */}
         <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16 z-50 pointer-events-none">
           <Link href="/" className="pointer-events-auto">
@@ -266,7 +266,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.4 }}
-              className="bg-[#0f0f0f] border border-white/5 rounded-[40px] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl"
+              className="bg-black border border-white/5 rounded-[40px] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl"
             >
               <div 
                 className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-10 blur-[100px] pointer-events-none"

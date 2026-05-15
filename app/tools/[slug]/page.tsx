@@ -105,7 +105,7 @@ export default async function ToolPage({
 // ─── PREMIUM NOIR LOADING STATE ────────────────────────────────
 function ToolLoadingState({ toolName }: { toolName?: string }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-6">
+    <div className="min-h-screen bg-black flex items-center justify-center px-6">
       <div className="text-center space-y-6 max-w-sm">
         {/* Animated diagnostic indicator */}
         <div className="relative w-16 h-16 mx-auto">

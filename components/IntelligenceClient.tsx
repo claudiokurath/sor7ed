@@ -264,7 +264,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
 
             {/* Separate Dynamic CTA Section */}
             <motion.div
-                className="my-16 bg-[#0f0f0f] border border-white/5 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 md:p-14 text-center relative overflow-hidden"
+                className="my-16 bg-black border border-white/5 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 md:p-14 text-center relative overflow-hidden"
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}

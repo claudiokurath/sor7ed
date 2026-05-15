@@ -16,7 +16,7 @@ export default function ArticleCover({ keyword, branch, color, imageUrl }: Artic
 
   if (imageUrl && !imgError) {
     return (
-      <div className="relative h-48 sm:h-72 w-full overflow-hidden rounded-t-2xl bg-[#0a0a0a]">
+      <div className="relative h-48 sm:h-72 w-full overflow-hidden rounded-t-2xl bg-black">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl}

@@ -20,7 +20,7 @@ export default async function Home() {
     }).filter(Boolean);
 
     return (
-        <div className="bg-[#0a0a0a]">
+        <div className="bg-black">
             <HomeClient tools={tools || []} user={user} articles={articles || []} branches={branches} />
         </div>
     );

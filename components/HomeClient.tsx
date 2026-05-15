@@ -66,7 +66,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] overflow-y-scroll overflow-x-hidden scroll-smooth sm:snap-y sm:snap-mandatory">
+    <main className="min-h-screen bg-black overflow-y-scroll overflow-x-hidden scroll-smooth sm:snap-y sm:snap-mandatory">
       
       {/* HERO SECTION */}
       <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start">
@@ -276,7 +276,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             >
               <Link 
                 href={`/${branch.slug}`}
-                className="relative flex flex-col justify-between h-[460px] w-[75vw] sm:w-[260px] p-8 rounded-xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
+                className="relative flex flex-col justify-between h-[460px] w-[75vw] sm:w-[260px] p-8 rounded-xl bg-black border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
               >
                 <div 
                   className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
@@ -311,7 +311,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </div>
 
       {/* TOOLS GALLERY SECTION */}
-      <div className="sm:snap-start bg-[#0d0d0d] py-20">
+      <div className="sm:snap-start bg-black py-20">
         <ToolStrip 
           tools={tools} 
           title="The Lab"

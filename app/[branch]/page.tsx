@@ -74,7 +74,7 @@ export default async function BranchPage({
   const hasContent = (protocols && protocols.length > 0) || (tools && tools.length > 0);
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white pt-20 font-roboto font-thin">
+    <main className="min-h-screen bg-black text-white pt-20 font-roboto font-thin">
       {/* ─── HERO WITH MIDJOURNEY TEXTURE ─── */}
       <TexturedBackground 
         texture="architecture" 
