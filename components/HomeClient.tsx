@@ -138,7 +138,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
                 </motion.span>
               </AnimatePresence>
             </div>
-            <span className="text-white block mt-2">We build systems that work.</span>
+            <span className="text-white block mt-4 text-xl sm:text-2xl md:text-3xl opacity-60">We build systems that work.</span>
           </h1>
 
           <motion.p
@@ -193,7 +193,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </section>
 
       {/* BRANCHES SECTION */}
-      <section id="branches" className="relative py-16 border-t border-white/5 overflow-hidden">
+      <section id="branches" className="relative py-16 border-t border-white/5 overflow-hidden sm:snap-start">
         <div className="px-4 sm:px-6 md:px-16 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="max-w-xl text-left">
@@ -274,16 +274,20 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </section>
 
       {/* INTELLIGENCE STRIP */}
-      <IntelligenceStrip articles={articles} />
+      <div className="sm:snap-start">
+        <IntelligenceStrip articles={articles} />
+      </div>
 
       {/* TOOLS GALLERY SECTION */}
-      <ToolStrip 
-        tools={tools} 
-        title="Take the 2-minute triage — we'll find your highest-friction branch."
-        subtitle="Answer a few questions to get the exact assessments and protocols for your situation. No account needed."
-      />
+      <div className="sm:snap-start">
+        <ToolStrip 
+          tools={tools} 
+          title="Take the 2-minute triage"
+          subtitle="We'll find your highest-friction branch."
+        />
+      </div>
 
-      <div id="about" className="border-t border-white/5">
+      <div id="about" className="border-t border-white/5 sm:snap-start">
         <FounderHero />
       </div>
     </main>

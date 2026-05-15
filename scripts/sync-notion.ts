@@ -93,7 +93,7 @@ async function syncProtocols() {
       level: getSelect(props.Level) || 'primer',
       summary: getText(props.Summary),
       featured: getCheckbox(props.Featured),
-      cover_image: getCover(page) || getUrl(props['Cover Image 1']) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
+      cover_image: getCover(page) || getFiles(props['Cover Image']) || getFiles(props['Cover Image 1']) || getUrl(props['Cover Image']) || getUrl(props['Cover Image 1']) || getText(props['Cover Image URL']),
       related_assessments: getText(props['Related Assessments']) ? JSON.parse(getText(props['Related Assessments'])) : []
     }
 
@@ -134,7 +134,7 @@ async function syncTools() {
       questions: rawQuestions ? JSON.parse(rawQuestions) : [],
       color: getText(props.Color) || '#ffffff',
       meta_description: getText(props['Meta Description']),
-      cover_image: getCover(page) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
+      cover_image: getCover(page) || getFiles(props['Cover Image']) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']),
       status: getStatus(props.Status) || 'Live'
     }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { getBranchColor } from '@/lib/branch-config';
@@ -18,6 +18,32 @@ type Tool = {
   cover_image: string;
   featured: boolean;
 };
+
+function ToolImage({ src, color, branch }: { src: string, color: string, branch: string }) {
+  const [error, setError] = useState(false);
+  
+  if (src && !error) {
+    return (
+      <img
+        src={src}
+        alt=""
+        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        onError={() => setError(true)}
+      />
+    );
+  }
+  
+  return (
+    <div
+      className="w-full h-full flex items-center justify-center"
+      style={{ background: `linear-gradient(135deg, ${color}20 0%, #0a0a0a 100%)` }}
+    >
+      <span className="text-5xl font-black opacity-10 tracking-tight" style={{ color }}>
+        {branch?.charAt(0)}
+      </span>
+    </div>
+  );
+}
 
 export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }: { tools: Tool[], title?: string, subtitle?: string }) {
   const toolsRef = useRef<HTMLDivElement>(null);
@@ -46,8 +72,8 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
                 </span>
               )}
             </h2>
-            <p className="text-white/40 text-[13px] md:text-sm font-roboto font-thin max-w-md leading-relaxed">
-              Answer a few questions to get the exact assessments and protocols for your situation. No account needed.
+            <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed uppercase">
+              ANSWER A FEW QUESTIONS TO GET THE EXACT ASSESSMENTS AND PROTOCOLS FOR YOUR SITUATION. NO ACCOUNT NEEDED.
             </p>
           </div>
           
@@ -100,23 +126,8 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
                 className="group flex flex-col w-[75vw] sm:w-[260px] h-[460px] bg-[#0f0f0f] border border-white/5 rounded-xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
               >
                 {/* Cover image */}
-                <div className="w-full h-40 shrink-0 overflow-hidden">
-                  {tool.cover_image ? (
-                    <img
-                      src={tool.cover_image}
-                      alt=""
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                  ) : (
-                    <div
-                      className="w-full h-full flex items-center justify-center"
-                      style={{ background: `linear-gradient(135deg, ${color}20 0%, #0a0a0a 100%)` }}
-                    >
-                      <span className="text-5xl font-black opacity-10 tracking-tight" style={{ color }}>
-                        {tool.branch?.charAt(0)}
-                      </span>
-                    </div>
-                  )}
+                <div className="w-full h-40 shrink-0 overflow-hidden bg-[#0a0a0a]">
+                  <ToolImage src={tool.cover_image} color={color} branch={tool.branch} />
                 </div>
 
                 {/* Content */}

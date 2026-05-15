@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { getBranchColor } from '@/lib/branch-config';
@@ -18,6 +18,32 @@ type IntelligenceBriefing = {
   level: string;
 };
 
+function ArticleImage({ src, color, branch }: { src: string, color: string, branch: string }) {
+  const [error, setError] = useState(false);
+  
+  if (src && !error) {
+    return (
+      <img
+        src={src}
+        alt=""
+        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        onError={() => setError(true)}
+      />
+    );
+  }
+  
+  return (
+    <div
+      className="w-full h-full flex items-center justify-center"
+      style={{ background: `linear-gradient(135deg, ${color}20 0%, #0a0a0a 100%)` }}
+    >
+      <span className="text-5xl font-black opacity-10 tracking-tight" style={{ color }}>
+        {branch?.charAt(0)}
+      </span>
+    </div>
+  );
+}
+
 export default function IntelligenceStrip({ articles }: { articles: IntelligenceBriefing[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -33,8 +59,8 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
           <div className="max-w-xl text-left">
             <h2 className="text-3xl md:text-5xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
-              <span className="text-white block">Field Intelligence.</span>
-              <span className="text-[#ffd107] block mt-1">Context and theory for the neurodivergent.</span>
+              <span className="text-white block">INTELLIGENCE YOUR BRAIN HAS BEEN WAITING FOR</span>
+              <span className="text-[#ffd107] block mt-1">DELIVERED THROUGH WHATSAPP</span>
             </h2>
             <p className="text-white/40 text-[13px] md:text-sm font-roboto font-thin max-w-md leading-relaxed">
               Deep-dive briefings on navigating a world built for typical brains. Practical frameworks to help you understand your own operating system.
@@ -90,23 +116,8 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
                 className="group flex flex-col w-[75vw] sm:w-[260px] h-[460px] bg-[#0f0f0f] border border-white/5 rounded-xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
               >
                 {/* Cover image */}
-                <div className="w-full h-40 shrink-0 overflow-hidden">
-                  {article.cover_image ? (
-                    <img
-                      src={article.cover_image}
-                      alt=""
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                  ) : (
-                    <div
-                      className="w-full h-full flex items-center justify-center"
-                      style={{ background: `linear-gradient(135deg, ${color}20 0%, #0a0a0a 100%)` }}
-                    >
-                      <span className="text-5xl font-black opacity-10 tracking-tight" style={{ color }}>
-                        {article.branch?.charAt(0)}
-                      </span>
-                    </div>
-                  )}
+                <div className="w-full h-40 shrink-0 overflow-hidden bg-[#0a0a0a]">
+                  <ArticleImage src={article.cover_image} color={color} branch={article.branch} />
                 </div>
 
                 {/* Content */}
