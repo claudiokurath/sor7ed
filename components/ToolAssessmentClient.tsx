@@ -50,6 +50,13 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null);
 
   useEffect(() => {
+    if (whatsappContext && tool.questions.length === 0) {
+      handleAssessmentComplete();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
@@ -222,7 +229,10 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
               </div>
 
               <motion.button
-                onClick={() => setCurrentStep(0)}
+                onClick={() => {
+                  setCurrentStep(0);
+                  if (tool.questions.length === 0) handleAssessmentComplete();
+                }}
                 className="w-full sm:w-auto bg-white text-black font-black px-12 py-5 rounded-full transition-all duration-300"
                 style={{ boxShadow: `0 0 50px ${toolColor}40` }}
                 whileHover={{ scale: 1.05, y: -2 }}
