@@ -4,21 +4,23 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { branches } from '@/lib/constants';
 
+const GOLD = '#C9A84C';
+
 const ROTATING_WORDS = [
-  { text: 'Overwhelmed', color: '#E94560' },
-  { text: 'Exhausted', color: '#FF6B6B' },
-  { text: 'Wired differently', color: '#4ECDC4' },
-  { text: 'Scattered', color: '#A855F7' },
-  { text: 'Behind', color: '#F4A261' },
-  { text: 'Stuck', color: '#E9C46A' },
+  'Overwhelmed',
+  'Exhausted',
+  'Wired differently',
+  'Scattered',
+  'Behind',
+  'Stuck',
 ];
 
-const STATS = {
-  templateDownloads: 12847,
-  toolCompletions: 3892,
-  averageRating: 4.8,
-  branches: 7
-};
+const STATS = [
+  { value: '12,847', label: 'Templates sent' },
+  { value: '7', label: 'Life branches' },
+  { value: '4.8', label: 'Average rating' },
+  { value: '3,892', label: 'Tools completed' },
+];
 
 const TOOLS = [
   {
@@ -68,7 +70,6 @@ const TEMPLATES = [
   }
 ];
 
-
 const FAQS = [
   {
     q: "What's the difference between templates and tools?",
@@ -95,6 +96,8 @@ const FAQS = [
 const WHATSAPP_NUMBER = "+44 7591 922247";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=SOR7ED`;
 
+const GRAIN_SVG = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+
 function RotatingHero() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -105,69 +108,61 @@ function RotatingHero() {
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
         setIsAnimating(false);
-      }, 300);
-    }, 3000);
+      }, 400);
+    }, 3200);
     return () => clearInterval(interval);
   }, []);
 
-  const current = ROTATING_WORDS[currentIndex];
-
   return (
-    <section className="min-h-screen flex items-center relative overflow-hidden pt-20">
+    <section className="min-h-screen flex items-end relative overflow-hidden pb-24 pt-36">
+      {/* Grain */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-20 blur-3xl transition-colors duration-1000"
-        style={{ backgroundColor: current.color }}
+        className="absolute inset-0 opacity-[0.04] pointer-events-none z-10"
+        style={{ backgroundImage: GRAIN_SVG, backgroundRepeat: 'repeat', backgroundSize: '128px' }}
       />
 
-      <div className="max-w-6xl mx-auto px-4 w-full relative z-10">
-        <span className="text-xs uppercase tracking-[0.3em] text-white/40 mb-8 block">
-          Practical protocols via WhatsApp
-        </span>
+      <div className="max-w-6xl mx-auto px-6 w-full relative z-20">
+        <p className="font-mono text-[11px] tracking-[0.4em] text-white/20 uppercase mb-16">
+          Practical protocols — WhatsApp delivery
+        </p>
 
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8">
-          <span className="block">If you&apos;re feeling</span>
+        <h1 className="font-black leading-[0.9] tracking-tight mb-12">
+          <span className="block text-xl md:text-2xl font-light tracking-[0.2em] text-white/25 uppercase mb-6">
+            If you&apos;re feeling
+          </span>
           <span
-            className="block transition-all duration-500 ease-out"
+            className="block text-7xl md:text-[11vw] transition-all duration-400 ease-out"
             style={{
-              color: current.color,
+              color: GOLD,
               opacity: isAnimating ? 0 : 1,
               transform: isAnimating ? 'translateY(20px)' : 'translateY(0)',
-              filter: isAnimating ? 'blur(4px)' : 'blur(0)',
+              filter: isAnimating ? 'blur(8px)' : 'blur(0)',
             }}
           >
-            {current.text}
+            {ROTATING_WORDS[currentIndex]}
+          </span>
+          <span className="block text-7xl md:text-[11vw] text-white">
+            we&apos;ve got you.
           </span>
         </h1>
 
-        <p className="text-lg text-white/50 max-w-md mb-10 leading-relaxed">
-          SOR7ED delivers practical protocols and tools for neurodivergent adults via WhatsApp — organised into 7 branches of life.
-        </p>
-
-        <div className="flex flex-wrap gap-4 mb-12">
+        <div className="flex flex-wrap items-center gap-6 mt-20">
           <Link
             href="/explore"
-            className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white px-8 py-4 rounded-full font-semibold transition inline-flex items-center gap-2"
+            className="inline-flex items-center gap-3 border border-white/70 hover:bg-white hover:text-black text-white px-10 py-4 font-black text-xs tracking-widest uppercase transition-all duration-300"
           >
-            Explore Your Branches
+            Explore 7 Branches
           </Link>
-          <Link
-            href="/signup"
-            className="border border-white/20 hover:bg-white/5 text-white px-8 py-4 rounded-full font-semibold transition"
+          <a
+            href={WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 text-white/35 hover:text-white text-xs tracking-widest uppercase font-bold transition-colors"
           >
-            Sign up for free protocols
-          </Link>
-        </div>
-
-        <p className="text-sm text-white/30">
-          Text <span className="text-white/50 font-mono">SOR7ED</span> to{' '}
-          <a href={WHATSAPP_LINK} className="text-white/50 hover:text-white underline">
-            {WHATSAPP_NUMBER}
+            <span style={{ color: GOLD }}>↗</span>
+            Text SOR7ED on WhatsApp
           </a>
-        </p>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent" />
+        </div>
       </div>
     </section>
   );
@@ -177,58 +172,54 @@ function BranchCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   return (
-    <section className="py-24">
-      <div className="max-w-5xl mx-auto px-4 mb-10 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-3">
-          Every part of your life, simplified
-        </h2>
-        <p className="text-white/40">7 branches. 50+ protocols. One WhatsApp.</p>
+    <section className="py-24 border-t border-white/[0.06]">
+      <div className="max-w-6xl mx-auto px-6 mb-12">
+        <div className="flex items-baseline justify-between">
+          <div>
+            <p className="font-mono text-[11px] tracking-[0.4em] text-white/20 uppercase mb-3">Seven branches</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">Every part of your life.</h2>
+          </div>
+          <Link
+            href="/explore"
+            className="hidden md:block font-mono text-[10px] tracking-widest uppercase text-white/25 hover:text-white transition-colors border-b border-white/15 pb-1"
+          >
+            View all →
+          </Link>
+        </div>
       </div>
 
       <div
         ref={scrollRef}
-        className="flex gap-5 overflow-x-auto px-6 pb-6 scrollbar-hide"
+        className="flex gap-px overflow-x-auto bg-white/[0.04]"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {branches.map((branch, i) => (
           <Link
             key={branch.slug}
             href={`/${branch.slug}`}
-            className="group relative flex-shrink-0 w-64 rounded-3xl border border-white/5 hover:border-white/15 bg-[#0f0f0f] p-8 transition-all duration-300 overflow-hidden"
+            className="group flex-shrink-0 w-72 bg-black p-10 hover:bg-white/[0.02] transition-colors duration-300"
           >
-            <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"
-              style={{ background: `radial-gradient(ellipse at 0% 0%, ${branch.color}18, transparent 70%)` }}
-            />
-            <div className="relative z-10">
-              <div className="flex items-start justify-between mb-6">
-                <span className="text-4xl">{branch.icon}</span>
-                <span className="text-white/15 font-mono text-sm">0{i + 1}</span>
-              </div>
-              <h3
-                className="text-xl font-black mb-2 tracking-tight"
-                style={{ color: branch.color }}
-              >
-                {branch.name}
-              </h3>
-              <p className="text-white/35 text-sm leading-relaxed">{branch.description}</p>
-              <div className="mt-6">
-                <span className="text-xs text-white/20 group-hover:text-white/40 transition-colors font-bold uppercase tracking-widest">
-                  Explore →
-                </span>
-              </div>
+            <div className="flex items-start justify-between mb-8">
+              <span className="text-3xl">{branch.icon}</span>
+              <span className="font-mono text-[10px] tracking-widest text-white/15">0{i + 1}</span>
+            </div>
+            <h3 className="text-xl font-black tracking-tight mb-3 text-white group-hover:text-white/70 transition-colors">
+              {branch.name}
+            </h3>
+            <p className="text-white/25 text-sm leading-relaxed">{branch.description}</p>
+            <div className="mt-8 flex items-center gap-3">
+              <div className="w-5 h-px transition-all duration-300 group-hover:w-8" style={{ backgroundColor: branch.color }} />
+              <span className="font-mono text-[10px] tracking-widest text-white/20 uppercase group-hover:text-white/40 transition-colors">
+                Explore
+              </span>
             </div>
           </Link>
         ))}
-        {/* See all card */}
         <Link
           href="/explore"
-          className="group flex-shrink-0 w-48 rounded-3xl border border-dashed border-white/10 hover:border-white/25 bg-transparent p-8 flex flex-col items-center justify-center transition-all duration-300"
+          className="group flex-shrink-0 w-48 bg-black flex flex-col items-center justify-center p-10 hover:bg-white/[0.02] transition-colors"
         >
-          <span className="text-white/30 group-hover:text-white/60 text-4xl mb-4 transition-colors">→</span>
-          <span className="text-white/30 group-hover:text-white/60 text-sm font-bold uppercase tracking-widest transition-colors">
-            See all
-          </span>
+          <span className="font-mono text-[10px] tracking-widest text-white/20 uppercase group-hover:text-white/50 transition-colors">See all →</span>
         </Link>
       </div>
     </section>
@@ -237,70 +228,54 @@ function BranchCarousel() {
 
 export default function HomeClient() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-black text-white">
 
       <RotatingHero />
 
-      {/* STATS BAR */}
-      <section className="py-16 border-y border-white/5">
-        <div className="max-w-5xl mx-auto px-4 flex flex-wrap justify-center gap-12 md:gap-20 text-center">
-          <div>
-            <div className="text-3xl md:text-4xl font-bold" style={{ color: ROTATING_WORDS[0].color }}>
-              {STATS.templateDownloads.toLocaleString()}
-            </div>
-            <div className="text-sm text-white/40 mt-1">Templates sent</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-bold" style={{ color: ROTATING_WORDS[2].color }}>
-              {STATS.branches}
-            </div>
-            <div className="text-sm text-white/40 mt-1">Life branches</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-bold" style={{ color: ROTATING_WORDS[3].color }}>
-              {STATS.averageRating}/5
-            </div>
-            <div className="text-sm text-white/40 mt-1">Average rating</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-bold" style={{ color: ROTATING_WORDS[1].color }}>
-              {STATS.toolCompletions.toLocaleString()}
-            </div>
-            <div className="text-sm text-white/40 mt-1">Tools completed</div>
+      {/* STATS */}
+      <section className="border-t border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/[0.06]">
+            {STATS.map((stat) => (
+              <div key={stat.label} className="px-8 first:pl-0 last:pr-0 py-10">
+                <div className="text-4xl font-black tracking-tight" style={{ color: GOLD }}>
+                  {stat.value}
+                </div>
+                <div className="font-mono text-[10px] tracking-widest text-white/20 uppercase mt-2">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 7 BRANCHES CAROUSEL */}
+      {/* BRANCHES CAROUSEL */}
       <BranchCarousel />
 
       {/* FREE TEMPLATES */}
-      <section className="py-24 px-4 bg-white/[0.02]">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-white/5 text-white/50 text-xs uppercase tracking-widest px-4 py-2 rounded-full mb-4">
-              Free Forever
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Templates</h2>
-            <p className="text-white/40">Instant. No account. Straight to your WhatsApp.</p>
+      <section className="py-24 border-t border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="mb-14">
+            <p className="font-mono text-[11px] tracking-[0.4em] text-white/20 uppercase mb-3">Free forever</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">Templates.</h2>
+            <p className="text-white/30 mt-4 text-sm">Instant. No account. Straight to your WhatsApp.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-px bg-white/[0.04]">
             {TEMPLATES.map((template) => (
               <a
                 key={template.id}
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group border border-white/10 rounded-2xl p-8 hover:border-white/20 hover:bg-white/[0.02] transition"
+                className="group bg-black p-10 hover:bg-white/[0.02] transition-colors"
               >
-                <div className="flex justify-between items-start mb-6">
-                  <span className="text-xs uppercase tracking-wider text-white/30">Template</span>
-                  <span className="text-xs text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full">Free</span>
+                <div className="flex justify-between items-start mb-10">
+                  <span className="font-mono text-[10px] tracking-widest text-white/20 uppercase">Template</span>
+                  <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: GOLD }}>Free</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-3 group-hover:text-white transition">{template.name}</h3>
-                <p className="text-white/50 text-sm mb-6 leading-relaxed">{template.desc}</p>
-                <span className="text-xs text-white/20">{template.format}</span>
+                <h3 className="text-xl font-black mb-4 group-hover:text-white/70 transition-colors">{template.name}</h3>
+                <p className="text-white/30 text-sm mb-10 leading-relaxed">{template.desc}</p>
+                <span className="font-mono text-[10px] tracking-widest text-white/15 uppercase">{template.format}</span>
               </a>
             ))}
           </div>
@@ -308,89 +283,54 @@ export default function HomeClient() {
       </section>
 
       {/* PREMIUM TOOLS */}
-      <section id="tools" className="py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-white/5 text-white/50 text-xs uppercase tracking-widest px-4 py-2 rounded-full mb-4">
-              Premium
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Tools</h2>
-            <p className="text-white/40">Interactive assessments. Personalized protocols. Account required.</p>
+      <section id="tools" className="py-24 border-t border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="mb-14">
+            <p className="font-mono text-[11px] tracking-[0.4em] uppercase mb-3" style={{ color: GOLD }}>Premium</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">Tools.</h2>
+            <p className="text-white/30 mt-4 text-sm">Interactive assessments. Personalized protocols. Account required.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {TOOLS.map((tool, i) => (
-              <div
-                key={tool.id}
-                className="border border-white/10 rounded-2xl p-8 hover:border-white/20 hover:bg-white/[0.02] transition relative overflow-hidden"
-              >
-                <div className="absolute top-6 right-6 text-lg font-bold text-white/80">
-                  {tool.price}
+          <div className="grid md:grid-cols-3 gap-px bg-white/[0.04]">
+            {TOOLS.map((tool) => (
+              <div key={tool.id} className="bg-black p-10 hover:bg-white/[0.02] transition-colors group">
+                <div className="flex justify-between items-start mb-10">
+                  <span className="font-mono text-[10px] tracking-widest text-white/20 uppercase">Tool · {tool.time}</span>
+                  <span className="font-black text-xl" style={{ color: GOLD }}>{tool.price}</span>
                 </div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-xs uppercase tracking-wider text-white/30">Tool</span>
-                  <span className="text-xs text-white/30">⏱ {tool.time}</span>
-                </div>
-                <h3 className="text-xl font-semibold mb-3">{tool.name}</h3>
-                <p className="text-white/50 text-sm mb-8 leading-relaxed">{tool.desc}</p>
+                <h3 className="text-xl font-black mb-4">{tool.name}</h3>
+                <p className="text-white/30 text-sm mb-10 leading-relaxed">{tool.desc}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-white/20">{tool.completions.toLocaleString()} completed</span>
+                  <span className="font-mono text-[10px] tracking-widest text-white/15 uppercase">{tool.completions.toLocaleString()} completed</span>
                   <Link
                     href="/signup?redirect=/tools"
-                    className="text-sm font-medium hover:text-white transition"
-                    style={{ color: ROTATING_WORDS[i % ROTATING_WORDS.length].color }}
+                    className="font-mono text-[10px] tracking-widest uppercase text-white/30 hover:text-white transition-colors border-b border-white/10 pb-0.5"
                   >
-                    Create account →
+                    Get access →
                   </Link>
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="mt-16 p-8 border border-white/10 rounded-2xl bg-white/[0.02]">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Want all tools?</h3>
-                <p className="text-white/40 text-sm">Monthly subscription coming soon. Get early access.</p>
-              </div>
-              <Link
-                href="/waitlist"
-                className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-white/90 transition whitespace-nowrap"
-              >
-                Join Waitlist
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-24 px-4 bg-white/[0.02]">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16">How it works</h2>
+      <section className="py-24 border-t border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="font-mono text-[11px] tracking-[0.4em] text-white/20 uppercase mb-3">Process</p>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-16">How it works.</h2>
 
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-3 gap-px bg-white/[0.04]">
             {[
-              {
-                step: "01",
-                title: "Get free templates",
-                desc: `Text SOR7ED to ${WHATSAPP_NUMBER}. Instant templates, no account, no catch.`
-              },
-              {
-                step: "02",
-                title: "Hit a wall?",
-                desc: "When templates aren't enough, our interactive tools diagnose your specific friction points."
-              },
-              {
-                step: "03",
-                title: "Create account",
-                desc: "One account unlocks all tools, saves your results, and builds your personal protocol library."
-              }
+              { step: "01", title: "Get free templates", desc: `Text SOR7ED to ${WHATSAPP_NUMBER}. Instant delivery, no account, no catch.` },
+              { step: "02", title: "Hit a wall?", desc: "When templates aren't enough, our tools diagnose your specific friction points." },
+              { step: "03", title: "Create account", desc: "One account unlocks all tools, saves your results, builds your protocol library." }
             ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="text-5xl font-bold text-white/10 mb-6">{item.step}</div>
-                <h3 className="text-lg font-semibold mb-3">{item.title}</h3>
-                <p className="text-white/40 text-sm leading-relaxed">{item.desc}</p>
+              <div key={item.step} className="bg-black p-10">
+                <div className="font-black text-7xl tracking-tight mb-8 opacity-20" style={{ color: GOLD }}>{item.step}</div>
+                <h3 className="text-xl font-black mb-4">{item.title}</h3>
+                <p className="text-white/30 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -398,103 +338,62 @@ export default function HomeClient() {
       </section>
 
       {/* TESTIMONIAL */}
-      <section className="py-24 px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <blockquote className="text-2xl md:text-3xl font-light text-white/90 mb-8 leading-relaxed">
+      <section className="py-32 border-t border-white/[0.06]">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="w-8 h-px mb-12" style={{ backgroundColor: GOLD }} />
+          <blockquote className="text-3xl md:text-4xl font-black tracking-tight leading-[1.1] mb-12 text-white/85">
             &ldquo;I started with the free templates. Two weeks later I bought the Tax Calculator and finally understood where my money was going.&rdquo;
           </blockquote>
-          <footer className="text-white/40">
-            <span className="text-white font-medium">James R.</span>
-            <span className="mx-2">·</span>
-            <span>ADHD, software developer</span>
+          <footer className="font-mono text-[11px] tracking-widest text-white/25 uppercase">
+            James R. — ADHD, software developer
           </footer>
         </div>
       </section>
 
-      {/* PRICING */}
-      <section className="py-24 px-4 bg-white/[0.02]">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-12">Simple pricing</h2>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="border border-emerald-500/30 rounded-2xl p-8 bg-emerald-500/5">
-              <div className="text-sm text-emerald-400 uppercase tracking-wider mb-3">Free Forever</div>
-              <h3 className="text-2xl font-bold mb-6">Templates</h3>
-              <ul className="text-left text-white/60 text-sm space-y-4 mb-8">
-                <li className="flex items-center gap-3"><span className="text-emerald-400">✓</span> Instant WhatsApp delivery</li>
-                <li className="flex items-center gap-3"><span className="text-emerald-400">✓</span> No account required</li>
-                <li className="flex items-center gap-3"><span className="text-emerald-400">✓</span> New templates weekly</li>
-                <li className="flex items-center gap-3"><span className="text-emerald-400">✓</span> Community access</li>
-              </ul>
-              <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full bg-emerald-500 text-black py-4 rounded-full font-semibold hover:bg-emerald-400 transition text-center"
-              >
-                Get Templates
-              </a>
-            </div>
-
-            <div className="border border-white/10 rounded-2xl p-8">
-              <div className="text-sm text-white/50 uppercase tracking-wider mb-3">Premium</div>
-              <h3 className="text-2xl font-bold mb-6">Tools</h3>
-              <ul className="text-left text-white/60 text-sm space-y-4 mb-8">
-                <li className="flex items-center gap-3"><span className="text-white/30">✓</span> Interactive assessments</li>
-                <li className="flex items-center gap-3"><span className="text-white/30">✓</span> Personalized protocols</li>
-                <li className="flex items-center gap-3"><span className="text-white/30">✓</span> Save results & track progress</li>
-                <li className="flex items-center gap-3"><span className="text-white/30">✓</span> Priority WhatsApp support</li>
-              </ul>
-              <div className="text-center text-white/40 text-sm mb-4">From £7 per tool</div>
-              <Link
-                href="/signup"
-                className="block w-full border border-white/20 text-white py-4 rounded-full font-semibold hover:bg-white/5 transition text-center"
-              >
-                Create Account
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
-      <section className="py-24 px-4">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16">Frequent questions</h2>
-
-          <div className="space-y-8">
+      <section className="py-24 border-t border-white/[0.06]">
+        <div className="max-w-4xl mx-auto px-6">
+          <p className="font-mono text-[11px] tracking-[0.4em] text-white/20 uppercase mb-3">Questions</p>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-16">FAQ.</h2>
+          <div className="divide-y divide-white/[0.06]">
             {FAQS.map((faq) => (
-              <div key={faq.q} className="border-b border-white/10 pb-8">
-                <h3 className="font-semibold mb-3 text-lg">{faq.q}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{faq.a}</p>
+              <div key={faq.q} className="py-8">
+                <h3 className="font-black text-lg mb-4 tracking-tight">{faq.q}</h3>
+                <p className="text-white/35 text-sm leading-relaxed max-w-2xl">{faq.a}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* WHATSAPP CTA */}
-      <section className="py-24 px-4 bg-white/[0.02] border-y border-white/5">
-        <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Get sorted today</h2>
-          <p className="text-white/40 mb-10">
-            Free templates on WhatsApp. No credit card. No waiting.
-          </p>
-
-          <a
-            href={WHATSAPP_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-[#128C7E] transition"
-          >
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-            Message {WHATSAPP_NUMBER}
-          </a>
-
-          <p className="text-xs text-white/20 mt-6">
-            Or text <span className="text-white/40 font-mono">SOR7ED</span> to the number above
+      {/* FINAL CTA */}
+      <section className="py-40 border-t border-white/[0.06]">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="font-mono text-[11px] tracking-[0.4em] text-white/20 uppercase mb-10">Get started now</p>
+          <h2 className="text-7xl md:text-9xl font-black tracking-tight leading-[0.88] mb-16">
+            Get<br /><span style={{ color: GOLD }}>sorted.</span>
+          </h2>
+          <div className="flex flex-wrap gap-5">
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-4 bg-white text-black px-12 py-5 font-black text-xs tracking-widest uppercase hover:bg-white/90 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              Open WhatsApp
+            </a>
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-4 border border-white/20 text-white px-12 py-5 font-black text-xs tracking-widest uppercase hover:border-white/50 transition-colors"
+            >
+              Create account
+            </Link>
+          </div>
+          <p className="font-mono text-[10px] tracking-widest text-white/15 uppercase mt-10">
+            Free templates. No credit card. No waiting.
           </p>
         </div>
       </section>
