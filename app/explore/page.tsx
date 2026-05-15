@@ -12,12 +12,14 @@ export const metadata: Metadata = {
         description: "Protocols for neurodivergent adults across 7 areas of life. Pick a branch, find what fits, get it delivered to WhatsApp.",
         url: `${siteUrl}/explore`,
         siteName: "SOR7ED",
+        images: [{ url: `${siteUrl}/Images/og-explore.jpg`, width: 1187, height: 631, alt: "SOR7ED — 7 Branches of Life" }],
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
         title: "Explore SOR7ED — 7 Branches of Life",
         description: "Protocols for neurodivergent adults across 7 areas of life.",
+        images: [`${siteUrl}/Images/og-explore.jpg`],
     },
 };
 
