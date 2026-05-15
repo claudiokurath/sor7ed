@@ -77,43 +77,22 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
           />
         </div>
 
-        <div className="absolute top-8 left-0 right-0 flex items-center px-4 sm:px-6 md:px-16 z-50">
-          {/* Logo Centered */}
-          <div className="absolute left-1/2 -translate-x-1/2">
+        <div className="flex flex-col items-center text-center max-w-5xl mx-auto">
+          {/* Logo in the middle of hero content */}
+          <div className="mb-16">
             <Link href="/">
               <Image 
                 src="/Images/Logo2026.png" 
                 alt="SOR7ED" 
-                width={216} 
-                height={84} 
-                className="h-20 w-auto opacity-90 hover:opacity-100 transition-opacity" 
+                width={280} 
+                height={108} 
+                className="h-32 w-auto opacity-100" 
               />
             </Link>
           </div>
 
-          <div className="flex-1" />
-
-          <div className="flex gap-4 sm:gap-8 items-center relative z-10">
-            {user ? (
-              <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-                Dashboard
-              </Link>
-            ) : (
-              <>
-                <Link href="/signup?mode=login" className="hidden sm:block text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-                  Sign In
-                </Link>
-                <Link href="/signup" className="px-5 py-2.5 bg-white text-black text-xs tracking-widest uppercase font-black rounded-full hover:scale-105 transition-all">
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="relative z-10 max-w-5xl">
           <motion.p
-            className="text-sm md:text-xs tracking-[0.35em] uppercase text-white/30 mb-6 font-medium"
+            className="text-sm md:text-xs tracking-[0.35em] uppercase text-white/30 mb-8 font-medium"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -121,46 +100,31 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             Practical protocols via WhatsApp
           </motion.p>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.0] tracking-tight mb-8">
-            <span className="text-white block mb-2">If you&apos;re feeling</span>
-            <div className="h-[1.1em] relative overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={taglineIndex}
-                  initial={{ y: 40, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -40, opacity: 0 }}
-                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                  className="block"
-                  style={{ color: taglines[taglineIndex].color }}
-                >
-                  {taglines[taglineIndex].word}
-                </motion.span>
-              </AnimatePresence>
-            </div>
-            <span className="text-white block mt-2">We build systems that work.</span>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.0] tracking-tight mb-10">
+            <span className="text-white block mb-2">The world wasn&apos;t built for your brain.</span>
+            <span className="text-[#ffd107] block">We build systems that are.</span>
           </h1>
 
           <motion.p
-            className="text-white/40 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed"
+            className="text-white/40 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed mx-auto mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
             style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}
           >
-            SOR7ED delivers practical protocols and tactical tools for neurodivergent adults via WhatsApp — organized into 7 branches of life.
+            ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
           </motion.p>
 
           {/* Full-width buttons on mobile */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 mt-10 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto justify-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
           >
             <a
               href="#branches"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white text-base transition-all duration-300 hover:scale-105"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-white text-base transition-all duration-300 hover:scale-105"
               style={{ background: '#2E5BFF' }}
             >
               Explore Your Branches
@@ -168,14 +132,14 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             {user ? (
               <Link
                 href="/intelligence"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
               >
                 Browse Intelligence →
               </Link>
             ) : (
               <Link
                 href="/signup"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
               >
                 Sign up for free protocols
               </Link>

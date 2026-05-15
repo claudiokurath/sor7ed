@@ -25,21 +25,18 @@ export function FounderHero() {
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight tracking-tight">
-            {SITE_COPY.hero.title}
+          <h1 className="text-4xl md:text-7xl font-black mb-6 leading-[1.0] tracking-tight">
+            <span className="text-white block">{SITE_COPY.hero.title}</span>
+            <span className="text-[#ffd107] block mt-1">SOR7ED is software for the brain.</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-white/70 mb-8 max-w-2xl leading-relaxed">
+          <p className="text-white/40 text-lg md:text-xl mb-10 max-w-2xl leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
             {SITE_COPY.hero.tagline}
           </p>
 
-          <p className="text-base text-white/50 mb-10 max-w-2xl leading-relaxed">
-            {SITE_COPY.hero.subtext}
-          </p>
-
           {/* Founder story callout */}
-          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 mb-10 max-w-3xl">
-            <p className="text-sm md:text-base text-white/60 leading-relaxed italic">
+          <div className="p-8 rounded-[32px] bg-white/[0.03] border border-white/10 mb-12 max-w-3xl">
+            <p className="text-white/60 text-base md:text-lg leading-relaxed italic" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
               "{SITE_COPY.hero.founderNote}"
             </p>
           </div>
