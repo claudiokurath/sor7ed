@@ -9,6 +9,7 @@ import type { User } from '@supabase/supabase-js';
 import { siteConfig } from '@/lib/constants';
 
 import ArticleCover from './ArticleCover';
+import AudioBriefing from './AudioBriefing';
 
 type Article = {
   slug: string;
@@ -25,6 +26,8 @@ type Article = {
   cta_headline: string;
   deep_dive: string;
   read_time: string;
+  audio_url?: string;
+  audio_duration_seconds?: number;
 };
 
 const supabase = createClient();
@@ -235,6 +238,19 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     </button>
                 </div>
             </div>
+
+            {/* Audio Deep Dive */}
+            {article.audio_url && (
+                <div className="mb-12">
+                    <AudioBriefing
+                        audioUrl={article.audio_url}
+                        title={article.title}
+                        duration={article.audio_duration_seconds}
+                        branchColor={article.color || '#3B82F6'}
+                        protocolSlug={article.slug}
+                    />
+                </div>
+            )}
 
             {/* Main Article Content */}
             <div className="space-y-6 text-white/80 text-lg leading-relaxed mb-16 border-t border-white/10 pt-12">

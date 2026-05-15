@@ -10,16 +10,35 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     
     const { data: article } = await supabase
         .from('protocols')
-        .select('title, problem, description, branch')
+        .select('title, problem, excerpt, description, branch, cover_image')
         .eq('slug', resolvedParams.slug)
         .eq('status', 'Published')
         .single();
         
     if (!article) return { title: 'Intelligence Not Found' };
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
+    const pageUrl = `${siteUrl}/intelligence/${resolvedParams.slug}`;
+    const description = article.problem || article.description || `Field Intelligence briefing on ${article.title}.`;
+    const image = article.cover_image || `${siteUrl}/og-default.jpg`;
+
     return {
-        title: `${article.title} | Field Intelligence`,
-        description: article.problem || article.description || `Field Intelligence briefing on ${article.title}.`,
+        title: `${article.title} | SOR7ED`,
+        description,
+        openGraph: {
+            title: article.title,
+            description,
+            url: pageUrl,
+            siteName: 'SOR7ED',
+            images: [{ url: image, width: 1500, height: 600, alt: article.title }],
+            type: 'article',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: article.title,
+            description,
+            images: [image],
+        },
     };
 }
 
