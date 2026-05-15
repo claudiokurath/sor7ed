@@ -1,3 +1,9 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import AmbientBackground from '@/components/AmbientBackground';
+import { getBranches } from "@/lib/getBranches";
+import { Metadata } from "next";
 import IntelligenceStrip from '@/components/IntelligenceStrip';
 import ToolStrip from '@/components/ToolStrip';
 import Image from 'next/image';
