@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
 
             // First message — send onboarding welcome sequence
             if (!user.whatsapp_onboarded) {
-                await handleOnboarding(senderPhone, normalizedPhone, user.first_name, supabase);
+                await handleOnboarding(senderPhone, normalizedPhone, user.first_name ?? 'there', supabase);
                 await supabase
                     .from('users')
                     .update({ whatsapp_onboarded: true, whatsapp_onboarded_at: new Date().toISOString() })
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "ok" });
             }
             if (keyword === 'status') {
-                await handleStatusCommand(senderPhone, user.id, user.first_name, supabase);
+                await handleStatusCommand(senderPhone, user.id, user.first_name ?? 'there', supabase);
                 return NextResponse.json({ status: "ok" });
             }
             if (keyword === 'dashboard') {
@@ -138,22 +138,22 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "ok" });
             }
             if (keyword === 'park') {
-                await handleParkCommand(senderPhone, user.first_name);
+                await handleParkCommand(senderPhone, user.first_name ?? 'there');
                 return NextResponse.json({ status: "ok" });
             }
             if (keyword === 'new') {
-                await handleNewCommand(senderPhone, user.first_name, supabase);
+                await handleNewCommand(senderPhone, user.first_name ?? 'there', supabase);
                 return NextResponse.json({ status: "ok" });
             }
             if (keyword === 'history') {
-                await handleHistoryCommand(senderPhone, user.id, user.first_name, supabase);
+                await handleHistoryCommand(senderPhone, user.id, user.first_name ?? 'there', supabase);
                 return NextResponse.json({ status: "ok" });
             }
 
             // Handle AUDIO [keyword] requests
             if (keyword.startsWith('audio ')) {
                 const baseKeyword = keyword.slice(6).trim();
-                await handleAudioRequest(senderPhone, normalizedPhone, baseKeyword, user.first_name, supabase);
+                await handleAudioRequest(senderPhone, normalizedPhone, baseKeyword, user.first_name ?? 'there', supabase);
                 return NextResponse.json({ status: "ok" });
             }
 
@@ -164,10 +164,10 @@ export async function POST(req: NextRequest) {
                 if (notionArticle.pdfUrl) {
                     await sendWhatsAppDocument(senderPhone, notionArticle.pdfUrl, notionArticle.title, notionArticle.excerpt || '');
                 } else if (notionArticle.gammaUrl) {
-                    const content = `Hi ${user.first_name}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}\n\n${notionArticle.gammaUrl}`;
+                    const content = `Hi ${user.first_name ?? 'there'}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}\n\n${notionArticle.gammaUrl}`;
                     await sendWhatsAppMessage(senderPhone, content);
                 } else {
-                    const content = `Hi ${user.first_name}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}`;
+                    const content = `Hi ${user.first_name ?? 'there'}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}`;
                     await sendWhatsAppMessage(senderPhone, content);
                 }
             } else {
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
                         await sendWhatsAppTemplate(senderPhone, keyword, token);
                     } else {
                         const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
-                        const content = `Hi ${user.first_name}, I've prepared your assessment for *${tool.name}*.\n\n${tool.tldr}\n\n*START ASSESSMENT:*\n${bridgeUrl}\n\n(This link expires in 30 minutes)`;
+                        const content = `Hi ${user.first_name ?? 'there'}, I've prepared your assessment for *${tool.name}*.\n\n${tool.tldr}\n\n*START ASSESSMENT:*\n${bridgeUrl}\n\n(This link expires in 30 minutes)`;
                         await sendWhatsAppMessage(senderPhone, content);
                     }
                 } else {
