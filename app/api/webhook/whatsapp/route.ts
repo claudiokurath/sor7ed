@@ -100,6 +100,16 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "unregistered" });
             }
 
+            // First message — send onboarding welcome sequence
+            if (!user.whatsapp_onboarded) {
+                await handleOnboarding(senderPhone, user.first_name, supabase);
+                await supabase
+                    .from('users')
+                    .update({ whatsapp_onboarded: true, whatsapp_onboarded_at: new Date().toISOString() })
+                    .eq('id', user.id);
+                return NextResponse.json({ status: "onboarded" });
+            }
+
             // Handle dashboard commands
             if (keyword === 'status') {
                 await handleStatusCommand(senderPhone, user.id, user.first_name, supabase);
@@ -173,6 +183,56 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+async function handleOnboarding(
+    to: string,
+    firstName: string,
+    supabase: ReturnType<typeof getSupabase>
+) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+
+    // Message 1: Welcome
+    await sendWhatsAppMessage(to,
+        `Hey ${firstName}. You just made it into SOR7ED. 🤍\n\n` +
+        `This thread is your intelligence file. Every protocol, every tool, every deep dive — ` +
+        `delivered here. No apps. No dashboards. Just this.\n\n` +
+        `Here's where to start:`
+    );
+
+    // Small pause so messages arrive in order
+    await new Promise(r => setTimeout(r, 800));
+
+    // Message 2: Fetch 2 featured protocols and send as rich preview links
+    const { data: featured } = await supabase
+        .from('protocols')
+        .select('title, slug, excerpt')
+        .eq('status', 'Published')
+        .eq('featured', true)
+        .order('created_at', { ascending: false })
+        .limit(2);
+
+    if (featured?.length) {
+        for (const protocol of featured) {
+            await sendWhatsAppMessage(to, `${siteUrl}/intelligence/${protocol.slug}`, true);
+            await new Promise(r => setTimeout(r, 600));
+        }
+    }
+
+    // Message 3: Topic menu
+    await sendWhatsAppMessage(to,
+        `*Browse by topic — just reply with a keyword:*\n\n` +
+        `💸 *SPEND* — money leaks & ADHD tax\n` +
+        `⏱ *MOMENTUM* — habit systems that survive a crash\n` +
+        `😴 *WELLBEING* — sleep, energy, revenge bedtime\n` +
+        `📵 *DETOX* — reclaim your attention\n\n` +
+        `━━━━━━━━\n\n` +
+        `*Other commands:*\n` +
+        `STATUS — your intelligence file\n` +
+        `NEW — latest protocol\n` +
+        `PARK — pause without guilt\n` +
+        `AUDIO [keyword] — listen instead of read`
+    );
 }
 
 async function handleStatusCommand(
