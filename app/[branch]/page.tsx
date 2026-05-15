@@ -68,13 +68,13 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
             <section className="relative pt-40 pb-20 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto z-10">
                 <div className="flex flex-col items-start">
                     <span className="text-5xl md:text-7xl mb-8">{branchInfo.icon}</span>
-                    <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight leading-[1.0] uppercase">
+                    <h1 className="text-4xl md:text-6xl font-anton tracking-wider mb-6 leading-[1.0] uppercase">
                       {ecosystemInfo?.label || branchInfo.name}
                     </h1>
-                    <p className="text-[#ffd107] text-2xl md:text-3xl font-bold mb-4 max-w-2xl leading-tight">
+                    <p className="text-[#ffd107] text-2xl md:text-3xl font-anton tracking-wider mb-4 max-w-2xl leading-tight uppercase">
                       {ecosystemInfo?.tagline}
                     </p>
-                    <p className="text-white/50 text-xl md:text-2xl max-w-2xl leading-relaxed mb-12" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
+                    <p className="text-white/50 text-xl md:text-2xl max-w-2xl leading-relaxed mb-12 font-roboto font-thin">
                         {ecosystemInfo?.description || branchInfo.description}
                     </p>
                     
