@@ -40,8 +40,8 @@ export const TexturedBackground: React.FC<TexturedBackgroundProps> = ({
       </div>
 
       {/* Noir Overlays */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#000000] via-transparent to-[#000000]" />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#000000] via-transparent to-[#000000]/30" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#0a0a0a] via-transparent to-[#0a0a0a]/30" />
 
       {/* Content */}
       <div className="relative z-20">

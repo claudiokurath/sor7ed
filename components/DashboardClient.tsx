@@ -100,7 +100,10 @@ export default function DashboardClient({
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/30">
                 <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
-                  {profile?.whatsapp_number || 'WhatsApp pending'}
+                  ID: {profile?.whatsapp_number || 'PENDING'}
+                </span>
+                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
+                  STATUS: ACTIVE
                 </span>
               </div>
             </div>
@@ -162,7 +165,7 @@ export default function DashboardClient({
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.05 }}
                         className={`aspect-square rounded-3xl p-6 flex flex-col justify-between border transition-all duration-500 ${
-                          branch.isAssessed ? 'bg-black border-white/10' : 'bg-transparent border-white/5 grayscale opacity-30'
+                          branch.isAssessed ? 'bg-[#0f0f0f] border-white/10' : 'bg-transparent border-white/5 grayscale opacity-30'
                         }`}
                       >
                         <span className="text-2xl">{branch.icon}</span>
@@ -196,7 +199,7 @@ export default function DashboardClient({
                       </div>
                     ) : (
                       history.slice(0, 3).map(item => (
-                        <div key={item.id} className="bg-black border border-white/5 rounded-2xl p-6 flex items-center justify-between group hover:border-white/10 transition-all">
+                        <div key={item.id} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-6 flex items-center justify-between group hover:border-white/10 transition-all">
                           <div className="flex items-center gap-6">
                             <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-sm font-black"
                               style={{ color: getBranchColor(favorites.find(f => f.item_slug === item.tool_slug)?.item_branch || '') }}>
@@ -228,7 +231,7 @@ export default function DashboardClient({
                       { label: 'Assessments', value: history.length },
                       { label: 'Coverage', value: `${Math.round((branchCoverage.filter(b => b.isAssessed).length / 7) * 100)}%` },
                     ].map(stat => (
-                      <div key={stat.label} className="bg-black border border-white/5 rounded-2xl p-6 flex justify-between items-center">
+                      <div key={stat.label} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-6 flex justify-between items-center">
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{stat.label}</span>
                         <span className="text-xl font-black">{stat.value}</span>
                       </div>
@@ -238,7 +241,7 @@ export default function DashboardClient({
 
                 <section>
                   <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Active Keywords</h2>
-                  <div className="bg-black border border-white/5 rounded-3xl p-8">
+                  <div className="bg-[#0f0f0f] border border-white/5 rounded-3xl p-8">
                     {favorites.length === 0 ? (
                       <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest text-center py-4">No active keywords.</p>
                     ) : (
@@ -274,7 +277,7 @@ export default function DashboardClient({
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {favorites.map(item => (
-                    <div key={item.id} className="bg-black border border-white/5 rounded-[32px] p-8 group transition-all hover:border-white/10">
+                    <div key={item.id} className="bg-[#0f0f0f] border border-white/5 rounded-[32px] p-8 group transition-all hover:border-white/10">
                       <div className="flex justify-between items-start mb-8">
                         <KeywordToken keyword={item.item_keyword} color={item.item_color} size="medium" />
                         <button onClick={() => removeFavorite(item.id)} className="p-3 rounded-full hover:bg-red-500/10 text-white/10 hover:text-red-500 transition-all">
@@ -311,7 +314,7 @@ export default function DashboardClient({
               ) : (
                 <div className="space-y-4">
                   {history.map(item => (
-                    <div key={item.id} className="bg-black border border-white/5 rounded-[24px] p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:border-white/10 transition-all group">
+                    <div key={item.id} className="bg-[#0f0f0f] border border-white/5 rounded-[24px] p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:border-white/10 transition-all group">
                       <div className="flex items-center gap-8">
                         <div className="text-center shrink-0">
                           <p className="text-2xl font-black mb-1">{item.score}</p>

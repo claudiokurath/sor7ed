@@ -35,7 +35,7 @@ function ArticleImage({ src, color, branch }: { src: string, color: string, bran
   return (
     <div
       className="w-full h-full flex items-center justify-center"
-      style={{ background: `linear-gradient(135deg, ${color}20 0%, #000000 100%)` }}
+      style={{ background: `linear-gradient(135deg, ${color}20 0%, #0a0a0a 100%)` }}
     >
       <span className="text-5xl font-black opacity-10 tracking-tight" style={{ color }}>
         {branch?.charAt(0)}
@@ -113,10 +113,10 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
             >
               <Link
                 href={`/intelligence/${article.slug}`}
-                className="group flex flex-col w-[75vw] sm:w-[260px] h-[460px] bg-black border border-white/5 rounded-xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
+                className="group flex flex-col w-[75vw] sm:w-[260px] h-[460px] bg-[#0f0f0f] border border-white/5 rounded-xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
               >
                 {/* Cover image */}
-                <div className="w-full h-40 shrink-0 overflow-hidden bg-black">
+                <div className="w-full h-40 shrink-0 overflow-hidden bg-[#0a0a0a]">
                   <ArticleImage src={article.cover_image} color={color} branch={article.branch} />
                 </div>
 
@@ -147,7 +147,7 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
 
                   <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-end">
                     <span className="text-[9px] font-black uppercase tracking-widest text-white/20 group-hover:text-white/50 transition-colors">
-                      Read →
+                      Read Protocol →
                     </span>
                   </div>
                 </div>

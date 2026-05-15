@@ -43,7 +43,7 @@ export default async function ToolsPage() {
   const stats = await getLabStats();
 
   return (
-    <main className="bg-black text-white min-h-screen pt-20 font-roboto font-thin">
+    <main className="bg-[#0a0a0a] text-white min-h-screen pt-20 font-roboto font-thin">
       {/* ─── HERO WITH MIDJOURNEY TEXTURE ─── */}
       <TexturedBackground
         texture="research" 

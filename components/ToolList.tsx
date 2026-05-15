@@ -82,7 +82,7 @@ function ToolCard({ tool, featured }: { tool: Tool, featured: boolean }) {
     return (
         <Link
             href={`/tools/${tool.slug}`}
-            className={`relative flex flex-col p-8 rounded-[2.5rem] bg-black border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group ${
+            className={`relative flex flex-col p-8 rounded-[2.5rem] bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group ${
                 featured ? 'h-[450px]' : 'h-[400px]'
             }`}
             style={{ '--glow-color': color } as CSSProperties}

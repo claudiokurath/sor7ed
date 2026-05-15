@@ -61,7 +61,7 @@ function SignupForm() {
 
   if (status === 'success') {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+      <main className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-6">
         <motion.div
           className="max-w-lg w-full text-center"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -98,7 +98,7 @@ function SignupForm() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-20">
+    <main className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-6 py-20">
       <div className="max-w-md w-full">
 
         <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors block mb-12">
@@ -256,7 +256,7 @@ function SignupForm() {
 export default function Signup() {
     return (
         <Suspense fallback={
-            <main className="min-h-screen bg-black flex items-center justify-center">
+            <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-white/10 border-t-white rounded-full animate-spin" />
             </main>
         }>

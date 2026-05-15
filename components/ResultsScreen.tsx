@@ -309,7 +309,7 @@ function RecommendationGrid({ recommendations, isVisible }: {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: (tools.length * 0.1) + (index * 0.1) }}
-                    className="block p-6 rounded-3xl bg-black border border-white/5 
+                    className="block p-6 rounded-3xl bg-[#0f0f0f] border border-white/5 
                                hover:bg-white/[0.03] transition-all group relative overflow-hidden"
                     style={{ borderLeftColor: rec.branchColor, borderLeftWidth: '4px' }}
                   >
@@ -352,7 +352,7 @@ function RecommendationCard({ rec, index }: { rec: Recommendation, index: number
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.1 }}
-      className="p-6 rounded-3xl bg-black border border-white/5 
+      className="p-6 rounded-3xl bg-[#0f0f0f] border border-white/5 
                  hover:bg-white/[0.03] transition-all group"
       style={{ borderLeftColor: rec.branchColor, borderLeftWidth: '4px' }}
     >

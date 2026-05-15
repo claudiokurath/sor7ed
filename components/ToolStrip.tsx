@@ -36,7 +36,7 @@ function ToolImage({ src, color, branch }: { src: string, color: string, branch:
   return (
     <div
       className="w-full h-full flex items-center justify-center"
-      style={{ background: `linear-gradient(135deg, ${color}20 0%, #000000 100%)` }}
+      style={{ background: `linear-gradient(135deg, ${color}20 0%, #0a0a0a 100%)` }}
     >
       <span className="text-5xl font-black opacity-10 tracking-tight" style={{ color }}>
         {branch?.charAt(0)}
@@ -72,8 +72,8 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
                 </span>
               )}
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed">
-              Answer a few questions. Get your exact situation mapped. No account needed.
+            <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed uppercase">
+              ANSWER A FEW QUESTIONS TO GET THE EXACT ASSESSMENTS AND PROTOCOLS FOR YOUR SITUATION. NO ACCOUNT NEEDED.
             </p>
           </div>
           
@@ -123,10 +123,10 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
             >
               <Link
                 href={`/tools/${tool.slug}`}
-                className="group flex flex-col w-[75vw] sm:w-[260px] h-[460px] bg-black border border-white/5 rounded-xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
+                className="group flex flex-col w-[75vw] sm:w-[260px] h-[460px] bg-[#0f0f0f] border border-white/5 rounded-xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
               >
                 {/* Cover image */}
-                <div className="w-full h-40 shrink-0 overflow-hidden bg-black">
+                <div className="w-full h-40 shrink-0 overflow-hidden bg-[#0a0a0a]">
                   <ToolImage src={tool.cover_image} color={color} branch={tool.branch} />
                 </div>
 
