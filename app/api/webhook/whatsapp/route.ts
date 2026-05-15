@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
 
             // First message — send onboarding welcome sequence
             if (!user.whatsapp_onboarded) {
-                await handleOnboarding(senderPhone, user.first_name, supabase);
+                await handleOnboarding(senderPhone, normalizedPhone, user.first_name, supabase);
                 await supabase
                     .from('users')
                     .update({ whatsapp_onboarded: true, whatsapp_onboarded_at: new Date().toISOString() })
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
 
             // Handle dashboard commands
             if (keyword === 'menu' || keyword === 'branches') {
-                await sendBranchMenu(senderPhone);
+                await sendBranchMenu(senderPhone, normalizedPhone);
                 return NextResponse.json({ status: "ok" });
             }
             // Branch number shortcuts: 1–7
@@ -203,10 +203,10 @@ export async function POST(req: NextRequest) {
     }
 }
 
-async function sendBranchMenu(to: string) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
-    // Single message — all 7 branches on one page
-    await sendWhatsAppMessage(to, `${siteUrl}/explore`, true);
+async function sendBranchMenu(to: string, normalizedPhone: string) {
+    await sendWhatsAppMessage(to, `Here's your dashboard — tap to open:`);
+    await new Promise(r => setTimeout(r, 400));
+    await handleDashboardCommand(to, normalizedPhone);
 }
 
 async function handleHelpCommand(to: string) {
@@ -226,22 +226,22 @@ async function handleHelpCommand(to: string) {
 
 async function handleOnboarding(
     to: string,
+    normalizedPhone: string,
     firstName: string,
     supabase: ReturnType<typeof getSupabase>
 ) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
-
     // Message 1: Welcome
     await sendWhatsAppMessage(to,
         `Hey ${firstName}. You just made it into SOR7ED. 🤍\n\n` +
-        `This thread is your intelligence file. Protocols, deep dives, tools — delivered here. No app needed.\n\n` +
-        `Start by browsing the 7 branches below. Tap whatever feels relevant, look around, and text any keyword you find to get that protocol delivered here.`
+        `This thread is your intelligence file. No app. No inbox. Just this.\n\n` +
+        `Your dashboard is below — tap to open it, pick a branch, and find what fits. ` +
+        `When you find a protocol you want, text the keyword and it arrives here.`
     );
 
     await new Promise(r => setTimeout(r, 700));
 
-    // Message 2: Single explore link (all 7 branches on one page)
-    await sendWhatsAppMessage(to, `${siteUrl}/explore`, true);
+    // Message 2: Personal dashboard bridge link (auto-logs them in)
+    await handleDashboardCommand(to, normalizedPhone);
 }
 
 async function handleStatusCommand(
