@@ -112,6 +112,23 @@ export async function POST(req: NextRequest) {
             }
 
             // Handle dashboard commands
+            if (keyword === 'menu' || keyword === 'branches') {
+                await sendBranchMenu(senderPhone);
+                return NextResponse.json({ status: "ok" });
+            }
+            // Branch number shortcuts: 1–7
+            if (/^[1-7]$/.test(keyword)) {
+                const branch = branches[parseInt(keyword) - 1];
+                const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+                await sendWhatsAppMessage(senderPhone, `${branch.icon} *${branch.name}*\n${branch.description}`, false);
+                await new Promise(r => setTimeout(r, 400));
+                await sendWhatsAppMessage(senderPhone, `${siteUrl}/${branch.slug}`, true);
+                return NextResponse.json({ status: "ok" });
+            }
+            if (keyword === 'help') {
+                await handleHelpCommand(senderPhone);
+                return NextResponse.json({ status: "ok" });
+            }
             if (keyword === 'status') {
                 await handleStatusCommand(senderPhone, user.id, user.first_name, supabase);
                 return NextResponse.json({ status: "ok" });
@@ -184,6 +201,38 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+async function sendBranchMenu(to: string) {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+
+    await sendWhatsAppMessage(to,
+        `*Your 7 branches — tap to explore:*\n\n` +
+        branches.map((b, i) => `${i + 1}. ${b.icon} *${b.name}* — ${b.description}`).join('\n') +
+        `\n\n_Or text a number (1–7) to open a specific branch._`
+    );
+
+    await new Promise(r => setTimeout(r, 600));
+
+    for (const branch of branches) {
+        await sendWhatsAppMessage(to, `${siteUrl}/${branch.slug}`, true);
+        await new Promise(r => setTimeout(r, 500));
+    }
+}
+
+async function handleHelpCommand(to: string) {
+    await sendWhatsAppMessage(to,
+        `*SOR7ED commands:*\n\n` +
+        `*MENU* — your 7 branch dashboard\n` +
+        `*1–7* — open a specific branch\n` +
+        `*STATUS* — your progress file\n` +
+        `*NEW* — latest protocol\n` +
+        `*HISTORY* — past diagnostics\n` +
+        `*DASHBOARD* — full web view\n` +
+        `*PARK* — pause without guilt\n` +
+        `*AUDIO [keyword]* — audio version of any protocol\n\n` +
+        `_Or text any keyword (like SPEND, MOMENTUM) to get a protocol delivered here._`
+    );
 }
 
 async function handleOnboarding(
