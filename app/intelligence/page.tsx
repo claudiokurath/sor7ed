@@ -34,12 +34,12 @@ export default async function IntelligencePage() {
 
             {/* HERO */}
             <section className="px-5 pt-14 pb-14 max-w-6xl mx-auto">
-                <div className="max-w-3xl mb-10">
-                    <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.0] mb-6">
-                        The world wasn&apos;t built for your brain.<br />
-                        <span className="text-white/40">We build systems that are.</span>
+                <div className="max-w-4xl mb-10">
+                    <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] mb-8">
+                        <span className="text-white block">The world wasn&apos;t built for your brain.</span>
+                        <span className="text-[#ffd107] block">We build systems that are.</span>
                     </h1>
-                    <p className="text-white/40 text-base sm:text-lg leading-relaxed max-w-2xl">
+                    <p className="text-white/50 text-base sm:text-lg leading-relaxed max-w-3xl">
                         ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software. SOR7ED is that software, delivered one protocol at a time.
                     </p>
                 </div>

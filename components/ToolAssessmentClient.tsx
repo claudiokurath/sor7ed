@@ -97,10 +97,39 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
       { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between urge and action." }
     ];
 
-    // 5. Fetch Recommendations (Dummy)
+    // 5. Fetch REAL Recommendations from Supabase
+    const { data: recTools } = await supabase
+      .from('tools')
+      .select('name, short_description, tldr, branch, color, slug')
+      .eq('branch', tool.branch)
+      .neq('slug', tool.slug)
+      .neq('status', 'Draft')
+      .limit(2);
+
+    const { data: recProtocols } = await supabase
+      .from('protocols')
+      .select('title, excerpt, summary, branch, color, slug')
+      .eq('branch', tool.branch)
+      .eq('status', 'Published')
+      .limit(2);
+
     const recommendations: Recommendation[] = [
-      { title: "Dopamine Menu", description: "Build your list of healthy hits.", branch: branchSlug, branchColor: tool.color, href: "/tools/dopamine-menu", type: "tool" },
-      { title: "Focus Protocol", description: "Protect your deep work sessions.", branch: branchSlug, branchColor: tool.color, href: "/intelligence", type: "protocol" }
+      ...(recTools || []).map(t => ({
+        title: t.name,
+        description: t.short_description || t.tldr || '',
+        branch: t.branch as BranchSlug,
+        branchColor: t.color,
+        href: `/tools/${t.slug}`,
+        type: 'tool' as const
+      })),
+      ...(recProtocols || []).map(p => ({
+        title: p.title,
+        description: p.excerpt || p.summary || '',
+        branch: p.branch as BranchSlug,
+        branchColor: p.color || tool.color,
+        href: `/intelligence/${p.slug}`,
+        type: 'protocol' as const
+      }))
     ];
 
     const result: AssessmentResult = {

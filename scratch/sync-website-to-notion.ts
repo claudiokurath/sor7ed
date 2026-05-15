@@ -88,85 +88,132 @@ function listComponents(dir: string, list: string[] = []): string[] {
 
 const componentFiles = listComponents('components');
 
+// ---------- Gather Supabase Content ----------
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(env['NEXT_PUBLIC_SUPABASE_URL'] || '', env['SUPABASE_SERVICE_ROLE_KEY'] || '');
+
+async function gatherSupabaseContent() {
+  const { data: tools } = await supabase.from('tools').select('name, branch, keyword').neq('status', 'Draft');
+  const { data: protocols } = await supabase.from('protocols').select('title, branch, keyword').eq('status', 'Published');
+  return { tools: tools || [], protocols: protocols || [] };
+}
+
 // ---------- Build Notion block payload ----------
-const blocks: any[] = [];
+async function buildBlocks() {
+  const blocks: any[] = [];
+  const { tools, protocols } = await gatherSupabaseContent();
 
-// Header
-blocks.push({
-  object: 'block',
-  type: 'heading_1',
-  heading_1: { rich_text: [{ type: 'text', text: { content: 'SOR7ED Master Document – Auto‑Sync' } }] },
-});
+  // Header
+  blocks.push({
+    object: 'block',
+    type: 'heading_1',
+    heading_1: { rich_text: [{ type: 'text', text: { content: 'SOR7ED Master Document – Auto‑Sync' } }] },
+  });
 
-// Version / Maintainer (already present but we rebuild for completeness)
-blocks.push({
-  object: 'block',
-  type: 'paragraph',
-  paragraph: {
-    rich_text: [
-      { type: 'text', text: { content: `Version: ${packageJson.version}` } },
-      { type: 'text', text: { content: ' | ' } },
-      { type: 'text', text: { content: `Maintainer: ${env['MAINTAINER_EMAIL'] || 'claudio.kurath@gmail.com'}` } },
-    ],
-  },
-});
-
-// Deployment URL
-if (deploymentUrl) {
+  // Version / Maintainer
   blocks.push({
     object: 'block',
     type: 'paragraph',
-    paragraph: { rich_text: [{ type: 'text', text: { content: `Production URL: ${deploymentUrl}` } }] },
+    paragraph: {
+      rich_text: [
+        { type: 'text', text: { content: `Version: ${packageJson.version}` } },
+        { type: 'text', text: { content: ' | ' } },
+        { type: 'text', text: { content: `Maintainer: ${env['MAINTAINER_EMAIL'] || 'claudio.kurath@gmail.com'}` } },
+      ],
+    },
   });
+
+  // Deployment URL
+  if (deploymentUrl) {
+    blocks.push({
+      object: 'block',
+      type: 'paragraph',
+      paragraph: { rich_text: [{ type: 'text', text: { content: `Production URL: ${deploymentUrl}` } }] },
+    });
+  }
+
+  // Content Summary heading
+  blocks.push({
+    object: 'block',
+    type: 'heading_2',
+    heading_2: { rich_text: [{ type: 'text', text: { content: 'Live Content Summary' } }] },
+  });
+
+  blocks.push({
+    object: 'block',
+    type: 'heading_3',
+    heading_3: { rich_text: [{ type: 'text', text: { content: `Tactical Tools (${tools.length})` } }] },
+  });
+  tools.forEach(tool => {
+    blocks.push({
+      object: 'block',
+      type: 'bulleted_list_item',
+      bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `${tool.name} [${tool.branch}] — Keyword: ${tool.keyword}` } }] },
+    });
+  });
+
+  blocks.push({
+    object: 'block',
+    type: 'heading_3',
+    heading_3: { rich_text: [{ type: 'text', text: { content: `Intelligence Briefings (${protocols.length})` } }] },
+  });
+  protocols.forEach(p => {
+    blocks.push({
+      object: 'block',
+      type: 'bulleted_list_item',
+      bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `${p.title} [${p.branch}] — Keyword: ${p.keyword}` } }] },
+    });
+  });
+
+  // Tech Stack heading
+  blocks.push({
+    object: 'block',
+    type: 'heading_2',
+    heading_2: { rich_text: [{ type: 'text', text: { content: 'Tech Stack' } }] },
+  });
+  topDeps.forEach(dep => {
+    blocks.push({
+      object: 'block',
+      type: 'bulleted_list_item',
+      bulleted_list_item: { rich_text: [{ type: 'text', text: { content: dep } }] },
+    });
+  });
+
+  // Key Pages heading
+  blocks.push({
+    object: 'block',
+    type: 'heading_2',
+    heading_2: { rich_text: [{ type: 'text', text: { content: 'Key Pages (Routes)' } }] },
+  });
+  pagesList.forEach(route => {
+    blocks.push({
+      object: 'block',
+      type: 'bulleted_list_item',
+      bulleted_list_item: { rich_text: [{ type: 'text', text: { content: route } }] },
+    });
+  });
+
+  // Core Components heading
+  blocks.push({
+    object: 'block',
+    type: 'heading_2',
+    heading_2: { rich_text: [{ type: 'text', text: { content: 'Core Components' } }] },
+  });
+  componentFiles.forEach(comp => {
+    blocks.push({
+      object: 'block',
+      type: 'bulleted_list_item',
+      bulleted_list_item: { rich_text: [{ type: 'text', text: { content: comp } }] },
+    });
+  });
+
+  return blocks;
 }
-
-// Tech Stack heading
-blocks.push({
-  object: 'block',
-  type: 'heading_2',
-  heading_2: { rich_text: [{ type: 'text', text: { content: 'Tech Stack' } }] },
-});
-// List dependencies
-topDeps.forEach(dep => {
-  blocks.push({
-    object: 'block',
-    type: 'bulleted_list_item',
-    bulleted_list_item: { rich_text: [{ type: 'text', text: { content: dep } }] },
-  });
-});
-
-// Key Pages heading
-blocks.push({
-  object: 'block',
-  type: 'heading_2',
-  heading_2: { rich_text: [{ type: 'text', text: { content: 'Key Pages (Routes)' } }] },
-});
-pagesList.forEach(route => {
-  blocks.push({
-    object: 'block',
-    type: 'bulleted_list_item',
-    bulleted_list_item: { rich_text: [{ type: 'text', text: { content: route } }] },
-  });
-});
-
-// Core Components heading
-blocks.push({
-  object: 'block',
-  type: 'heading_2',
-  heading_2: { rich_text: [{ type: 'text', text: { content: 'Core Components' } }] },
-});
-componentFiles.forEach(comp => {
-  blocks.push({
-    object: 'block',
-    type: 'bulleted_list_item',
-    bulleted_list_item: { rich_text: [{ type: 'text', text: { content: comp } }] },
-  });
-});
 
 // ---- Function to replace all children of the master doc ----
 async function syncMasterDoc() {
   try {
-    // Delete existing children (if any)
+    const blocks = await buildBlocks();
     const existing = await notion.blocks.children.list({ block_id: MASTER_DOC_ID });
     if (existing.results.length) {
       for (const child of existing.results) {

@@ -2,26 +2,22 @@ import { createClient } from "@/lib/supabase/server";
 import HomeClient from "@/components/HomeClient";
 import { getBranches } from "@/lib/getBranches";
 
+export const revalidate = 60;
+
 export default async function Home() {
     const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    const { data: tools } = await supabase
-        .from('tools')
-        .select('*')
-        .neq('status', 'Draft')
-        .order('created_at', { ascending: false })
-        .limit(3);
+    const [{ data: allTools }, { data: articles }, branches] = await Promise.all([
+        supabase.from('tools').select('*').neq('status', 'Draft').order('created_at', { ascending: false }),
+        supabase.from('protocols').select('*').eq('status', 'Published').order('created_at', { ascending: false }).limit(6),
+        getBranches()
+    ]);
 
-    const { data: articles } = await supabase
-        .from('protocols')
-        .select('*')
-        .eq('status', 'Published')
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-    const branches = await getBranches();
+    const tools = branches.map(branch => {
+        return allTools?.find(t => t.branch === branch.name) || allTools?.find(t => t.branch === branch.slug);
+    }).filter(Boolean);
 
     return (
         <div className="bg-[#0a0a0a]">

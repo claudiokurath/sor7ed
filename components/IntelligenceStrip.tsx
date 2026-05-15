@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { getBranchColor } from '@/lib/branch-config';
 
 type IntelligenceBriefing = {
   slug: string;
@@ -31,8 +32,12 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
       <div className="px-4 sm:px-6 md:px-16 mb-10">
         <div className="flex justify-between items-end max-w-7xl mx-auto">
           <div>
-            <span className="text-xs tracking-[0.35em] uppercase text-white/20 mb-3 font-black block">Field Intelligence</span>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter">Intelligence Briefings</h2>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.1] max-w-4xl">
+              <span className="text-white block mb-2">The world wasn&apos;t built for your brain. We build systems that are.</span>
+              <span className="text-[#ffd107] block text-2xl md:text-3xl font-bold opacity-90 leading-relaxed">
+                ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
+              </span>
+            </h2>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -62,7 +67,7 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {articles.map((article, i) => {
-          const color = article.color || '#3B82F6';
+          const color = article.color && article.color !== '#ffffff' ? article.color : getBranchColor(article.branch);
           return (
             <motion.div
               key={article.slug}
@@ -75,7 +80,7 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
             >
               <Link
                 href={`/intelligence/${article.slug}`}
-                className="group flex flex-col w-[80vw] sm:w-[340px] bg-[#0f0f0f] border border-white/5 rounded-3xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
+                className="group flex flex-col w-[80vw] sm:w-[340px] h-[520px] bg-[#0f0f0f] border border-white/5 rounded-3xl hover:border-transparent transition-all duration-500 relative overflow-hidden"
               >
                 {/* Hover glow */}
                 <div
