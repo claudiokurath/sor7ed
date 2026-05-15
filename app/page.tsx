@@ -84,7 +84,7 @@ const FAQS = [
 ];
 
 // === WHATSAPP CONFIG ===
-const WHATSAPP_NUMBER = "+44 7400 123456"; // UPDATE THIS
+const WHATSAPP_NUMBER = "+447591922247";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=SORTED`;
 
 export default async function HomePage() {
