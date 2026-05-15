@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
             
             const { data: user } = await supabase
                 .from('users')
-                .select('id, user_id, first_name')
+                .select('id, user_id, first_name, whatsapp_onboarded')
                 .eq('whatsapp_number', normalizedPhone)
                 .single();
 
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
 
             // First message — send onboarding welcome sequence
             if (!user.whatsapp_onboarded) {
-                await handleOnboarding(senderPhone, normalizedPhone, user.first_name ?? 'there', supabase);
+                await handleOnboarding(senderPhone, normalizedPhone, user.first_name ?? 'there');
                 await supabase
                     .from('users')
                     .update({ whatsapp_onboarded: true, whatsapp_onboarded_at: new Date().toISOString() })
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
             // Handle AUDIO [keyword] requests
             if (keyword.startsWith('audio ')) {
                 const baseKeyword = keyword.slice(6).trim();
-                await handleAudioRequest(senderPhone, normalizedPhone, baseKeyword, user.first_name ?? 'there', supabase);
+                await handleAudioRequest(senderPhone, normalizedPhone, baseKeyword, supabase);
                 return NextResponse.json({ status: "ok" });
             }
 
@@ -228,7 +228,6 @@ async function handleOnboarding(
     to: string,
     normalizedPhone: string,
     firstName: string,
-    supabase: ReturnType<typeof getSupabase>
 ) {
     // Message 1: Welcome
     await sendWhatsAppMessage(to,
@@ -374,7 +373,6 @@ async function handleAudioRequest(
     senderPhone: string,
     normalizedPhone: string,
     keyword: string,
-    firstName: string,
     supabase: ReturnType<typeof getSupabase>
 ) {
     const { data: protocol } = await supabase
