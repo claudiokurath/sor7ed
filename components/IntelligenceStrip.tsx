@@ -8,7 +8,7 @@ type IntelligenceBriefing = {
   slug: string;
   title: string;
   branch: string;
-  color: string;
+  color?: string;
   cover_image: string;
   summary: string;
   tldr?: string;
