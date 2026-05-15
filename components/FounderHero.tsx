@@ -25,7 +25,7 @@ export function FounderHero() {
             </span>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-anton tracking-wider mb-4 leading-[1.1] uppercase">
+          <h1 className="text-2xl md:text-4xl font-anton tracking-wider mb-4 leading-[1.1] uppercase">
             <span className="text-white block">{SITE_COPY.hero.title}</span>
             <span className="text-[#ffd107] block mt-1">SOR7ED is software for the brain.</span>
           </h1>

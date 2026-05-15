@@ -197,7 +197,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         <div className="px-4 sm:px-6 md:px-16 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="max-w-xl text-left">
-              <h2 className="text-3xl md:text-5xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
+              <h2 className="text-2xl md:text-4xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
                 <span className="text-white block">Every part of your life.</span>
                 <span className="text-[#ffd107] block mt-1">Simplified into 7 branches.</span>
               </h2>
