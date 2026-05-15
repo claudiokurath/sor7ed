@@ -32,11 +32,11 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
       <div className="px-4 sm:px-6 md:px-16 mb-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
           <div className="max-w-xl text-left">
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.1] mb-4">
+            <h2 className="text-3xl md:text-5xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
               <span className="text-white block">Field Intelligence.</span>
               <span className="text-[#ffd107] block mt-1">Context and theory for the neurodivergent.</span>
             </h2>
-            <p className="text-white/40 text-[13px] md:text-sm font-medium max-w-md leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
+            <p className="text-white/40 text-[13px] md:text-sm font-roboto font-thin max-w-md leading-relaxed">
               Deep-dive briefings on navigating a world built for typical brains. Practical frameworks to help you understand your own operating system.
             </p>
           </div>
@@ -130,7 +130,7 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
                   <h3 className="text-sm font-black text-white mb-2 group-hover:text-white/80 transition-colors tracking-tight leading-tight uppercase line-clamp-3">
                     {article.title}
                   </h3>
-                  <p className="text-white/30 text-[11px] leading-relaxed line-clamp-4 flex-1">
+                  <p className="text-white/30 text-[11px] font-roboto font-thin leading-relaxed line-clamp-4 flex-1">
                     {article.summary || article.tldr || article.excerpt}
                   </p>
 

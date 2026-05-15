@@ -100,17 +100,16 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             Practical protocols via WhatsApp
           </motion.p>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-8">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-anton tracking-wider leading-[1.1] mb-8 uppercase">
             <span className="text-white block mb-2">The world wasn&apos;t built for your brain.</span>
             <span className="text-[#ffd107] block">We build systems that are.</span>
           </h1>
 
           <motion.p
-            className="text-white/40 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed mx-auto mb-10"
+            className="text-white/40 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed mx-auto mb-10 font-roboto font-thin"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}
           >
             ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
           </motion.p>
@@ -162,11 +161,11 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         <div className="px-4 sm:px-6 md:px-16 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="max-w-xl text-left">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.1] mb-4">
+              <h2 className="text-3xl md:text-5xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
                 <span className="text-white block">Every part of your life.</span>
                 <span className="text-[#ffd107] block mt-1">Simplified into 7 branches.</span>
               </h2>
-              <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
+              <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed">
                 Practical protocols and tactical tools designed for busy, distracted, and neurodivergent minds. Delivered one micro-action at a time.
               </p>
             </div>
@@ -223,12 +222,12 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
                 </div>
                 <div className="relative z-10 mt-auto">
                   <h3 
-                    className="text-xl font-black mb-3 tracking-tight transition-colors group-hover:brightness-110 uppercase"
+                    className="text-xl font-anton tracking-wider mb-3 transition-colors group-hover:brightness-110 uppercase"
                     style={{ color: branch.color }}
                   >
                     {branch.name}
                   </h3>
-                  <p className="text-white/40 text-[11px] leading-relaxed group-hover:text-white/60 transition-colors line-clamp-4">
+                  <p className="text-white/40 text-[11px] font-roboto font-thin leading-relaxed group-hover:text-white/60 transition-colors line-clamp-4">
                     {branch.description}
                   </p>
                 </div>
