@@ -1,171 +1,157 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { branches } from '@/lib/constants';
 
 const WHATSAPP_LINK = `https://wa.me/447591922247?text=SOR7ED`;
 
-const taglines = [
-    { word: 'Overwhelmed', color: '#E94560' },
-    { word: 'Scattered',   color: '#A855F7' },
-    { word: 'Exhausted',   color: '#FF6B6B' },
-    { word: 'Wired differently', color: '#4ECDC4' },
-    { word: 'Behind',      color: '#F4A261' },
-    { word: 'Stuck',       color: '#E9C46A' },
-];
-
 export default function HomeClient() {
-    const [taglineIndex, setTaglineIndex] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll();
-    const backgroundOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setTaglineIndex(i => (i + 1) % taglines.length);
-        }, 2400);
-        return () => clearInterval(interval);
-    }, []);
-
-    const current = taglines[taglineIndex];
+    const scrollToCard = (index: number) => {
+        const clamped = Math.max(0, Math.min(index, branches.length - 1));
+        setActiveIndex(clamped);
+        const container = carouselRef.current;
+        if (!container) return;
+        const card = container.children[clamped] as HTMLElement;
+        if (card) {
+            container.scrollTo({ left: card.offsetLeft - 24, behavior: 'smooth' });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
 
             {/* ── HERO ── */}
-            <section className="relative min-h-[92vh] flex flex-col justify-center px-6 md:px-16 pt-20 overflow-hidden">
-
-                <motion.div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{ opacity: backgroundOpacity }}
-                >
-                    <div
-                        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-[0.07] blur-3xl"
-                        style={{ background: 'radial-gradient(circle, #2E5BFF 0%, transparent 70%)' }}
-                    />
-                </motion.div>
-
-                <div className="relative z-10 max-w-5xl">
+            <section className="relative min-h-[90vh] flex flex-col justify-center px-6 md:px-16 pt-24 pb-16">
+                <div className="max-w-5xl">
                     <motion.p
                         className="text-xs tracking-[0.35em] uppercase text-white/25 mb-8 font-bold"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
+                        transition={{ duration: 0.5 }}
                     >
                         Practical protocols via WhatsApp
                     </motion.p>
 
                     <motion.h1
-                        className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-2 leading-[1.0] tracking-tight"
+                        className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-[1.0] tracking-tight uppercase"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, delay: 0.1 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
                     >
-                        If you&apos;re feeling
+                        Every part of your life.<br />
+                        <span className="text-white/30">Simplified into 7 branches.</span>
                     </motion.h1>
 
+                    {/* Branch pills */}
                     <motion.div
-                        className="text-5xl md:text-7xl lg:text-8xl font-black mb-10 leading-[1.0] h-[1.1em] overflow-hidden"
+                        className="flex flex-wrap gap-2 mb-8"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                        <AnimatePresence mode="wait">
-                            <motion.span
-                                key={taglineIndex}
-                                initial={{ y: 70, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: -70, opacity: 0 }}
-                                transition={{ duration: 0.4, ease: 'easeOut' }}
-                                style={{ color: current.color, display: 'block', trackingTight: true }}
-                                className="tracking-tight"
+                        {branches.map((branch) => (
+                            <Link
+                                key={branch.slug}
+                                href={`/${branch.slug}`}
+                                className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border transition-all duration-200 hover:opacity-80"
+                                style={{
+                                    borderColor: `${branch.color}50`,
+                                    color: branch.color,
+                                    backgroundColor: `${branch.color}10`,
+                                }}
                             >
-                                {current.word}
-                            </motion.span>
-                        </AnimatePresence>
+                                {branch.name}
+                            </Link>
+                        ))}
                     </motion.div>
 
                     <motion.p
-                        className="text-white/40 text-lg md:text-xl max-w-lg leading-relaxed"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
+                        className="text-white/40 text-base md:text-lg max-w-lg leading-relaxed mb-10"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
                     >
                         SOR7ED delivers practical protocols and tools for neurodivergent adults via WhatsApp — organised into 7 branches of life.
                     </motion.p>
 
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-4 mt-10"
-                        initial={{ opacity: 0, y: 20 }}
+                        className="flex flex-col sm:flex-row gap-4"
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.7 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
                     >
                         <Link
                             href="/signup"
-                            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-white text-sm bg-[#2563EB] hover:bg-[#1d4ed8] transition-all duration-300 hover:scale-105"
+                            className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-white text-sm bg-[#2563EB] hover:bg-[#1d4ed8] transition-all duration-300 hover:scale-105"
                         >
                             Sign up — it&apos;s free
                         </Link>
                         <a
-                            href="#branches"
-                            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-white/50 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
+                            href={WHATSAPP_LINK}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-white/40 text-sm border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
                         >
-                            Explore the 7 branches
+                            Text SOR7ED on WhatsApp
                         </a>
                     </motion.div>
                 </div>
-
-                <motion.div
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                >
-                    <div className="w-px h-10 bg-gradient-to-b from-transparent to-white/20" />
-                </motion.div>
             </section>
 
-            {/* ── 7 BRANCHES DIVIDER ── */}
-            <section className="px-6 md:px-16 pt-16 pb-8" id="branches">
-                <motion.div
-                    className="flex items-center gap-4 mb-8"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                >
-                    <div className="h-px flex-1 bg-white/5" />
-                    <span className="text-white/20 text-xs tracking-[0.35em] uppercase font-bold">
-                        7 Branches of Life
-                    </span>
-                    <div className="h-px flex-1 bg-white/5" />
-                </motion.div>
+            {/* ── 7 BRANCHES CAROUSEL ── */}
+            <section className="pb-28" id="branches">
+                <div className="px-6 md:px-16 mb-6 flex items-center justify-between">
+                    <div>
+                        <span className="text-white/20 text-xs tracking-[0.35em] uppercase font-bold block mb-2">
+                            7 Branches of Life
+                        </span>
+                        <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                            Find what fits. Get it on WhatsApp.
+                        </h2>
+                    </div>
+                    {/* Nav arrows */}
+                    <div className="flex gap-2 shrink-0">
+                        <button
+                            onClick={() => scrollToCard(activeIndex - 1)}
+                            disabled={activeIndex === 0}
+                            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                            aria-label="Previous branch"
+                        >
+                            ←
+                        </button>
+                        <button
+                            onClick={() => scrollToCard(activeIndex + 1)}
+                            disabled={activeIndex === branches.length - 1}
+                            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                            aria-label="Next branch"
+                        >
+                            →
+                        </button>
+                    </div>
+                </div>
 
-                <motion.h2
-                    className="text-3xl md:text-5xl font-black text-white mt-2 mb-3 tracking-tight leading-[1.0]"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                >
-                    Every part of your life,<br />simplified.
-                </motion.h2>
-                <motion.p
-                    className="text-white/30 text-base max-w-lg leading-relaxed"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
-                >
-                    Each branch contains articles and tools that come with step-by-step protocols. Find what matches your problem here, then get the protocol on WhatsApp.
-                </motion.p>
-            </section>
-
-            {/* ── BRANCH CAROUSEL ── */}
-            <section className="pb-24">
+                {/* Cards */}
                 <div
-                    ref={containerRef}
-                    className="flex gap-5 px-6 md:px-16 overflow-x-auto pb-4"
+                    ref={carouselRef}
+                    className="flex gap-4 px-6 md:px-16 overflow-x-auto pb-4"
                     style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
+                    onScroll={(e) => {
+                        const container = e.currentTarget;
+                        const scrollLeft = container.scrollLeft;
+                        let closest = 0;
+                        let minDist = Infinity;
+                        Array.from(container.children).forEach((child, i) => {
+                            const el = child as HTMLElement;
+                            const dist = Math.abs(el.offsetLeft - scrollLeft - 24);
+                            if (dist < minDist) { minDist = dist; closest = i; }
+                        });
+                        setActiveIndex(closest);
+                    }}
                 >
                     {branches.map((branch, i) => (
                         <motion.div
@@ -174,27 +160,34 @@ export default function HomeClient() {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.07 }}
-                            whileHover={{ y: -4 }}
+                            transition={{ delay: i * 0.06 }}
+                            className="shrink-0"
                         >
                             <Link
                                 href={`/${branch.slug}`}
-                                className="block min-w-[280px] md:min-w-[320px] p-8 rounded-3xl border border-white/8 bg-[#0f0f0f] hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 group"
+                                className="relative block w-[280px] md:w-[320px] h-[220px] rounded-3xl overflow-hidden border border-white/8 bg-[#0f0f0f] hover:border-white/20 transition-all duration-300 group"
                             >
-                                <div className="flex items-start justify-between mb-6">
-                                    <span className="text-3xl">{branch.icon}</span>
-                                    <span className="text-white/15 font-mono text-xs font-bold">{branch.num}</span>
-                                </div>
-                                <h3
-                                    className="text-2xl font-black mb-3 tracking-tight"
-                                    style={{ color: branch.color }}
+                                {/* Large background number */}
+                                <span
+                                    className="absolute -bottom-4 -right-2 text-[140px] font-black leading-none select-none pointer-events-none"
+                                    style={{ color: `${branch.color}18` }}
                                 >
-                                    {branch.name}
-                                </h3>
-                                <p className="text-white/35 text-sm leading-relaxed">
-                                    {branch.description}
-                                </p>
-                                <div className="mt-6">
+                                    {branch.num}
+                                </span>
+
+                                <div className="relative z-10 p-7 h-full flex flex-col justify-between">
+                                    <div>
+                                        <span className="text-2xl mb-3 block">{branch.icon}</span>
+                                        <h3
+                                            className="text-2xl font-black tracking-tight mb-2"
+                                            style={{ color: branch.color }}
+                                        >
+                                            {branch.name}
+                                        </h3>
+                                        <p className="text-white/40 text-sm leading-relaxed line-clamp-2">
+                                            {branch.description}
+                                        </p>
+                                    </div>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 group-hover:text-white/40 transition-colors">
                                         Explore →
                                     </span>
@@ -202,17 +195,22 @@ export default function HomeClient() {
                             </Link>
                         </motion.div>
                     ))}
+                </div>
 
-                    <motion.div style={{ scrollSnapAlign: 'start' }}>
-                        <Link
-                            href="/explore"
-                            className="flex min-w-[180px] h-full items-center justify-center rounded-3xl border border-dashed border-white/10 hover:border-white/25 transition-all duration-300 group px-8"
-                        >
-                            <span className="text-white/25 group-hover:text-white/50 text-sm font-bold uppercase tracking-widest transition-colors">
-                                See all →
-                            </span>
-                        </Link>
-                    </motion.div>
+                {/* Dot indicators */}
+                <div className="flex justify-center gap-2 mt-6">
+                    {branches.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => scrollToCard(i)}
+                            className="w-1.5 h-1.5 rounded-full transition-all duration-300"
+                            style={{
+                                backgroundColor: i === activeIndex ? branches[activeIndex].color : 'rgba(255,255,255,0.15)',
+                                transform: i === activeIndex ? 'scale(1.4)' : 'scale(1)',
+                            }}
+                            aria-label={`Go to branch ${i + 1}`}
+                        />
+                    ))}
                 </div>
             </section>
 
