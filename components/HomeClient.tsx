@@ -346,7 +346,6 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         title="Take the 2-minute triage — we'll find your highest-friction branch."
         subtitle="Answer a few questions to get the exact assessments and protocols for your situation. No account needed."
       />
-      </section>
 
       {/* MISSION SECTION */}
       <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start border-t border-white/5">
