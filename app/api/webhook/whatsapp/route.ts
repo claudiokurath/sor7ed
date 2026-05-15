@@ -96,8 +96,12 @@ export async function POST(req: NextRequest) {
                 .single();
 
             if (!user) {
-                const signupPrompt = `Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at ${process.env.NEXT_PUBLIC_SITE_URL}/signup to unlock your protocols.`;
-                await sendWhatsAppMessage(senderPhone, signupPrompt);
+                await sendWhatsAppMessage(senderPhone,
+                    `Hey! You just found SOR7ED — practical protocols for neurodivergent adults. 🤍\n\n` +
+                    `Sign up in 30 seconds to unlock your intelligence file:\n` +
+                    `${process.env.NEXT_PUBLIC_SITE_URL}/signup\n\n` +
+                    `Once you're in, text this number anytime to access your dashboard.`
+                );
                 return NextResponse.json({ status: "unregistered" });
             }
 
@@ -109,6 +113,13 @@ export async function POST(req: NextRequest) {
                     .update({ whatsapp_onboarded: true, whatsapp_onboarded_at: new Date().toISOString() })
                     .eq('id', user.id);
                 return NextResponse.json({ status: "onboarded" });
+            }
+
+            // Entry/greeting phrases — show menu
+            const entryPhrases = ['sorted', "let's get sorted", 'lets get sorted', 'hello', 'hi', 'hey', 'start'];
+            if (entryPhrases.includes(keyword)) {
+                await handleHelpCommand(senderPhone);
+                return NextResponse.json({ status: "ok" });
             }
 
             // Handle dashboard commands

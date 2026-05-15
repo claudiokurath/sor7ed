@@ -13,7 +13,7 @@ const ROTATING_WORDS = [
 ];
 
 const WHATSAPP_NUMBER = "+44 7591 922247";
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=SORTED`;
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}?text=Let%27s%20get%20sorted`;
 
 export default function HomeClient() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -79,7 +79,7 @@ export default function HomeClient() {
         </div>
 
         <p className="text-sm text-white/30">
-          Text <span className="text-white/50 font-mono">SORTED</span> to{' '}
+          Text <span className="text-white/50 font-mono">Let&apos;s get sorted</span> to{' '}
           <a href={WHATSAPP_LINK} className="text-white/50 hover:text-white underline">
             {WHATSAPP_NUMBER}
           </a>
