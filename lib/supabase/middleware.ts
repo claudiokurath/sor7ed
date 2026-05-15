@@ -36,17 +36,31 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const publicPaths = ['/login', '/auth', '/tools', '/bridge', '/api', '/intelligence', ...branches.map(b => `/${b.slug}`)];
+  // ─── ROUTE PROTECTION LOGIC ──────────────────────────────────
+  const pathname = request.nextUrl.pathname;
+
+  const publicPaths = [
+    '/login', 
+    '/auth', 
+    '/tools', 
+    '/bridge', 
+    '/api', 
+    '/intelligence', 
+    ...branches.map(b => `/${b.slug}`)
+  ];
+
   const isPublic =
-    request.nextUrl.pathname === '/' ||
-    request.nextUrl.pathname === '/signup' ||
-    publicPaths.some(p => request.nextUrl.pathname.startsWith(p));
+    pathname === '/' ||
+    pathname === '/signup' ||
+    publicPaths.some(p => pathname.startsWith(p));
 
   if (!user && !isPublic) {
-    // no user, redirect to signup page
+    // No user, redirect to signup page
     const url = request.nextUrl.clone()
     url.pathname = '/signup'
+    
     const response = NextResponse.redirect(url)
+    
     // Copy over the refreshed cookies to the redirect response
     supabaseResponse.cookies.getAll().forEach(cookie => {
       response.cookies.set(cookie.name, cookie.value, cookie)
@@ -54,17 +68,6 @@ export async function updateSession(request: NextRequest) {
     return response
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-  // creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Return the myNewResponse object.
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
-
+  // IMPORTANT: You *must* return the supabaseResponse object as it is
   return supabaseResponse
 }
