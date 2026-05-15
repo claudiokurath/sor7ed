@@ -577,5 +577,9 @@ async function sendWhatsAppMessage(to: string, text: string, previewUrl = false)
         }),
     });
 
-    return await response.json();
+    const result = await response.json();
+    if (!response.ok) {
+        console.error("Meta API error:", JSON.stringify(result));
+    }
+    return result;
 }
