@@ -81,6 +81,9 @@ export async function POST(req: NextRequest) {
 
             console.log(`Received WhatsApp keyword: ${keyword} from ${senderPhone}`);
 
+            // Mark message as read (shows blue ticks)
+            await markMessageRead(message.id);
+
             const supabase = getSupabase();
             const normalizedPhone = senderPhone.startsWith('+') ? senderPhone : `+${senderPhone}`;
             
@@ -189,6 +192,22 @@ async function sendFallbackMessage(to: string, keyword: string, token: string) {
     const fallbackText = `\`\`\`SYSTEM: ${content.systemAlert}\`\`\`\n\n${content.hookLine}\n\n*${content.assessmentName}*\nTime required: ${content.duration}.\n\n*START ASSESSMENT:*\n${bridgeUrl}`;
 
     await sendWhatsAppMessage(to, fallbackText);
+}
+
+async function markMessageRead(messageId: string) {
+    const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+    await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            messaging_product: "whatsapp",
+            status: "read",
+            message_id: messageId,
+        }),
+    });
 }
 
 async function sendWhatsAppDocument(to: string, pdfUrl: string, filename: string, caption: string) {
