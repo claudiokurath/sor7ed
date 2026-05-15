@@ -72,8 +72,8 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
                 </span>
               )}
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed uppercase">
-              ANSWER A FEW QUESTIONS TO GET THE EXACT ASSESSMENTS AND PROTOCOLS FOR YOUR SITUATION. NO ACCOUNT NEEDED.
+            <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed">
+              Answer a few questions. Get your exact situation mapped. No account needed.
             </p>
           </div>
           

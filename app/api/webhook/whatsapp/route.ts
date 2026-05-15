@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
                 .single();
 
             if (!user) {
-                const signupPrompt = "Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at https://www.sor7ed.com/signup to unlock your protocols.";
+                const signupPrompt = `Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at ${process.env.NEXT_PUBLIC_SITE_URL}/signup to unlock your protocols.`;
                 await sendWhatsAppMessage(senderPhone, signupPrompt);
                 return NextResponse.json({ status: "unregistered" });
             }

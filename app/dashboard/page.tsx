@@ -12,7 +12,7 @@ export default async function Dashboard() {
   }
 
   const [profileRes, favoritesRes, historyRes, toolsRes, branches] = await Promise.all([
-    supabase.from('users').select('*').eq('email', user.email).single(),
+    supabase.from('users').select('*').eq('user_id', user.id).single(),
     supabase.from('user_favorites').select('*').eq('user_id', user.id).order('saved_at', { ascending: false }),
     supabase.from('assessment_history').select('*').eq('user_id', user.id).order('completed_at', { ascending: false }).limit(20),
     supabase.from('tools').select('slug, branch, color'),

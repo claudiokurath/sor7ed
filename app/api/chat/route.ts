@@ -18,10 +18,28 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const { messages } = await req.json();
+  const body = await req.json();
+  const rawMessages = body?.messages;
+
+  if (!Array.isArray(rawMessages) || rawMessages.length === 0) {
+    return new Response('Bad request', { status: 400 });
+  }
+
+  // Cap history and strip any non-user/assistant messages to block prompt injection
+  const messages = rawMessages
+    .slice(-50)
+    .filter((m: unknown): m is { role: 'user' | 'assistant'; content: string } => {
+      if (typeof m !== 'object' || m === null) return false;
+      const msg = m as Record<string, unknown>;
+      return (msg.role === 'user' || msg.role === 'assistant') && typeof msg.content === 'string';
+    });
+
+  if (messages.length === 0) {
+    return new Response('Bad request', { status: 400 });
+  }
 
   // If the last user message is a PARK command, short‑circuit with the static response
-  const lastMessage = messages?.[messages.length - 1];
+  const lastMessage = messages[messages.length - 1];
   if (lastMessage?.role === 'user' && isParkCommand(lastMessage?.content)) {
     return new Response(PARK_MESSAGE, {
       headers: { 'Content-Type': 'text/plain' },

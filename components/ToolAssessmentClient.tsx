@@ -40,7 +40,7 @@ const supabase = createClient();
 
 export default function ToolAssessmentClient({ tool, whatsappContext }: {
   tool: Tool,
-  whatsappContext?: { phone: string, sourceKeyword: string, entryTime: string } | null
+  whatsappContext?: { sourceKeyword: string, entryTime: string } | null
 }) {
   const [currentStep, setCurrentStep] = useState(whatsappContext ? 0 : -1); // Auto-start if from WhatsApp
   const [answers, setAnswers] = useState<Record<number, string>>({});

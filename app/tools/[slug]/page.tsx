@@ -46,18 +46,11 @@ export async function generateMetadata({
 // ─── SECURITY: INPUT SANITIZATION ─────────────────────────────
 function sanitizeWhatsAppParams(searchParams: {
   wa?: string;
-  phone?: string; 
   keyword?: string;
 }) {
   const isWhatsAppEntry = searchParams.wa === '1';
-  
-  if (!isWhatsAppEntry) return null;
 
-  // Sanitize phone: only digits, +, spaces, hyphens, parentheses
-  const cleanPhone = (searchParams.phone || '')
-    .replace(/[^0-9+\s\-()]/g, '')
-    .trim()
-    .slice(0, 20);
+  if (!isWhatsAppEntry) return null;
 
   // Sanitize keyword: alphanumeric and hyphens only
   const cleanKeyword = (searchParams.keyword || '')
@@ -67,7 +60,6 @@ function sanitizeWhatsAppParams(searchParams: {
     .slice(0, 50);
 
   return {
-    phone: cleanPhone,
     sourceKeyword: cleanKeyword,
     entryTime: new Date().toISOString()
   };
@@ -79,7 +71,7 @@ export default async function ToolPage({
   searchParams 
 }: { 
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ wa?: string; phone?: string; keyword?: string }>;
+  searchParams: Promise<{ wa?: string; keyword?: string }>;
 }) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;

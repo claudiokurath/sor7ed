@@ -31,6 +31,16 @@ export async function POST(req: NextRequest) {
     const credits = parseInt(session.metadata?.credits_to_add ?? '0', 10);
 
     if (userId && credits > 0) {
+      // Idempotency: skip if already processed
+      const { data: existing } = await supabaseAdmin
+        .from('credit_transactions')
+        .select('id')
+        .eq('stripe_session_id', session.id)
+        .maybeSingle();
+      if (existing) {
+        return NextResponse.json({ received: true });
+      }
+
       await supabaseAdmin.from('credit_transactions').insert({
         user_id: userId,
         amount: credits,
@@ -58,11 +68,11 @@ async function notifyOwnerOfPurchase(userId: string, credits: number, amountTota
   const message = `💰 *Credit Purchase*\nUser: ${userId}\nCredits: ${credits}\nAmount: £${(amountTotal ?? 0) / 100}\nTime: ${new Date().toLocaleString()}`;
   try {
     await fetch(
-      `https://graph.facebook.com/v19.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      `https://graph.facebook.com/v18.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

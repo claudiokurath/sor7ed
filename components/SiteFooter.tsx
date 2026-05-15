@@ -35,8 +35,8 @@ export default function SiteFooter() {
             <div className="space-y-3 text-sm text-white/50">
               <p>1. Find your situation in our 7 branches</p>
               <p>2. Complete a 2-minute assessment</p>
-              <p>3. Sign up and get protocols on WhatsApp</p>
-              <p>4. Text keywords anytime for instant help</p>
+              <p>3. Sign up and get step-by-step guides on WhatsApp</p>
+              <p>4. Text any keyword any time for instant help</p>
             </div>
           </div>
 
@@ -45,10 +45,10 @@ export default function SiteFooter() {
               Safety & Privacy
             </h4>
             <div className="space-y-2 text-sm text-white/50">
-              <p>✓ No protocol content on website</p>
-              <p>✓ WhatsApp delivery only</p>
+              <p>✓ Guides delivered to WhatsApp, not email</p>
               <p>✓ Text STOP anytime to unsubscribe</p>
-              <p>✓ Your data stays secure</p>
+              <p>✓ No spam, ever</p>
+              <p>✓ Your data stays private</p>
             </div>
           </div>
 

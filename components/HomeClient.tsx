@@ -192,6 +192,28 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         </motion.div>
       </section>
 
+      {/* FOUNDER QUOTE — shown early so it's never missed */}
+      <section className="py-20 px-6 bg-black border-t border-white/5 sm:snap-start">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="h-1 w-16 bg-[#ffd107] mx-auto mb-12 opacity-50" />
+          <blockquote className="text-2xl md:text-4xl font-anton tracking-wider leading-tight text-white mb-10 uppercase">
+            "I didn&apos;t build SOR7ED because I love productivity. I built it because I got tired of paying the ADHD tax."
+          </blockquote>
+          <cite className="text-white/40 not-italic uppercase tracking-[0.2em] text-xs font-anton tracking-wider block">
+            Founder, SOR7ED
+          </cite>
+          <p className="text-white/30 text-sm font-roboto font-thin mt-4 max-w-lg mx-auto leading-relaxed">
+            Forgot subscriptions. Ghosted people I love. Let &apos;future me&apos; drown in decisions made at 2am.
+            Turns out a lot of us have the same chaos. So I sorted it into 7 categories and built tools for all of them.
+          </p>
+          <div className="mt-10">
+            <a href="#branches" className="text-[#ffd107] text-xs font-anton tracking-wider uppercase hover:opacity-70 transition-opacity">
+              See the 7 branches ↓
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* BRANCHES SECTION */}
       <section id="branches" className="relative py-16 border-t border-white/5 overflow-hidden sm:snap-start">
         <div className="px-4 sm:px-6 md:px-16 mb-8">
@@ -309,22 +331,6 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
           </p>
         </div>
       </div>
-
-      {/* FOUNDER TESTIMONIAL / QUOTE */}
-      <section className="py-32 px-6 bg-black border-t border-white/5 sm:snap-start">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="w-12 h-1 w-24 bg-[#ffd107] mx-auto mb-12 opacity-50" />
-          <blockquote className="text-2xl md:text-4xl font-anton tracking-wider leading-tight text-white mb-12 uppercase">
-            "I didn&apos;t build SOR7ED because I love productivity. I built it because I got tired of paying the ADHD tax."
-          </blockquote>
-          <div className="flex items-center justify-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20" />
-            <cite className="text-white/40 not-italic uppercase tracking-[0.2em] text-xs font-anton tracking-wider">
-              Founder, SOR7ED
-            </cite>
-          </div>
-        </div>
-      </section>
 
       <div id="about" className="border-t border-white/5 sm:snap-start">
         <FounderHero />

@@ -69,7 +69,7 @@ This doc is the single source of truth for building the SOR7ED platform. It outl
 ---
 
 ## Last Updated
-- **Timestamp:** ${new Date().toISOString()}
+- **Timestamp:** 2026-05-15
 
 ---
 

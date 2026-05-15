@@ -147,7 +147,7 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
 
                   <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-end">
                     <span className="text-[9px] font-black uppercase tracking-widest text-white/20 group-hover:text-white/50 transition-colors">
-                      Read Protocol →
+                      Read →
                     </span>
                   </div>
                 </div>

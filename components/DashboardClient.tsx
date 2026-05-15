@@ -100,10 +100,7 @@ export default function DashboardClient({
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/30">
                 <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
-                  ID: {profile?.whatsapp_number || 'PENDING'}
-                </span>
-                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
-                  STATUS: ACTIVE
+                  {profile?.whatsapp_number || 'WhatsApp pending'}
                 </span>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
+const getSupabaseAdmin = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const supabaseAdmin = getSupabaseAdmin();
+
     // Validate and consume token
     const { data: sessionData, error } = await supabaseAdmin
       .from('whatsapp_sessions')
@@ -39,14 +41,13 @@ export async function GET(request: NextRequest) {
       .update({ consumed: true })
       .eq('id', sessionData.id);
 
-    // Create the final target URL with context
+    // Build target URL — phone is intentionally omitted to avoid PII in URLs
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.sor7ed.com';
     const toolUrl = new URL(sessionData.target_url, siteUrl);
     toolUrl.searchParams.set('wa', '1');
-    toolUrl.searchParams.set('phone', sessionData.phone);
     toolUrl.searchParams.set('keyword', sessionData.source_keyword || '');
 
-    // CHECK FOR EXISTING USER TO AUTO-LOGIN
+    // Check for existing user and auto-login
     try {
       const { data: userProfile } = await supabaseAdmin
         .from('users')
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
 
       if (userProfile?.email) {
         console.log(`Bridge: Found existing user ${userProfile.email}, generating auto-login link.`);
-        
+
         const { data: authLink, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
           type: 'magiclink',
           email: userProfile.email,
@@ -66,7 +67,6 @@ export async function GET(request: NextRequest) {
         });
 
         if (!linkError && authLink?.properties?.action_link) {
-          // Redirect to the magic link which will handle sign-in then go to tool
           return NextResponse.redirect(authLink.properties.action_link);
         } else {
           console.error('Bridge: Failed to generate magic link:', linkError);
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       console.log('Bridge: No existing user found for this phone, proceeding as guest.');
     }
 
-    // FALLBACK: Redirect directly (guest mode)
+    // Fallback: redirect as guest
     return NextResponse.redirect(toolUrl.toString());
 
   } catch (error) {
