@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { Branch } from "@/lib/getBranches";
+import { branches } from "@/lib/constants";
 
 type Post = {
   id: string;
@@ -20,7 +20,7 @@ type Post = {
   level: string;
 };
 
-export default function IntelligenceGrid({ posts, branches }: { posts: Post[], branches: Branch[] }) {
+export default function IntelligenceGrid({ posts }: { posts: Post[] }) {
   const [search, setSearch] = useState("");
   const [activeBranch, setActiveBranch] = useState<string | null>(null);
 

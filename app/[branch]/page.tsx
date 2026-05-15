@@ -1,282 +1,101 @@
-// app/[branch]/page.tsx
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { TexturedBackground } from "@/components/TexturedBackground";
-import { SORTED_ECOSYSTEM_BRANCHES, BranchKey } from "@/lib/unified-branches";
-import { getBranches } from "@/lib/getBranches";
+import AmbientBackground from '@/components/AmbientBackground';
+
+import { branches } from "@/lib/constants";
 import { Metadata } from "next";
-import IntelligenceStrip from '@/components/IntelligenceStrip';
-import ToolStrip from '@/components/ToolStrip';
 
-type BranchParams = {
-  branch: string;
-};
+export async function generateMetadata({ params }: { params: Promise<{ branch: string }> }): Promise<Metadata> {
+    const resolvedParams = await params;
+    const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
+    
+    if (!branchInfo) return { title: 'Branch Not Found' };
 
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: BranchParams 
-}): Promise<Metadata> {
-  const branches = await getBranches();
-  const branchInfo = branches.find(b => b.slug === params.branch);
-  const ecosystemInfo = SORTED_ECOSYSTEM_BRANCHES[params.branch as BranchKey];
+    return {
+        title: `${branchInfo.name} | SOR7ED Branch`,
+        description: branchInfo.description,
+    };
+}
 
-  if (!branchInfo) return { title: 'Branch Not Found | SOR7ED' };
+export default async function BranchPage({ params }: { params: Promise<{ branch: string }> }) {
+    const resolvedParams = await params;
+    const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
 
-  return {
-    title: `${ecosystemInfo?.label || branchInfo.name} | SOR7ED`,
-    description: ecosystemInfo?.tagline || branchInfo.description,
-    openGraph: {
-      title: `${ecosystemInfo?.label || branchInfo.name} | SOR7ED`,
-      description: ecosystemInfo?.description || branchInfo.description,
+    if (!branchInfo) notFound();
+
+    const supabase = await createClient();
+
+    const { data: posts, error } = await supabase
+        .from('protocols')
+        .select('*')
+        .eq('branch', branchInfo.name)
+        .eq('status', 'Published')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+    if (error) {
+        console.error('Error fetching branch protocols:', error);
     }
-  };
-}
 
-export default async function BranchPage({ 
-  params 
-}: { 
-  params: BranchParams 
-}) {
-  const branches = await getBranches();
-  const branchInfo = branches.find(b => b.slug === params.branch);
-  const ecosystemInfo = SORTED_ECOSYSTEM_BRANCHES[params.branch as BranchKey];
+    return (
+        <main className="min-h-screen bg-[#0a0a0a] text-white px-6 py-20 relative overflow-hidden">
+            <AmbientBackground color={branchInfo.color} intensity="low" />
+            
+            <div className="relative z-10">
+                <div className="max-w-5xl mx-auto">
+                    <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors block mb-12">
+                        ← Back to branches
+                    </Link>
 
-  if (!branchInfo) notFound();
+                    <h1 className="text-5xl md:text-7xl font-black mb-4">{branchInfo.name}</h1>
+                    <p className="text-white/50 text-lg mb-16 max-w-xl">{branchInfo.description}</p>
 
-  const supabase = await createClient();
+                    <div className="space-y-4 mb-20">
+                        <p className="text-white/30 text-xs tracking-widest uppercase mb-6">Protocols & Tools</p>
 
-  // ✅ PERFORMANCE: Parallel data fetching
-  const [
-    { data: protocols, error: pError },
-    { data: tools, error: tError }
-  ] = await Promise.all([
-    supabase
-      .from('protocols')
-      .select('*')
-      .eq('branch', branchInfo.name)
-      .eq('status', 'Published')
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('tools')  
-      .select('*')
-      .eq('branch', branchInfo.name)
-      .neq('status', 'Draft')
-      .order('created_at', { ascending: false })
-  ]);
+                        {posts?.map((post) => (
+                            <Link
+                                key={post.slug}
+                                href={`/intelligence/${post.slug}`}
+                                className="border border-white/10 rounded-2xl p-6 flex justify-between items-center hover:bg-white/5 transition-all group"
+                            >
+                                <div>
+                                    <span className="text-xs bg-white/10 px-3 py-1 rounded-full text-white/70 mb-2 inline-block">Article</span>
+                                    <h3 className="text-lg font-bold group-hover:text-white/80 transition-colors">{post.title}</h3>
+                                    <p className="text-white/50 text-sm">{post.excerpt || post.description}</p>
+                                </div>
+                                <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono min-w-[140px]">
+                                    <span className="text-xs text-white/40 uppercase tracking-widest block mb-1">Text this →</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-lg">⚡</span>
+                                        <span className="font-bold tracking-widest uppercase">{post.keyword}</span>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
 
-  if (pError) console.error('Error fetching protocols:', pError);
-  if (tError) console.error('Error fetching tools:', tError);
+                        {(!posts || posts.length === 0) && (
+                            <div className="text-center py-20 border border-dashed border-white/10 rounded-3xl">
+                                <p className="text-white/30 italic">No protocols found for this branch yet.</p>
+                            </div>
+                        )}
+                    </div>
 
-  const branchColor = ecosystemInfo?.color || branchInfo.color || '#ffd107';
-  const hasContent = (protocols && protocols.length > 0) || (tools && tools.length > 0);
-
-  return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white pt-20 font-roboto font-thin">
-      {/* ─── HERO WITH MIDJOURNEY TEXTURE ─── */}
-      <TexturedBackground 
-        texture="architecture" 
-        intensityLevel="subtle"
-        className="relative"
-      >
-        <section className="relative px-4 sm:px-6 md:px-16 py-20 max-w-7xl mx-auto z-30">
-          {/* Branch color accent glow */}
-          <div 
-            className="absolute -top-20 -right-20 w-80 h-80 rounded-full blur-3xl opacity-10 pointer-events-none"
-            style={{ backgroundColor: branchColor }}
-          />
-
-          <div className="flex flex-col items-start">
-            {/* Branch icon */}
-            {branchInfo.icon && (
-              <span className="text-5xl md:text-7xl mb-8 block drop-shadow-lg">
-                {branchInfo.icon}
-              </span>
-            )}
-
-            {/* Branch name */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-anton tracking-wider mb-6 leading-[1.0] uppercase drop-shadow-xl">
-              {ecosystemInfo?.label || branchInfo.name}
-            </h1>
-
-            {/* Founder voice tagline */}
-            {ecosystemInfo?.tagline && (
-              <p 
-                className="text-2xl md:text-3xl font-anton tracking-wider mb-6 max-w-3xl leading-tight uppercase"
-                style={{ color: branchColor }}
-              >
-                {ecosystemInfo.tagline}
-              </p>
-            )}
-
-            <p className="text-white/60 text-lg md:text-xl max-w-2xl leading-relaxed mb-12">
-              {ecosystemInfo?.description || branchInfo.description}
-            </p>
-
-            {/* Branch status */}
-            <div className="flex gap-4 items-center">
-              <span className="text-[10px] font-anton tracking-wider uppercase tracking-[0.3em] text-white/20">
-                Branch Status
-              </span>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                <div 
-                  className="w-2 h-2 rounded-full animate-pulse" 
-                  style={{ backgroundColor: branchColor }} 
-                />
-                <span className="text-[10px] font-anton tracking-wider text-white/60 uppercase tracking-widest">
-                  Active
-                </span>
-              </div>
+                    <div className="border-t border-white/10 pt-16 text-center">
+                        <h2 className="text-3xl font-black mb-4">Want {branchInfo.name} protocols on WhatsApp?</h2>
+                        <p className="text-white/50 mb-8 max-w-md mx-auto">
+                            Sign up free, then text any keyword to get the step-by-step protocol instantly.
+                        </p>
+                        <Link
+                            href="/signup"
+                            className="inline-block bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-white/90 transition-all duration-300"
+                        >
+                            Sign up for free →
+                        </Link>
+                    </div>
+                </div>
             </div>
-          </div>
-        </section>
-      </TexturedBackground>
-
-      {/* ─── TOOLS STRIP ─── */}
-      {tools && tools.length > 0 && (
-        <div className="relative z-10 border-t border-white/5">
-          <ToolStrip 
-            tools={tools} 
-            title={`${ecosystemInfo?.label || branchInfo.name} Diagnostics`}
-            subtitle={`Find exactly what's broken in your ${(ecosystemInfo?.label || branchInfo.name).toLowerCase()} system.`}
-          />
-        </div>
-      )}
-
-      {/* ─── PROTOCOLS STRIP ─── */}
-      {protocols && protocols.length > 0 && (
-        <div className="relative z-10 border-t border-white/5">
-          <IntelligenceStrip articles={protocols as any} />
-        </div>
-      )}
-
-      {/* ─── EMPTY STATE ─── */}
-      {!hasContent && (
-        <BranchEmptyState 
-          branchName={ecosystemInfo?.label || branchInfo.name}
-          branchColor={branchColor}
-        />
-      )}
-
-      {/* ─── FOUNDER VOICE CTA ─── */}
-      <BranchCTA 
-        branchName={ecosystemInfo?.label || branchInfo.name}
-        branchColor={branchColor}
-        tagline={ecosystemInfo?.tagline}
-      />
-    </main>
-  );
-}
-
-// ─── EMPTY STATE COMPONENT ─────────────────────────────────────
-function BranchEmptyState({ 
-  branchName, 
-  branchColor 
-}: { 
-  branchName: string; 
-  branchColor: string;
-}) {
-  return (
-    <section className="py-32 relative z-10 border-t border-white/5">
-      <div className="max-w-2xl mx-auto px-6 text-center">
-        <div 
-          className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
-          style={{ 
-            backgroundColor: `${branchColor}15`, 
-            border: `1px solid ${branchColor}30` 
-          }}
-        >
-          <div 
-            className="w-3 h-3 rounded-full animate-pulse"
-            style={{ backgroundColor: branchColor }}
-          />
-        </div>
-        
-        <h3 className="text-xl font-anton tracking-wider text-white mb-3 uppercase">
-          Building this one right now.
-        </h3>
-        <p className="text-white/40 text-sm leading-relaxed mb-8 max-w-xs mx-auto">
-          The {branchName} protocols are in progress. I'm writing them from experience, 
-          not theory — so they take a bit longer to get right.
-        </p>
-        
-        <Link
-          href="/tools"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full 
-                     text-sm font-anton tracking-wider text-black transition-all 
-                     hover:scale-105 duration-300 uppercase"
-          style={{ backgroundColor: branchColor }}
-        >
-          See what's live →
-        </Link>
-      </div>
-    </section>
-  );
-}
-
-// ─── FOUNDER VOICE CTA ─────────────────────────────────────────
-function BranchCTA({ 
-  branchName, 
-  branchColor,
-  tagline
-}: { 
-  branchName: string; 
-  branchColor: string;
-  tagline?: string;
-}) {
-  return (
-    <section className="py-32 px-4 sm:px-6 md:px-16 relative z-10 border-t border-white/5">
-      <div className="max-w-5xl mx-auto">
-        <div className="relative rounded-[40px] p-8 sm:p-16 
-                       flex flex-col md:flex-row items-center 
-                       justify-between gap-12 text-center md:text-left
-                       overflow-hidden group
-                       bg-white/[0.02] border border-white/10">
-          
-          {/* Dynamic branch color glow */}
-          <div 
-            className="absolute -right-32 -bottom-32 w-96 h-96 rounded-full blur-[100px] 
-                       opacity-15 pointer-events-none transition-opacity duration-700 
-                       group-hover:opacity-25"
-            style={{ backgroundColor: branchColor }}
-          />
-
-          <div className="relative z-10">
-            <p 
-              className="text-[10px] font-anton tracking-wider uppercase tracking-[0.3em] mb-4"
-              style={{ color: branchColor }}
-            >
-              Stop Reading. Start Fixing.
-            </p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-anton tracking-wider uppercase mb-4 tracking-tight leading-tight">
-              Let's actually fix your<br />
-              {branchName} system.
-            </h2>
-            <p className="text-white/50 text-base sm:text-lg max-w-md leading-relaxed">
-              {tagline 
-                ? `${tagline} The diagnostic shows you what's broken. The WhatsApp protocol actually fixes it.`
-                : `The diagnostic shows you what's broken. The WhatsApp protocol actually fixes it. Step-by-step, built for how your brain works.`
-              }
-            </p>
-          </div>
-          
-          <Link
-            href="/signup"
-            className="relative z-10 shrink-0 inline-flex items-center 
-                       px-10 py-5 rounded-full font-anton tracking-wider text-black 
-                       hover:scale-105 transition-all duration-300 
-                       text-sm whitespace-nowrap uppercase"
-            style={{ 
-              backgroundColor: branchColor,
-              boxShadow: `0 0 30px ${branchColor}30`
-            }}
-          >
-            Get WhatsApp Access →
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
+        </main>
+    );
 }

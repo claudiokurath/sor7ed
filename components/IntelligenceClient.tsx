@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -145,8 +144,8 @@ export default function IntelligenceClient({ article }: { article: Article }) {
             />
             {/* Premium Header */}
             <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
-                <Link href="/">
-                    <Image src="/Images/Logo2026.png" alt="SOR7ED" width={216} height={84} className="h-20 w-auto opacity-20 hover:opacity-50 transition-opacity" />
+                <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors">
+                    SOR7ED
                 </Link>
                 
                 {user ? (

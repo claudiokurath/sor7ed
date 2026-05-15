@@ -1,22 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Anton, Roboto } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import SmartNav from "@/components/SmartNav";
-
-
-// ✅ MISSING INITIALIZATIONS - Correcting the initialization
-const anton = Anton({
-  variable: "--font-anton",
-  subsets: ["latin"],
-  weight: "400", // Anton requires explicit weight
-});
-
-const roboto = Roboto({
-  variable: "--font-roboto", 
-  subsets: ["latin"],
-  weight: ["100", "300", "400", "500", "700"], // Added 100/300 as used in body
-});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,16 +24,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "SOR7ED | Practical Protocols for Neurodivergent Minds",
   description: "Organize your life across 7 branches with practical protocols delivered via WhatsApp.",
-  icons: {
-    icon: '/Images/Favicon.jpg',
-    apple: '/Images/Favicon.jpg',
-  },
 };
 
 export function TextureOverlay() {
   return (
     <div 
-      className="pointer-events-none fixed inset-0 z-[100] h-full w-full opacity-[0.015] mix-blend-screen"
+      className="pointer-events-none fixed inset-0 z-[100] h-full w-full opacity-[0.015] mix-blend-mode-screen"
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
       }}
@@ -63,7 +45,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${anton.variable} ${roboto.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white">
         <TextureOverlay />

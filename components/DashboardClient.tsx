@@ -2,10 +2,9 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import type { Branch } from '@/lib/getBranches';
+import { branches } from '@/lib/constants';
 import KeywordToken from '@/components/KeywordToken';
 import { getBranchColor } from '@/lib/branch-config';
 import { ScoreLevel } from '@/types/assessment';
@@ -51,13 +50,11 @@ export default function DashboardClient({
   initialFavorites,
   initialHistory,
   tools,
-  branches,
 }: {
   profile: Profile | null;
   initialFavorites: UserFavorite[];
   initialHistory: AssessmentHistory[];
   tools: ToolSummary[];
-  branches: Branch[];
 }) {
   const [favorites, setFavorites] = useState<UserFavorite[]>(initialFavorites);
   const [history] = useState<AssessmentHistory[]>(initialHistory);
@@ -89,8 +86,8 @@ export default function DashboardClient({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <Link href="/">
-                  <Image src="/Images/Logo2026.png" alt="SOR7ED" width={180} height={72} className="h-16 w-auto opacity-20 hover:opacity-50 transition-opacity" />
+                <Link href="/" className="text-white/20 text-[10px] tracking-[0.3em] uppercase font-bold hover:text-white/40 transition-colors">
+                  SOR7ED
                 </Link>
                 <span className="text-white/10">/</span>
                 <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase font-bold">INTELLIGENCE PROFILE</span>

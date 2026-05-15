@@ -9,8 +9,6 @@ import KeywordToken from './KeywordToken';
 
 import { siteConfig } from '@/lib/constants';
 
-import { getHonestVerdict } from '@/lib/verdict-engine';
-
 interface ResultsScreenProps {
   result: AssessmentResult;
   onWhatsAppCTA?: () => void;
@@ -20,7 +18,6 @@ interface ResultsScreenProps {
 export default function ResultsScreen({ result, onWhatsAppCTA, isAuthenticated }: ResultsScreenProps) {
   const [revealPhase, setRevealPhase] = useState<'score' | 'narrative' | 'protocol' | 'cta'>('score');
   const branchColor = getBranchColor(result.branch);
-  const verdict = getHonestVerdict(result.score, result.branch);
 
   // Orchestrated reveal sequence for maximum psychological impact
   useEffect(() => {
@@ -93,11 +90,11 @@ export default function ResultsScreen({ result, onWhatsAppCTA, isAuthenticated }
           >
             {/* Narrative Insight */}
             <div className="mb-16">
-              <h2 className="text-xl md:text-3xl font-bold text-white mb-6 leading-tight">
-                {verdict.title}
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-6 leading-tight">
+                {result.narrative.subheadline}
               </h2>
-              <p className="text-white/70 text-base md:text-lg leading-relaxed whitespace-pre-line">
-                {verdict.body}
+              <p className="text-white/50 text-base md:text-lg leading-relaxed">
+                {result.narrative.insight}
               </p>
             </div>
 

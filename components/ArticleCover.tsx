@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 type ArticleCoverProps = {
@@ -12,17 +11,14 @@ type ArticleCoverProps = {
 };
 
 export default function ArticleCover({ keyword, branch, color, imageUrl }: ArticleCoverProps) {
-  const [imgError, setImgError] = useState(false);
-
-  if (imageUrl && !imgError) {
+  if (imageUrl) {
     return (
-      <div className="relative h-48 sm:h-72 w-full overflow-hidden rounded-t-2xl bg-[#0a0a0a]">
+      <div className="relative h-48 sm:h-72 w-full overflow-hidden rounded-t-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl}
           alt=""
           className="w-full h-full object-cover"
-          onError={() => setImgError(true)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>

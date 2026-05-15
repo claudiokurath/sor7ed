@@ -1,87 +1,57 @@
 @import "tailwindcss";
 
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-anton: var(--font-anton);
-  --font-roboto: var(--font-roboto);
 }
 
-@layer base {
+@media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ffffff;
-
-    --branch-spend-smart:  #F4D03F;
-    --branch-keep-going:   #E74C3C;
-    --branch-be-yourself:  #8B5CF6;
-    --branch-plan-ahead:   #3B82F6;
-    --branch-level-up:     #10B981;
-    --branch-be-connected: #F97316;
-    --branch-feel-good:    #14B8A6;
-  }
-
-  html {
-    background-color: var(--background);
-    color: var(--foreground);
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  body.focus-mode nav,
-  body.focus-mode footer {
-    display: none !important;
-  }
-
-  body.focus-mode {
-    background-color: #000;
-  }
-
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--background);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(244, 208, 63, 0.4);
-  }
-
-  ::selection {
-    background: rgba(244, 208, 63, 0.3);
-    color: white;
-  }
-
-  :focus-visible {
-    outline: 2px solid rgba(244, 208, 63, 0.5);
-    outline-offset: 2px;
-    border-radius: 4px;
+    --foreground: #ededed;
   }
 }
 
-@layer utilities {
-  .glass-panel {
-    @apply bg-white/[0.02] border border-white/10 backdrop-blur-md;
-  }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 17px;
+  overflow-x: hidden;
+  transition: background-color 0.5s ease;
+}
 
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Focus Mode Adjustments */
+body.focus-mode nav,
+body.focus-mode footer {
+  display: none !important;
+}
+
+body.focus-mode {
+  background-color: #000;
+}
+
+/* Custom Scrollbar for Premium Feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
 }

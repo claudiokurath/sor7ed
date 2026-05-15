@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function SiteFooter() {
   return (
@@ -8,9 +7,7 @@ export default function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-4">
           
           <div className="md:col-span-2">
-            <div className="mb-5">
-              <Image src="/Images/Logo2026.png" alt="SOR7ED" width={360} height={144} className="h-28 w-auto" />
-            </div>
+            <h3 className="text-white font-black text-xl mb-4 tracking-tight">SOR7ED</h3>
             <p className="text-white/50 leading-relaxed mb-6 max-w-md">
               Practical protocols for neurodivergent adults. We build the systems and tools 
               that work with your brain, not against it.
@@ -19,7 +16,7 @@ export default function SiteFooter() {
               <Link href="/tools" className="text-white/40 hover:text-white text-sm transition-colors">
                 Assessments
               </Link>
-              <Link href="/intelligence" className="text-white/40 hover:text-white text-sm transition-colors">
+              <Link href="/blog" className="text-white/40 hover:text-white text-sm transition-colors">
                 Articles
               </Link>
               <Link href="/signup?mode=login" className="text-white/40 hover:text-white text-sm transition-colors">
