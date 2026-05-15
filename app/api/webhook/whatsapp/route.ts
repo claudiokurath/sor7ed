@@ -99,30 +99,31 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "unregistered" });
             }
 
-            const { data: protocol } = await supabase
-                .from('protocols')
-                .select('*')
-                .ilike('keyword', keyword)
-                .single();
-            
-            if (protocol) {
-                if (protocol.pdf_url) {
-                    await sendWhatsAppDocument(senderPhone, protocol.pdf_url, protocol.title, protocol.tldr);
+            // 1. Look up keyword in Notion BLOG database (WhatsApp Trigger field)
+            const notionArticle = await lookupNotionArticle(keyword);
+
+            if (notionArticle) {
+                if (notionArticle.pdfUrl) {
+                    await sendWhatsAppDocument(senderPhone, notionArticle.pdfUrl, notionArticle.title, notionArticle.excerpt || '');
+                } else if (notionArticle.gammaUrl) {
+                    const content = `Hi ${user.first_name}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}\n\n${notionArticle.gammaUrl}`;
+                    await sendWhatsAppMessage(senderPhone, content);
                 } else {
-                    const content = `Hi ${user.first_name}, here is your protocol for *${protocol.title}*:\n\n${protocol.tldr}\n\n*THE PROTOCOL:*\n${protocol.protocol}\n\n${protocol.cta}`;
+                    const content = `Hi ${user.first_name}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}`;
                     await sendWhatsAppMessage(senderPhone, content);
                 }
             } else {
+                // 2. Fall back to Supabase tools
                 const { data: tool } = await supabase
                     .from('tools')
                     .select('*')
                     .ilike('keyword', keyword)
                     .single();
-                
+
                 if (tool) {
                     const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, keyword);
                     const template = getTemplateByKeyword(keyword);
-                    
+
                     if (template) {
                         await sendWhatsAppTemplate(senderPhone, keyword, token);
                     } else {
@@ -142,6 +143,48 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+async function lookupNotionArticle(keyword: string): Promise<{ title: string; excerpt: string; pdfUrl: string | null; gammaUrl: string | null } | null> {
+    const databaseId = process.env.NOTION_BLOG_DATABASE_ID;
+    const apiKey = process.env.NOTION_API_KEY;
+    if (!databaseId || !apiKey) return null;
+
+    const res = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            filter: {
+                property: "WhatsApp Trigger",
+                rich_text: { equals: keyword },
+            },
+            page_size: 1,
+        }),
+    });
+
+    if (!res.ok) return null;
+    const data = await res.json();
+    const page = data.results?.[0];
+    if (!page) return null;
+
+    const props = page.properties;
+    const title = props["Title"]?.title?.[0]?.plain_text ?? "";
+    const excerpt = props["Excerpt"]?.rich_text?.[0]?.plain_text ?? "";
+    const gammaUrl = props["Gamma URL"]?.url ?? null;
+
+    // Get fresh PDF URL from Gamma App File property
+    const files = props["Gamma App File"]?.files ?? [];
+    let pdfUrl: string | null = null;
+    if (files.length > 0) {
+        const file = files[0];
+        pdfUrl = file.type === "external" ? file.external?.url : file.file?.url ?? null;
+    }
+
+    return { title, excerpt, pdfUrl, gammaUrl };
 }
 
 async function sendWhatsAppTemplate(to: string, keyword: string, token: string) {
