@@ -271,39 +271,6 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         title="Take the 2-minute triage — we'll find your highest-friction branch."
         subtitle="Answer a few questions to get the exact assessments and protocols for your situation. No account needed."
       />
-
-      {/* MISSION SECTION */}
-      <section className="relative py-24 border-t border-white/5 overflow-hidden">
-        <div className="px-4 sm:px-6 md:px-16 max-w-7xl">
-          <div className="max-w-xl mb-16 text-left">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
-              <span className="text-white block">SOR7ED is software for the brain.</span>
-              <span className="text-[#ffd107] block mt-1">Delivered one protocol at a time.</span>
-            </h2>
-            <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
-              We built this for the late-diagnosed, the hyper-focused, and the chronically overwhelmed. No apps, no logins, no friction. Just what works.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/[0.02] border border-white/5 rounded-xl p-8 hover:bg-white/[0.04] transition-all group">
-              <span className="text-3xl mb-6 block">⚡</span>
-              <h3 className="text-lg font-black text-white mb-4 uppercase tracking-tight">Tactical Speed</h3>
-              <p className="text-white/30 text-xs leading-relaxed">No fluff. Protocols are designed to be read in 2 minutes and executed in 5. Speed is our priority.</p>
-            </div>
-            <div className="bg-white/[0.02] border border-white/5 rounded-xl p-8 hover:bg-white/[0.04] transition-all group">
-              <span className="text-3xl mb-6 block">📱</span>
-              <h3 className="text-lg font-black text-white mb-4 uppercase tracking-tight">Zero Friction</h3>
-              <p className="text-white/30 text-xs leading-relaxed">No new apps to manage. Everything lives in WhatsApp, where your life already happens.</p>
-            </div>
-            <div className="bg-white/[0.02] border border-white/5 rounded-xl p-8 hover:bg-white/[0.04] transition-all group">
-              <span className="text-3xl mb-6 block">🛠️</span>
-              <h3 className="text-lg font-black text-white mb-4 uppercase tracking-tight">Evidence Based</h3>
-              <p className="text-white/30 text-xs leading-relaxed">Built on neuro-science and behavioral frameworks that actually work for ADHD brains.</p>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
