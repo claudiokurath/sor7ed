@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
 
             // Handle dashboard commands
             if (keyword === 'menu' || keyword === 'branches') {
-                await sendBranchMenu(senderPhone, normalizedPhone);
+                await sendBranchMenu(senderPhone);
                 return NextResponse.json({ status: "ok" });
             }
             // Branch number shortcuts: 1–7
@@ -224,10 +224,9 @@ export async function POST(req: NextRequest) {
     }
 }
 
-async function sendBranchMenu(to: string, normalizedPhone: string) {
-    await sendWhatsAppMessage(to, `Here's your dashboard — tap to open:`);
-    await new Promise(r => setTimeout(r, 400));
-    await handleDashboardCommand(to, normalizedPhone);
+async function sendBranchMenu(to: string) {
+    const exploreUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/explore`;
+    await sendWhatsAppMessage(to, exploreUrl, true);
 }
 
 async function handleHelpCommand(to: string) {
@@ -260,8 +259,8 @@ async function handleOnboarding(
 
     await new Promise(r => setTimeout(r, 700));
 
-    // Message 2: Personal dashboard bridge link (auto-logs them in)
-    await handleDashboardCommand(to, normalizedPhone);
+    // Message 2: Explore page with rich image preview
+    await sendBranchMenu(to);
 }
 
 async function handleStatusCommand(
