@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import { getTemplateByKeyword } from "@/lib/whatsapp-templates";
 import { cacheNotionFile } from "@/lib/notion-file-cache";
+import { branches } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -195,40 +196,26 @@ async function handleOnboarding(
     // Message 1: Welcome
     await sendWhatsAppMessage(to,
         `Hey ${firstName}. You just made it into SOR7ED. 🤍\n\n` +
-        `This thread is your intelligence file. Every protocol, every tool, every deep dive — ` +
-        `delivered here. No apps. No dashboards. Just this.\n\n` +
-        `Here's where to start:`
+        `This thread is your intelligence file. Every protocol, every deep dive — delivered here. ` +
+        `No apps. No dashboards. Just this.\n\n` +
+        `SOR7ED is organised into 7 branches of life. Tap the ones that feel relevant right now and look around:`
     );
 
-    // Small pause so messages arrive in order
     await new Promise(r => setTimeout(r, 800));
 
-    // Message 2: Fetch 2 featured protocols and send as rich preview links
-    const { data: featured } = await supabase
-        .from('protocols')
-        .select('title, slug, excerpt')
-        .eq('status', 'Published')
-        .eq('featured', true)
-        .order('created_at', { ascending: false })
-        .limit(2);
-
-    if (featured?.length) {
-        for (const protocol of featured) {
-            await sendWhatsAppMessage(to, `${siteUrl}/intelligence/${protocol.slug}`, true);
-            await new Promise(r => setTimeout(r, 600));
-        }
+    // Messages 2–8: One link per branch, each renders as a rich preview card
+    for (const branch of branches) {
+        await sendWhatsAppMessage(to, `${siteUrl}/${branch.slug}`, true);
+        await new Promise(r => setTimeout(r, 500));
     }
 
-    // Message 3: Topic menu
+    // Message 9: Instructions
+    await new Promise(r => setTimeout(r, 600));
     await sendWhatsAppMessage(to,
-        `*Browse by topic — just reply with a keyword:*\n\n` +
-        `💸 *SPEND* — money leaks & ADHD tax\n` +
-        `⏱ *MOMENTUM* — habit systems that survive a crash\n` +
-        `😴 *WELLBEING* — sleep, energy, revenge bedtime\n` +
-        `📵 *DETOX* — reclaim your attention\n\n` +
+        `Once you find something useful, tap a keyword inside the page to get the protocol delivered here.\n\n` +
         `━━━━━━━━\n\n` +
-        `*Other commands:*\n` +
-        `STATUS — your intelligence file\n` +
+        `*Commands you can use any time:*\n` +
+        `STATUS — your progress file\n` +
         `NEW — latest protocol\n` +
         `PARK — pause without guilt\n` +
         `AUDIO [keyword] — listen instead of read`

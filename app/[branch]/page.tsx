@@ -9,12 +9,38 @@ import { Metadata } from "next";
 export async function generateMetadata({ params }: { params: Promise<{ branch: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
     const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
-    
+
     if (!branchInfo) return { title: 'Branch Not Found' };
 
+    const supabase = await createClient();
+    const { data: dbBranch } = await supabase
+        .from('branches')
+        .select('cover_image')
+        .eq('slug', resolvedParams.branch)
+        .single();
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
+    const pageUrl = `${siteUrl}/${resolvedParams.branch}`;
+    const image = dbBranch?.cover_image || `${siteUrl}/og-default.jpg`;
+    const description = `${branchInfo.icon} ${branchInfo.description} — protocols delivered to your WhatsApp.`;
+
     return {
-        title: `${branchInfo.name} | SOR7ED Branch`,
-        description: branchInfo.description,
+        title: `${branchInfo.name} | SOR7ED`,
+        description,
+        openGraph: {
+            title: `${branchInfo.icon} ${branchInfo.name}`,
+            description,
+            url: pageUrl,
+            siteName: 'SOR7ED',
+            images: [{ url: image, width: 1500, height: 600, alt: branchInfo.name }],
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: `${branchInfo.icon} ${branchInfo.name}`,
+            description,
+            images: [image],
+        },
     };
 }
 
