@@ -66,10 +66,10 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
   };
 
   return (
-    <main className="min-h-screen bg-black overflow-y-scroll overflow-x-hidden scroll-smooth sm:snap-y sm:snap-mandatory">
-      
+    <main className="h-screen bg-black overflow-y-scroll overflow-x-hidden snap-y snap-mandatory">
+
       {/* HERO SECTION */}
-      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start">
+      <section className="relative h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 snap-center">
         <div className="absolute inset-0 pointer-events-none">
           <div 
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-[0.06] blur-3xl"
@@ -192,8 +192,8 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
         </motion.div>
       </section>
 
-      {/* FOUNDER QUOTE — shown early so it's never missed */}
-      <section className="py-20 px-6 bg-black border-t border-white/5 sm:snap-start">
+      {/* FOUNDER QUOTE */}
+      <section className="h-screen flex flex-col items-center justify-center px-6 bg-black border-t border-white/5 snap-center">
         <div className="max-w-4xl mx-auto text-center">
           <div className="h-1 w-16 bg-[#ffd107] mx-auto mb-12 opacity-50" />
           <blockquote className="text-2xl md:text-4xl font-anton tracking-wider leading-tight text-white mb-10 uppercase">
@@ -215,9 +215,9 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </section>
 
       {/* BRANCHES SECTION */}
-      <section id="branches" className="relative py-16 border-t border-white/5 overflow-hidden sm:snap-start">
-        <div className="px-4 sm:px-6 md:px-16 mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+      <section id="branches" className="relative h-screen flex flex-col border-t border-white/5 overflow-hidden snap-center">
+        <div className="px-4 sm:px-6 md:px-16 pt-24 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-end gap-4">
             <div className="max-w-xl text-left">
               <h2 className="text-2xl md:text-4xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
                 <span className="text-white block">Every part of your life.</span>
@@ -261,7 +261,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
 
         <div 
           ref={carouselRef}
-          className="flex gap-4 sm:gap-4 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-12 w-full no-scrollbar scroll-smooth"
+          className="flex gap-4 sm:gap-4 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-4 w-full no-scrollbar scroll-smooth"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {branches.map((branch, i) => (
@@ -276,7 +276,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             >
               <Link 
                 href={`/${branch.slug}`}
-                className="relative flex flex-col justify-between h-[460px] w-[75vw] sm:w-[260px] p-8 rounded-xl bg-black border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
+                className="relative flex flex-col justify-between h-[380px] w-[75vw] sm:w-[240px] p-8 rounded-xl bg-black border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
               >
                 <div 
                   className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
@@ -306,33 +306,31 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </section>
 
       {/* INTELLIGENCE STRIP */}
-      <div className="sm:snap-start">
+      <div className="h-screen flex flex-col justify-center overflow-hidden snap-center border-t border-white/5">
         <IntelligenceStrip articles={articles} />
       </div>
 
       {/* TOOLS GALLERY SECTION */}
-      <div className="sm:snap-start bg-black py-20">
-        <ToolStrip 
-          tools={tools} 
+      <div className="h-screen flex flex-col justify-center overflow-hidden snap-center bg-black border-t border-white/5">
+        <ToolStrip
+          tools={tools}
           title="The Lab"
           subtitle="Featured diagnostics this week"
         />
-        
-        {/* TRIAGE CTA BUTTON */}
-        <div className="text-center py-12 px-6">
-          <Link 
-            href="/tools" 
+        <div className="text-center py-8 px-6">
+          <Link
+            href="/tools"
             className="inline-block bg-[#ffd107] text-black text-lg font-anton tracking-wider px-10 py-5 rounded-full hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,209,7,0.15)] uppercase"
           >
             Start 2-Minute Triage →
           </Link>
-          <p className="text-white/30 mt-6 text-sm font-roboto font-thin">
+          <p className="text-white/30 mt-4 text-sm font-roboto font-thin">
             No account needed. 7 questions. 2 minutes.
           </p>
         </div>
       </div>
 
-      <div id="about" className="border-t border-white/5 sm:snap-start">
+      <div id="about" className="h-screen flex flex-col justify-center overflow-hidden snap-center border-t border-white/5">
         <FounderHero />
       </div>
     </main>
