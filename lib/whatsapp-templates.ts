@@ -8,45 +8,42 @@ export interface TemplateContent {
 }
 
 export const TEMPLATE_LIBRARY: Record<string, TemplateContent> = {
+  spend: {
+    systemAlert: "MONEY LEAK DETECTED",
+    hookLine: "I just found a subscription I've been paying for since 2022. Please tell me your financial architecture is better than mine right now.",
+    assessmentName: "Spend Smart Diagnostic",
+    duration: "3 minutes",
+    ctaButtonText: "Find the leaks →",
+    postScript: "No judgment, just useful information about what's actually going on."
+  },
+  momentum: {
+    systemAlert: "MOMENTUM DROP IDENTIFIED",
+    hookLine: "I have two guitars I can't play and a Duolingo streak I murdered. Let's figure out what's actually killing your momentum.",
+    assessmentName: "Keep Going Diagnostic",
+    duration: "4 minutes",
+    ctaButtonText: "Map the pattern →",
+    postScript: "Build momentum systems that survive the inevitable crash."
+  },
+  wellbeing: {
+    systemAlert: "SLEEP REVENGE DETECTED",
+    hookLine: "Staying up too late because it's the only time that's yours is something I completely understand and also need to stop doing.",
+    assessmentName: "Feel Good Diagnostic",
+    duration: "4 minutes",
+    ctaButtonText: "Sort the baseline →",
+    postScript: "Let's fix the day so you don't need to steal the night."
+  },
   detox: {
-    systemAlert: "SIGNAL DEGRADATION DETECTED",
-    hookLine: "Your attention is being harvested. Time to measure the damage and rebuild your focus architecture.",
+    systemAlert: "ATTENTION HARVEST ALERT",
+    hookLine: "I used to check my phone 400 times a day. Turns out my attention was being harvested. Let's measure the damage.",
     assessmentName: "Notification Detox Diagnostic",
     duration: "3 minutes",
-    ctaButtonText: "Initiate Diagnostic",
-    postScript: "Results include your personalized protocol."
-  },
-  sleep: {
-    systemAlert: "RECOVERY PROTOCOL INITIATED", 
-    hookLine: "Sleep debt compounds faster than financial debt. Your recovery system needs auditing.",
-    assessmentName: "Sleep Architecture Analysis",
-    duration: "4 minutes",
-    ctaButtonText: "Run Analysis",
-    postScript: "Custom sleep protocol generated from your results."
-  },
-  dopamine: {
-    systemAlert: "REWARD CIRCUIT CHECK",
-    hookLine: "Your dopamine system is either working for you or against you. Time to find out which.",
-    assessmentName: "Dopamine Menu Builder",
-    duration: "5 minutes", 
-    ctaButtonText: "Map My System",
-    postScript: "Builds your personalized dopamine menu automatically."
-  },
-  friction: {
-    systemAlert: "RESISTANCE PATTERNS IDENTIFIED",
-    hookLine: "Every system has hidden friction points bleeding your energy. The Friction Finder locates yours.",
-    assessmentName: "Friction Finder Analysis",
-    duration: "4 minutes",
-    ctaButtonText: "Find My Friction",
-    postScript: "Most users identify 3-5 invisible blockers."
+    ctaButtonText: "Stop the harvest →",
+    postScript: "Built for how your brain actually works."
   }
 };
 
 export function getTemplateByKeyword(keyword: string): TemplateContent | null {
   const k = keyword.toLowerCase().trim();
-  // Check direct match
   if (TEMPLATE_LIBRARY[k]) return TEMPLATE_LIBRARY[k];
-  
-  // Fuzzy match or default
   return null;
 }

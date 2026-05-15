@@ -9,6 +9,7 @@ import type { User } from '@supabase/supabase-js';
 import IntelligenceStrip from '@/components/IntelligenceStrip';
 import ToolStrip from '@/components/ToolStrip';
 import { getBranchColor } from '@/lib/branch-config';
+import { FounderHero } from '@/components/FounderHero';
 
 type Tool = {
   id: string;
@@ -45,15 +46,7 @@ const taglines = [
 ];
 
 export default function HomeClient({ tools, user, articles, branches }: { tools: Tool[], user: User | null, articles: IntelligenceBriefing[], branches: Branch[] }) {
-  const [taglineIndex, setTaglineIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex(i => (i + 1) % taglines.length);
-    }, 2200);
-    return () => clearInterval(interval);
-  }, []);
 
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
@@ -67,119 +60,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
   return (
     <main className="min-h-screen bg-[#0a0a0a] overflow-y-scroll overflow-x-hidden scroll-smooth sm:snap-y sm:snap-mandatory">
       
-      {/* HERO SECTION */}
-      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start">
-        <div className="absolute inset-0 pointer-events-none">
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-[0.06] blur-3xl"
-            style={{ background: 'radial-gradient(circle, #2E5BFF 0%, transparent 70%)' }}
-          />
-        </div>
-
-        <div className="absolute top-8 left-0 right-0 flex items-center px-4 sm:px-6 md:px-16 z-50">
-          {/* Logo Centered */}
-          <div className="absolute left-1/2 -translate-x-1/2">
-            <Link href="/">
-              <Image 
-                src="/Images/Logo2026.png" 
-                alt="SOR7ED" 
-                width={216} 
-                height={84} 
-                className="h-20 w-auto opacity-90 hover:opacity-100 transition-opacity" 
-              />
-            </Link>
-          </div>
-
-          <div className="flex-1" />
-
-          <div className="flex gap-4 sm:gap-8 items-center relative z-10">
-            {user ? (
-              <Link href="/dashboard" className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-                Dashboard
-              </Link>
-            ) : (
-              <>
-                <Link href="/signup?mode=login" className="hidden sm:block text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium">
-                  Sign In
-                </Link>
-                <Link href="/signup" className="px-5 py-2.5 bg-white text-black text-xs tracking-widest uppercase font-black rounded-full hover:scale-105 transition-all">
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="relative z-10 max-w-5xl">
-          <motion.p
-            className="text-sm md:text-xs tracking-[0.35em] uppercase text-white/30 mb-6 font-medium"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            Practical protocols via WhatsApp
-          </motion.p>
-
-          <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.0] tracking-tight mb-8"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-          >
-            <span className="text-white block mb-2">The world wasn&apos;t built for your brain.</span>
-            <span className="text-[#ffd107] block">We build systems that are.</span>
-          </motion.h1>
-
-          <motion.p
-            className="text-white/40 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}
-          >
-            ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
-          </motion.p>
-
-          {/* Full-width buttons on mobile */}
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 mt-10 w-full sm:w-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            <a
-              href="#branches"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white text-base transition-all duration-300 hover:scale-105"
-              style={{ background: '#2E5BFF' }}
-            >
-              Explore Your Branches
-            </a>
-            {user ? (
-              <Link
-                href="/intelligence"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
-              >
-                Browse Intelligence →
-              </Link>
-            ) : (
-              <Link
-                href="/signup"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 rounded-full font-semibold text-white/60 text-base border border-white/10 hover:border-white/30 hover:text-white transition-all duration-300"
-              >
-                Sign up for free protocols
-              </Link>
-            )}
-          </motion.div>
-        </div>
-
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
-          <div className="w-px h-10 bg-gradient-to-b from-transparent to-white/20" />
-        </motion.div>
-      </section>
+      <FounderHero />
 
       {/* BRANCHES SECTION */}
       <section id="branches" className="relative py-24 border-t border-white/5 overflow-hidden">

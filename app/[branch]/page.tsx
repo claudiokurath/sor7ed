@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import AmbientBackground from '@/components/AmbientBackground';
+import { SORTED_ECOSYSTEM_BRANCHES, BranchKey } from "@/lib/unified-branches";
 import { getBranches } from "@/lib/getBranches";
 import { Metadata } from "next";
 import IntelligenceStrip from '@/components/IntelligenceStrip';
@@ -12,12 +13,13 @@ export async function generateMetadata({ params }: { params: Promise<{ branch: s
     const resolvedParams = await params;
     const branches = await getBranches();
     const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
+    const ecosystemInfo = SORTED_ECOSYSTEM_BRANCHES[resolvedParams.branch as BranchKey];
 
     if (!branchInfo) return { title: 'Branch Not Found' };
 
     return {
-        title: `${branchInfo.name} | SOR7ED Branch`,
-        description: branchInfo.description,
+        title: `${branchInfo.name} | SOR7ED`,
+        description: ecosystemInfo?.description || branchInfo.description,
     };
 }
 
@@ -25,6 +27,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
     const resolvedParams = await params;
     const branches = await getBranches();
     const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
+    const ecosystemInfo = SORTED_ECOSYSTEM_BRANCHES[resolvedParams.branch as BranchKey];
 
     if (!branchInfo) notFound();
 
@@ -62,13 +65,17 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                 </Link>
             </div>
 
-            {/* HERO */}
             <section className="relative pt-40 pb-20 px-4 sm:px-6 md:px-16 max-w-7xl mx-auto z-10">
                 <div className="flex flex-col items-start">
                     <span className="text-5xl md:text-7xl mb-8">{branchInfo.icon}</span>
-                    <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight leading-[1.0]">{branchInfo.name}</h1>
-                    <p className="text-white/50 text-xl md:text-2xl max-w-2xl leading-relaxed mb-12">
-                        {branchInfo.description}
+                    <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight leading-[1.0] uppercase">
+                      {ecosystemInfo?.label || branchInfo.name}
+                    </h1>
+                    <p className="text-[#ffd107] text-2xl md:text-3xl font-bold mb-4 max-w-2xl leading-tight">
+                      {ecosystemInfo?.tagline}
+                    </p>
+                    <p className="text-white/50 text-xl md:text-2xl max-w-2xl leading-relaxed mb-12" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
+                        {ecosystemInfo?.description || branchInfo.description}
                     </p>
                     
                     <div className="flex gap-4 items-center">
