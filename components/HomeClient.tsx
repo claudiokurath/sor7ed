@@ -46,7 +46,15 @@ const taglines = [
 ];
 
 export default function HomeClient({ tools, user, articles, branches }: { tools: Tool[], user: User | null, articles: IntelligenceBriefing[], branches: Branch[] }) {
+  const [taglineIndex, setTaglineIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTaglineIndex(i => (i + 1) % taglines.length);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, []);
 
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
@@ -113,15 +121,25 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             Practical protocols via WhatsApp
           </motion.p>
 
-          <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.0] tracking-tight mb-8"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-          >
-            <span className="text-white block mb-2">The world wasn&apos;t built for your brain.</span>
-            <span className="text-[#ffd107] block">We build systems that are.</span>
-          </motion.h1>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.0] tracking-tight mb-8">
+            <span className="text-white block mb-2">If you&apos;re feeling</span>
+            <div className="h-[1.1em] relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={taglineIndex}
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -40, opacity: 0 }}
+                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  className="block"
+                  style={{ color: taglines[taglineIndex].color }}
+                >
+                  {taglines[taglineIndex].word}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+            <span className="text-white block mt-2">We build systems that work.</span>
+          </h1>
 
           <motion.p
             className="text-white/40 text-base sm:text-lg md:text-xl max-w-xl leading-relaxed"
@@ -130,7 +148,7 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             transition={{ duration: 0.6, delay: 0.5 }}
             style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}
           >
-            ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software.
+            SOR7ED delivers practical protocols and tactical tools for neurodivergent adults via WhatsApp — organized into 7 branches of life.
           </motion.p>
 
           {/* Full-width buttons on mobile */}
