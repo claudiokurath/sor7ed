@@ -25,50 +25,63 @@ export const metadata: Metadata = {
 
 export default function ExplorePage() {
     return (
-        <main className="min-h-screen bg-[#0a0a0a] text-white px-4 py-20">
-            <div className="max-w-2xl mx-auto">
-
-                <div className="mb-12 pt-8">
-                    <span className="text-xs uppercase tracking-[0.3em] text-white/30 block mb-4">
-                        Your dashboard
-                    </span>
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">7 branches of life.</h1>
-                    <p className="text-white/40 text-lg leading-relaxed">
-                        Tap a branch to explore its protocols. When you find one that fits,
-                        text the keyword to get it delivered to your WhatsApp.
+        <div className="min-h-screen bg-[#0a0a0a] text-white">
+            {/* Header */}
+            <div className="border-b border-white/5 px-6 py-16 pt-28">
+                <div className="max-w-5xl mx-auto">
+                    <span className="text-xs uppercase tracking-[0.3em] text-white/25 block mb-4">Your dashboard</span>
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-4">
+                        7 branches<br />
+                        <span className="text-white/30">of your life.</span>
+                    </h1>
+                    <p className="text-white/40 text-lg max-w-md mt-6">
+                        Pick a branch. Find what fits. Text the keyword and get it on WhatsApp.
                     </p>
                 </div>
+            </div>
 
-                <div className="space-y-3">
+            {/* Branch Grid */}
+            <div className="max-w-5xl mx-auto px-6 py-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {branches.map((branch, i) => (
                         <Link
                             key={branch.slug}
                             href={`/${branch.slug}`}
-                            className="flex items-center gap-5 p-5 rounded-2xl border border-white/8 hover:border-white/20 hover:bg-white/[0.02] transition-all group"
+                            className="group relative rounded-3xl border border-white/5 hover:border-white/15 bg-[#0f0f0f] p-8 transition-all duration-300 overflow-hidden"
                         >
-                            <span className="text-3xl">{branch.icon}</span>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-xs text-white/20 font-mono">0{i + 1}</span>
-                                    <h2 className="font-semibold text-lg group-hover:text-white transition-colors"
-                                        style={{ color: branch.color }}>
-                                        {branch.name}
-                                    </h2>
+                            {/* Glow */}
+                            <div
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"
+                                style={{ background: `radial-gradient(ellipse at 0% 0%, ${branch.color}12, transparent 70%)` }}
+                            />
+
+                            <div className="relative z-10">
+                                <div className="flex items-start justify-between mb-6">
+                                    <span className="text-4xl">{branch.icon}</span>
+                                    <span className="text-white/15 font-mono text-sm">0{i + 1}</span>
                                 </div>
-                                <p className="text-white/40 text-sm mt-0.5 truncate">{branch.description}</p>
+                                <h2
+                                    className="text-xl font-black mb-2 tracking-tight"
+                                    style={{ color: branch.color }}
+                                >
+                                    {branch.name}
+                                </h2>
+                                <p className="text-white/35 text-sm leading-relaxed">{branch.description}</p>
+
+                                <div className="mt-6 flex items-center gap-2">
+                                    <span className="text-xs text-white/20 group-hover:text-white/40 transition-colors font-bold uppercase tracking-widest">
+                                        Explore →
+                                    </span>
+                                </div>
                             </div>
-                            <span className="text-white/20 group-hover:text-white/50 transition-colors text-lg">→</span>
                         </Link>
                     ))}
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-white/5 text-center">
-                    <p className="text-white/20 text-xs">
-                        Text <span className="text-white/40 font-mono">MENU</span> any time to come back here.
-                    </p>
-                </div>
-
+                <p className="text-center text-white/15 text-xs mt-12">
+                    Text <span className="text-white/30 font-mono">MENU</span> any time to come back here
+                </p>
             </div>
-        </main>
+        </div>
     );
 }
