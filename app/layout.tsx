@@ -4,16 +4,18 @@ import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import SmartNav from "@/components/SmartNav";
 
+
+// ✅ MISSING INITIALIZATIONS - Correcting the initialization
 const anton = Anton({
-  weight: "400",
   variable: "--font-anton",
   subsets: ["latin"],
+  weight: "400", // Anton requires explicit weight
 });
 
 const roboto = Roboto({
-  weight: ["100", "300"],
-  variable: "--font-roboto",
+  variable: "--font-roboto", 
   subsets: ["latin"],
+  weight: ["100", "300", "400", "500", "700"], // Added 100/300 as used in body
 });
 
 const geistSans = Geist({
