@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { branches } from '@/lib/constants';
 
 const ROTATING_WORDS = [
   { text: 'Overwhelmed', color: '#E94560' },
@@ -67,7 +68,6 @@ const TEMPLATES = [
   }
 ];
 
-const BRANCHES = ['Cognitive', 'Temporal', 'Emotional', 'Financial', 'Social', 'Physical', 'Environmental'];
 
 const FAQS = [
   {
@@ -145,7 +145,7 @@ function RotatingHero() {
 
         <div className="flex flex-wrap gap-4 mb-12">
           <Link
-            href="/branches"
+            href="/explore"
             className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white px-8 py-4 rounded-full font-semibold transition inline-flex items-center gap-2"
           >
             Explore Your Branches
@@ -168,6 +168,68 @@ function RotatingHero() {
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
         <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent" />
+      </div>
+    </section>
+  );
+}
+
+function BranchCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <section className="py-24">
+      <div className="max-w-5xl mx-auto px-4 mb-10 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-3">
+          Every part of your life, simplified
+        </h2>
+        <p className="text-white/40">7 branches. 50+ protocols. One WhatsApp.</p>
+      </div>
+
+      <div
+        ref={scrollRef}
+        className="flex gap-5 overflow-x-auto px-6 pb-6 scrollbar-hide"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {branches.map((branch, i) => (
+          <Link
+            key={branch.slug}
+            href={`/${branch.slug}`}
+            className="group relative flex-shrink-0 w-64 rounded-3xl border border-white/5 hover:border-white/15 bg-[#0f0f0f] p-8 transition-all duration-300 overflow-hidden"
+          >
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"
+              style={{ background: `radial-gradient(ellipse at 0% 0%, ${branch.color}18, transparent 70%)` }}
+            />
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-6">
+                <span className="text-4xl">{branch.icon}</span>
+                <span className="text-white/15 font-mono text-sm">0{i + 1}</span>
+              </div>
+              <h3
+                className="text-xl font-black mb-2 tracking-tight"
+                style={{ color: branch.color }}
+              >
+                {branch.name}
+              </h3>
+              <p className="text-white/35 text-sm leading-relaxed">{branch.description}</p>
+              <div className="mt-6">
+                <span className="text-xs text-white/20 group-hover:text-white/40 transition-colors font-bold uppercase tracking-widest">
+                  Explore →
+                </span>
+              </div>
+            </div>
+          </Link>
+        ))}
+        {/* See all card */}
+        <Link
+          href="/explore"
+          className="group flex-shrink-0 w-48 rounded-3xl border border-dashed border-white/10 hover:border-white/25 bg-transparent p-8 flex flex-col items-center justify-center transition-all duration-300"
+        >
+          <span className="text-white/30 group-hover:text-white/60 text-4xl mb-4 transition-colors">→</span>
+          <span className="text-white/30 group-hover:text-white/60 text-sm font-bold uppercase tracking-widest transition-colors">
+            See all
+          </span>
+        </Link>
       </div>
     </section>
   );
@@ -209,26 +271,8 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* 7 BRANCHES */}
-      <section className="py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Every part of your life, simplified
-          </h2>
-          <p className="text-white/40 mb-16">7 branches. 50+ protocols. One WhatsApp.</p>
-
-          <div className="flex flex-wrap justify-center gap-3">
-            {BRANCHES.map((branch) => (
-              <span
-                key={branch}
-                className="border border-white/10 rounded-full px-6 py-3 text-sm text-white/70 hover:border-white/30 hover:text-white transition cursor-default"
-              >
-                {branch}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* 7 BRANCHES CAROUSEL */}
+      <BranchCarousel />
 
       {/* FREE TEMPLATES */}
       <section className="py-24 px-4 bg-white/[0.02]">
