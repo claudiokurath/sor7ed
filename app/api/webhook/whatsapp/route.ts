@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
             }
 
             // Entry/greeting phrases — show menu
-            const entryPhrases = ['sorted', "let's get sorted", 'lets get sorted', 'hello', 'hi', 'hey', 'start'];
+            const entryPhrases = ['sor7ed', 'sorted', "let's get sorted", 'lets get sorted', 'hello', 'hi', 'hey', 'start'];
             if (entryPhrases.includes(keyword)) {
                 await handleHelpCommand(senderPhone);
                 return NextResponse.json({ status: "ok" });
