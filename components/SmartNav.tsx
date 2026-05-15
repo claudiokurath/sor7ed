@@ -20,19 +20,13 @@ export default function SmartNav() {
       setUser(data.user);
     });
   }, []);
-  // Only show on non-homepage after user scrolls
-  useEffect(() => {
-    if (pathname === '/') return;
-    
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 100);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [pathname]);
 
-  if (pathname === '/') return null;
+  // Make it always visible as requested by the user
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  // Removed pathname === '/' return null to show on homepage
 
   return (
     <AnimatePresence>

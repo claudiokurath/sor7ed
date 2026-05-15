@@ -71,3 +71,4 @@ export async function updateSession(request: NextRequest) {
   // IMPORTANT: You *must* return the supabaseResponse object as it is
   return supabaseResponse
 }
+AudioData

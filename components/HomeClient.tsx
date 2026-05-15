@@ -201,6 +201,16 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
                 <span className="text-white block">Every part of your life.</span>
                 <span className="text-[#ffd107] block mt-1">Simplified into 7 branches.</span>
               </h2>
+              <div className="flex flex-wrap gap-2 mb-8">
+                {branches.map(branch => (
+                  <span 
+                    key={branch.slug} 
+                    className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] uppercase tracking-widest text-white/60 font-anton tracking-wider"
+                  >
+                    {branch.name}
+                  </span>
+                ))}
+              </div>
               <p className="text-white/40 text-sm md:text-base font-roboto font-thin max-w-md leading-relaxed">
                 Practical protocols and tactical tools designed for busy, distracted, and neurodivergent minds. Delivered one micro-action at a time.
               </p>
@@ -279,13 +289,42 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </div>
 
       {/* TOOLS GALLERY SECTION */}
-      <div className="sm:snap-start">
+      <div className="sm:snap-start bg-[#0d0d0d] py-20">
         <ToolStrip 
           tools={tools} 
-          title="Take the 2-minute triage"
-          subtitle="We'll find your highest-friction branch."
+          title="The Lab"
+          subtitle="Featured diagnostics this week"
         />
+        
+        {/* TRIAGE CTA BUTTON */}
+        <div className="text-center py-12 px-6">
+          <Link 
+            href="/tools" 
+            className="inline-block bg-[#ffd107] text-black text-lg font-anton tracking-wider px-10 py-5 rounded-full hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,209,7,0.15)] uppercase"
+          >
+            Start 2-Minute Triage →
+          </Link>
+          <p className="text-white/30 mt-6 text-sm font-roboto font-thin">
+            No account needed. 7 questions. 2 minutes.
+          </p>
+        </div>
       </div>
+
+      {/* FOUNDER TESTIMONIAL / QUOTE */}
+      <section className="py-32 px-6 bg-black border-t border-white/5 sm:snap-start">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="w-12 h-1 w-24 bg-[#ffd107] mx-auto mb-12 opacity-50" />
+          <blockquote className="text-2xl md:text-4xl font-anton tracking-wider leading-tight text-white mb-12 uppercase">
+            "I didn&apos;t build SOR7ED because I love productivity. I built it because I got tired of paying the ADHD tax."
+          </blockquote>
+          <div className="flex items-center justify-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20" />
+            <cite className="text-white/40 not-italic uppercase tracking-[0.2em] text-xs font-anton tracking-wider">
+              Founder, SOR7ED
+            </cite>
+          </div>
+        </div>
+      </section>
 
       <div id="about" className="border-t border-white/5 sm:snap-start">
         <FounderHero />
