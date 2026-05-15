@@ -7,7 +7,7 @@ export default async function Home() {
     const { data: articles } = await supabase
         .from('protocols')
         .select('slug, title, branch, tldr, excerpt, summary, cover_image, read_time, level')
-        .eq('status', 'Live')
+        .eq('status', 'Published')
         .order('created_at', { ascending: false })
         .limit(8);
 
