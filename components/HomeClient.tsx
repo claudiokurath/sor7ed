@@ -196,144 +196,72 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </section>
 
       {/* BRANCHES SECTION */}
-      <section id="branches" className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center sm:snap-start px-4 sm:px-6 md:px-16 pt-10 pb-6">
-          <div className="mb-10">
-            <motion.div
-                className="flex items-center gap-4 mb-2"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-            >
-                <div className="h-px flex-1 bg-white/5" />
-                <span className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium">
-                7 Branches of Life
-                </span>
-                <div className="h-px flex-1 bg-white/5" />
-            </motion.div>
-
-            <motion.h2
-                className="text-3xl md:text-5xl font-bold text-white mt-6 mb-2 tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-            >
-                Every part of your life,<br />simplified.
-            </motion.h2>
-
-            <motion.p
-                className="text-white/30 text-base max-w-lg leading-relaxed"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-            >
-                Each branch contains practical protocols — 2-minute micro-actions designed for busy, distracted, and neurodivergent minds.
-            </motion.p>
-          </div>
-
-        {/* Enhanced carousel with navigation for PC */}
-        <div className="relative group">
-          <div 
-            ref={carouselRef}
-            className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-12 w-full no-scrollbar scroll-smooth"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <style jsx>{`
-              .no-scrollbar::-webkit-scrollbar { display: none; }
-            `}</style>
-            
-            {branches.map((branch, i) => (
-              <motion.div
-                key={branch.slug}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                style={{ scrollSnapAlign: 'start' }}
-                className="shrink-0"
-              >
-                <Link 
-                  href={`/${branch.slug}`}
-                  className="relative flex flex-col justify-between h-[50vh] min-h-[360px] max-h-[420px] w-[85vw] sm:w-[320px] p-6 sm:p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
-                >
-                  {/* Card glow effect */}
-                  <div 
-                    className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
-                    style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
-                  />
-                  
-                  {/* Large number in top-left */}
-                  <div 
-                    className="text-6xl sm:text-7xl md:text-8xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none" 
-                    style={{ color: branch.color }}
-                  >
-                    {branch.num}
-                  </div>
-
-                  {/* Bottom content */}
-                  <div className="relative z-10 mt-auto">
-                    <h3 
-                      className="text-xl sm:text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:brightness-110"
-                      style={{ color: branch.color }}
-                    >
-                      {branch.name}
-                    </h3>
-                    <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors">
-                      {branch.description}
-                    </p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Navigation Arrows for Desktop */}
-          <button 
-            onClick={() => scrollCarousel('left')}
-            className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all z-20 backdrop-blur-md opacity-0 group-hover:opacity-100"
-            aria-label="Previous branch"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          
-          <button 
-            onClick={() => scrollCarousel('right')}
-            className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all z-20 backdrop-blur-md opacity-0 group-hover:opacity-100"
-            aria-label="Next branch"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
-        </div>
-      </section>
-
-      {/* START HERE — triage, shown after branches so users know what they are */}
-      <section className="px-4 sm:px-6 md:px-16 py-12 sm:py-16 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="flex-1">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/40 mb-3 font-medium">
-                Not sure where to start?
-              </p>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
-                Take the 2-minute triage — we&apos;ll find your highest-friction branch.
+      <section id="branches" className="relative py-32 border-t border-white/5 overflow-hidden">
+        <div className="px-4 sm:px-6 md:px-16 mb-16">
+          <div className="flex flex-col md:flex-row justify-between items-end max-w-7xl mx-auto gap-8">
+            <div className="max-w-4xl">
+              <h2 className="text-4xl md:text-7xl font-black tracking-tight leading-[1.0] mb-6">
+                <span className="text-white block">Every part of your life.</span>
+                <span className="text-[#ffd107] block mt-2">Simplified into 7 branches.</span>
               </h2>
-              <p className="text-white/50 leading-relaxed">
-                Answer a few questions and we&apos;ll point you to the exact assessment and protocol for your situation. No account needed.
+              <p className="text-white/40 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+                Practical protocols and tactical tools designed for busy, distracted, and neurodivergent minds. Delivered one micro-action at a time.
               </p>
             </div>
-            <Link
-              href="/tools"
-              className="inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-sm bg-white text-black hover:scale-105 transition-all duration-300 whitespace-nowrap"
-              style={{ boxShadow: '0 0 40px rgba(255,255,255,0.1)' }}
+            <div className="flex items-center gap-3 shrink-0">
+              <button onClick={() => scrollCarousel('left')} className="hidden md:flex w-11 h-11 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all" aria-label="Previous branch">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button onClick={() => scrollCarousel('right')} className="hidden md:flex w-11 h-11 rounded-full bg-white/5 border border-white/10 items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all" aria-label="Next branch">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div 
+          ref={carouselRef}
+          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory px-4 sm:px-6 md:px-16 pb-12 w-full no-scrollbar scroll-smooth"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {branches.map((branch, i) => (
+            <motion.div
+              key={branch.slug}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              style={{ scrollSnapAlign: 'start' }}
+              className="shrink-0"
             >
-              Start Triage →
-            </Link>
-          </motion.div>
+              <Link 
+                href={`/${branch.slug}`}
+                className="relative flex flex-col justify-between h-[480px] w-[75vw] sm:w-[280px] p-8 rounded-2xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
+              >
+                <div 
+                  className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20" 
+                  style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
+                />
+                <div 
+                  className="text-7xl md:text-9xl font-black opacity-20 group-hover:opacity-40 transition-opacity duration-300 leading-none" 
+                  style={{ color: branch.color }}
+                >
+                  {branch.num}
+                </div>
+                <div className="relative z-10 mt-auto">
+                  <h3 
+                    className="text-2xl font-black mb-3 tracking-tight transition-colors group-hover:brightness-110"
+                    style={{ color: branch.color }}
+                  >
+                    {branch.name}
+                  </h3>
+                  <p className="text-white/40 text-xs leading-relaxed group-hover:text-white/60 transition-colors line-clamp-4">
+                    {branch.description}
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -348,50 +276,37 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       />
 
       {/* MISSION SECTION */}
-      <section className="relative min-h-[90vh] sm:h-screen w-full flex flex-col justify-center px-4 sm:px-6 md:px-16 sm:snap-start border-t border-white/5">
-        <div className="max-w-4xl">
-          <motion.p
-            className="text-xs tracking-[0.35em] uppercase text-white/20 mb-6 font-medium"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            Our Mission
-          </motion.p>
-          <motion.h2
-            className="text-4xl md:text-6xl font-black text-white leading-tight mb-8 tracking-tight"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            The world wasn&apos;t built for your brain. We build systems that are.
-          </motion.h2>
-          <motion.p
-            className="text-white/40 text-lg max-w-2xl leading-relaxed mb-10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
-            ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software. SOR7ED is that software, delivered one protocol at a time.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-          >
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-300 hover:scale-105"
-              style={{ background: '#2E5BFF' }}
-            >
-              Start your journey →
-            </Link>
-          </motion.div>
+      <section className="relative py-32 border-t border-white/5 overflow-hidden">
+        <div className="px-4 sm:px-6 md:px-16 max-w-7xl mx-auto">
+          <div className="max-w-4xl mb-20">
+            <h2 className="text-4xl md:text-7xl font-black tracking-tight leading-[1.0] mb-6">
+              <span className="text-white block">SOR7ED is software for the brain.</span>
+              <span className="text-[#ffd107] block mt-2">Delivered one protocol at a time.</span>
+            </h2>
+            <p className="text-white/40 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+              We built this for the late-diagnosed, the hyper-focused, and the chronically overwhelmed. No apps, no logins, no friction. Just what works.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 sm:p-10 hover:bg-white/[0.04] transition-all group">
+              <span className="text-4xl mb-6 block">⚡</span>
+              <h3 className="text-2xl font-black text-white mb-4">Tactical Speed</h3>
+              <p className="text-white/40 text-sm leading-relaxed">No fluff. Protocols are designed to be read in 2 minutes and executed in 5. Speed is our priority.</p>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 sm:p-10 hover:bg-white/[0.04] transition-all group">
+              <span className="text-4xl mb-6 block">📱</span>
+              <h3 className="text-2xl font-black text-white mb-4">Zero Friction</h3>
+              <p className="text-white/40 text-sm leading-relaxed">No new apps to manage. Everything lives in WhatsApp, where your life already happens.</p>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 sm:p-10 hover:bg-white/[0.04] transition-all group">
+              <span className="text-4xl mb-6 block">🛠️</span>
+              <h3 className="text-2xl font-black text-white mb-4">Evidence Based</h3>
+              <p className="text-white/40 text-sm leading-relaxed">Built on neuro-science and behavioral frameworks that actually work for ADHD brains.</p>
+            </div>
+          </div>
         </div>
       </section>
-
     </main>
   );
 }
