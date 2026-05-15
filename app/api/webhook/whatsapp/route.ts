@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import { getTemplateByKeyword } from "@/lib/whatsapp-templates";
+import { cacheNotionFile } from "@/lib/notion-file-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
             
             const { data: user } = await supabase
                 .from('users')
-                .select('first_name')
+                .select('id, user_id, first_name')
                 .eq('whatsapp_number', normalizedPhone)
                 .single();
 
@@ -97,6 +98,28 @@ export async function POST(req: NextRequest) {
                 const signupPrompt = `Welcome to SOR7ED! It looks like you haven't registered your number yet. Please sign up at ${process.env.NEXT_PUBLIC_SITE_URL}/signup to unlock your protocols.`;
                 await sendWhatsAppMessage(senderPhone, signupPrompt);
                 return NextResponse.json({ status: "unregistered" });
+            }
+
+            // Handle dashboard commands
+            if (keyword === 'status') {
+                await handleStatusCommand(senderPhone, user.id, user.first_name, supabase);
+                return NextResponse.json({ status: "ok" });
+            }
+            if (keyword === 'dashboard') {
+                await handleDashboardCommand(senderPhone, normalizedPhone);
+                return NextResponse.json({ status: "ok" });
+            }
+            if (keyword === 'park') {
+                await handleParkCommand(senderPhone, user.first_name);
+                return NextResponse.json({ status: "ok" });
+            }
+            if (keyword === 'new') {
+                await handleNewCommand(senderPhone, user.first_name, supabase);
+                return NextResponse.json({ status: "ok" });
+            }
+            if (keyword === 'history') {
+                await handleHistoryCommand(senderPhone, user.id, user.first_name, supabase);
+                return NextResponse.json({ status: "ok" });
             }
 
             // Handle AUDIO [keyword] requests
@@ -150,6 +173,132 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+async function handleStatusCommand(
+    to: string,
+    userId: string,
+    firstName: string,
+    supabase: ReturnType<typeof getSupabase>
+) {
+    const { data: history } = await supabase
+        .from('assessment_history')
+        .select('tool_name, score, completed_at')
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false })
+        .limit(5);
+
+    const { data: usage } = await supabase
+        .from('protocol_usage')
+        .select('keyword, used_at')
+        .eq('user_id', userId)
+        .order('used_at', { ascending: false })
+        .limit(3);
+
+    const assessmentLines = history?.length
+        ? history.map(h => {
+            const score = h.score ?? null;
+            const emoji = score === null ? '⬜' : score >= 70 ? '🔴' : score >= 40 ? '🟡' : '🟢';
+            return `${emoji} *${h.tool_name}* — ${score ?? 'Completed'}`;
+          }).join('\n')
+        : '⬜ No assessments yet';
+
+    const recentLine = usage?.length
+        ? `\n\n*Recent protocols:* ${usage.map(u => u.keyword).join(', ')}`
+        : '';
+
+    const msg =
+        `\`\`\`YOUR INTELLIGENCE FILE\`\`\`\n\n` +
+        `Hi ${firstName}. Here's where you stand:\n\n` +
+        assessmentLines +
+        recentLine +
+        `\n\n━━━━━━━━\n` +
+        `🔴 High friction  🟡 Some  🟢 Well calibrated\n\n` +
+        `*Commands:*\n` +
+        `DASHBOARD — full web view\n` +
+        `NEW — latest protocol\n` +
+        `HISTORY — all diagnostics\n` +
+        `PARK — pause without guilt`;
+
+    await sendWhatsAppMessage(to, msg);
+}
+
+async function handleDashboardCommand(to: string, normalizedPhone: string) {
+    const supabase = getSupabase();
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+    await supabase.from('whatsapp_sessions').insert({
+        phone: normalizedPhone,
+        token,
+        tool_slug: 'dashboard',
+        expires_at: expiresAt.toISOString(),
+        source_keyword: 'dashboard',
+        target_url: '/dashboard',
+    });
+
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}&redirect=/dashboard`;
+    await sendWhatsAppMessage(to, dashboardUrl, true);
+}
+
+async function handleParkCommand(to: string, firstName: string) {
+    const msg =
+        `PARKED. 🤍\n\n` +
+        `Everything stays exactly where you left it, ${firstName}.\n\n` +
+        `No timers. No pressure. No guilt.\n\n` +
+        `When you have the headspace, just say hi and I'll give you one tiny next step.`;
+    await sendWhatsAppMessage(to, msg);
+}
+
+async function handleNewCommand(
+    to: string,
+    firstName: string,
+    supabase: ReturnType<typeof getSupabase>
+) {
+    const { data: protocol } = await supabase
+        .from('protocols')
+        .select('title, slug, excerpt, keyword')
+        .eq('status', 'Published')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+    if (!protocol) {
+        await sendWhatsAppMessage(to, 'No new protocols yet — check back soon!');
+        return;
+    }
+
+    const url = `${process.env.NEXT_PUBLIC_SITE_URL}/protocols/${protocol.slug}`;
+    const keywordHint = protocol.keyword ? `\n\nText *${protocol.keyword.toUpperCase()}* to get the protocol delivered here.` : '';
+    const msg = `🆕 *Latest protocol for you, ${firstName}*\n\n*${protocol.title}*\n\n${protocol.excerpt || ''}${keywordHint}\n\n${url}`;
+    await sendWhatsAppMessage(to, msg, true);
+}
+
+async function handleHistoryCommand(
+    to: string,
+    userId: string,
+    firstName: string,
+    supabase: ReturnType<typeof getSupabase>
+) {
+    const { data: history } = await supabase
+        .from('assessment_history')
+        .select('tool_name, score, level, completed_at')
+        .eq('user_id', userId)
+        .order('completed_at', { ascending: false })
+        .limit(10);
+
+    if (!history?.length) {
+        await sendWhatsAppMessage(to, `No diagnostics on record yet, ${firstName}. Start one at ${process.env.NEXT_PUBLIC_SITE_URL}/tools`);
+        return;
+    }
+
+    const lines = history.map(h => {
+        const date = new Date(h.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        const score = h.score !== null ? ` — ${h.score}` : '';
+        return `• ${h.tool_name}${score} _(${date})_`;
+    }).join('\n');
+
+    await sendWhatsAppMessage(to, `\`\`\`DIAGNOSTIC RECORD\`\`\`\n\n${lines}`);
 }
 
 async function handleAudioRequest(
@@ -237,12 +386,16 @@ async function lookupNotionArticle(keyword: string): Promise<{ title: string; ex
     const excerpt = props["Excerpt"]?.rich_text?.[0]?.plain_text ?? "";
     const gammaUrl = props["Gamma URL"]?.url ?? null;
 
-    // Get fresh PDF URL from Gamma App File property
+    // Get PDF URL from Gamma App File property — cache via Supabase to avoid 1-hour Notion expiry
     const files = props["Gamma App File"]?.files ?? [];
     let pdfUrl: string | null = null;
     if (files.length > 0) {
         const file = files[0];
-        pdfUrl = file.type === "external" ? file.external?.url : file.file?.url ?? null;
+        const rawUrl = file.type === "external" ? file.external?.url : file.file?.url ?? null;
+        if (rawUrl) {
+            const pageId = page.id.replace(/-/g, '');
+            pdfUrl = await cacheNotionFile(rawUrl, pageId, "application/pdf");
+        }
     }
 
     return { title, excerpt, pdfUrl, gammaUrl };
@@ -339,9 +492,9 @@ async function sendWhatsAppDocument(to: string, pdfUrl: string, filename: string
     return await response.json();
 }
 
-async function sendWhatsAppMessage(to: string, text: string) {
+async function sendWhatsAppMessage(to: string, text: string, previewUrl = false) {
     const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
-    
+
     const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -353,7 +506,7 @@ async function sendWhatsAppMessage(to: string, text: string) {
             recipient_type: "individual",
             to: to,
             type: "text",
-            text: { body: text },
+            text: { body: text, preview_url: previewUrl },
         }),
     });
 
