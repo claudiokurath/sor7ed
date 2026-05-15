@@ -100,13 +100,13 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
             Practical protocols via WhatsApp
           </motion.p>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.0] tracking-tight mb-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight mb-8">
             <span className="text-white block mb-2">The world wasn&apos;t built for your brain.</span>
             <span className="text-[#ffd107] block">We build systems that are.</span>
           </h1>
 
           <motion.p
-            className="text-white/40 text-base sm:text-lg md:text-xl max-w-2xl leading-relaxed mx-auto mb-12"
+            className="text-white/40 text-sm sm:text-base md:text-lg max-w-xl leading-relaxed mx-auto mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -158,11 +158,11 @@ export default function HomeClient({ tools, user, articles, branches }: { tools:
       </section>
 
       {/* BRANCHES SECTION */}
-      <section id="branches" className="relative py-24 border-t border-white/5 overflow-hidden">
-        <div className="px-4 sm:px-6 md:px-16 mb-12">
+      <section id="branches" className="relative py-16 border-t border-white/5 overflow-hidden">
+        <div className="px-4 sm:px-6 md:px-16 mb-8">
           <div className="flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="max-w-xl text-left">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.1] mb-4">
                 <span className="text-white block">Every part of your life.</span>
                 <span className="text-[#ffd107] block mt-1">Simplified into 7 branches.</span>
               </h2>

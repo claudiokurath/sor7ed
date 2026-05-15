@@ -28,15 +28,15 @@ export default function IntelligenceStrip({ articles }: { articles: Intelligence
   if (articles.length === 0) return null;
 
   return (
-    <section className="relative py-24 border-t border-white/5 overflow-hidden">
-      <div className="px-4 sm:px-6 md:px-16 mb-12">
+    <section className="relative py-16 border-t border-white/5 overflow-hidden">
+      <div className="px-4 sm:px-6 md:px-16 mb-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-8">
           <div className="max-w-xl text-left">
-            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.0] mb-6">
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-[1.1] mb-4">
               <span className="text-white block">Field Intelligence.</span>
               <span className="text-[#ffd107] block mt-1">Context and theory for the neurodivergent.</span>
             </h2>
-            <p className="text-white/40 text-sm md:text-base font-medium max-w-md leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
+            <p className="text-white/40 text-[13px] md:text-sm font-medium max-w-md leading-relaxed" style={{ fontFamily: '"Arial Narrow", Arial, sans-serif' }}>
               Deep-dive briefings on navigating a world built for typical brains. Practical frameworks to help you understand your own operating system.
             </p>
           </div>
