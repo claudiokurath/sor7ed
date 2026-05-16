@@ -135,10 +135,10 @@ export async function POST(req: NextRequest) {
             if (keyword === 'stop') {
                 await supabase
                     .from('users')
-                    .update({ whatsapp_opted_out: true })
+                    .update({ whatsapp_opted_out: true, weekly_opted_in: false })
                     .eq('whatsapp_number', normalizedPhone);
                 await sendWhatsAppMessage(senderPhone,
-                    `You are unsubscribed from SOR7ED messages.\n\n` +
+                    `You are unsubscribed from all SOR7ED messages.\n\n` +
                     `Text *START* to re-enable any time.\n` +
                     `To delete your data: hello@sor7ed.com`
                 );
@@ -154,9 +154,34 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "opted_in" });
             }
 
+            if (keyword === 'stopweekly') {
+                await supabase
+                    .from('users')
+                    .update({ weekly_opted_in: false })
+                    .eq('whatsapp_number', normalizedPhone);
+                await sendWhatsAppMessage(senderPhone,
+                    `Weekly updates stopped.\n\n` +
+                    `You will still get responses when you text keywords.\n` +
+                    `Text *STARTWEEKLY* to turn them back on.`
+                );
+                return NextResponse.json({ status: "weekly_stopped" });
+            }
+
+            if (keyword === 'startweekly') {
+                await supabase
+                    .from('users')
+                    .update({ weekly_opted_in: true, weekly_opted_in_at: new Date().toISOString() })
+                    .eq('whatsapp_number', normalizedPhone);
+                await sendWhatsAppMessage(senderPhone,
+                    `You are in for weekly updates — every Tuesday, one useful thing. 🤍\n\n` +
+                    `Text *STOPWEEKLY* any time to turn them off.`
+                );
+                return NextResponse.json({ status: "weekly_started" });
+            }
+
             const { data: user } = await supabase
                 .from('users')
-                .select('id, user_id, first_name, whatsapp_onboarded, whatsapp_opted_out')
+                .select('id, user_id, first_name, whatsapp_onboarded, whatsapp_opted_out, weekly_opted_in')
                 .eq('whatsapp_number', normalizedPhone)
                 .single();
 
@@ -291,8 +316,11 @@ export async function POST(req: NextRequest) {
 
             // 1. Look up keyword in Notion BLOG database (WhatsApp Trigger field)
             const notionArticle = await lookupNotionArticle(keyword);
+            let contentDelivered = false;
+            let contentId = keyword;
 
             if (notionArticle) {
+                contentDelivered = true;
                 if (notionArticle.pdfUrl) {
                     await sendWhatsAppDocument(senderPhone, notionArticle.pdfUrl, notionArticle.title, notionArticle.excerpt || '');
                 } else if (notionArticle.gammaUrl) {
@@ -311,6 +339,8 @@ export async function POST(req: NextRequest) {
                     .single();
 
                 if (tool) {
+                    contentDelivered = true;
+                    contentId = tool.slug;
                     const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, keyword);
                     const template = getTemplateByKeyword(keyword);
 
@@ -326,6 +356,25 @@ export async function POST(req: NextRequest) {
                         `"${rawText}" is not a keyword I recognise.\n\n` +
                         `Text *HELP* to find what you need.\n` +
                         `Text *MENU* to browse your 7 branches.`
+                    );
+                }
+            }
+
+            // Log every content delivery for analytics/compliance
+            if (contentDelivered) {
+                await supabase.from('whatsapp_message_log').insert({
+                    user_phone: normalizedPhone,
+                    message_type: notionArticle ? 'protocol' : 'tool',
+                    content_id: contentId,
+                });
+
+                // Offer weekly opt-in after first content delivery (once only)
+                if (!user.weekly_opted_in) {
+                    await new Promise(r => setTimeout(r, 800));
+                    await sendWhatsAppMessage(senderPhone,
+                        `Quick question — want one useful thing from SOR7ED every Tuesday?\n\n` +
+                        `Just one message. Always actionable. Easy to stop.\n\n` +
+                        `Text *STARTWEEKLY* to get them, or ignore this.`
                     );
                 }
             }
