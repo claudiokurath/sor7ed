@@ -10,11 +10,12 @@ export default async function Dashboard() {
     redirect('/signup?mode=login');
   }
 
-  const [profileRes, favoritesRes, historyRes, toolsRes] = await Promise.all([
+  const [profileRes, favoritesRes, historyRes, toolsRes, savedItemsRes] = await Promise.all([
     supabase.from('users').select('*').eq('user_id', user.id).single(),
     supabase.from('user_favorites').select('*').eq('user_id', user.id).order('saved_at', { ascending: false }),
     supabase.from('assessment_history').select('*').eq('user_id', user.id).order('completed_at', { ascending: false }).limit(20),
     supabase.from('tools').select('slug, branch, color'),
+    supabase.from('saved_items').select('id, url, title, category, saved_at').eq('user_id', user.id).order('saved_at', { ascending: false }).limit(100),
   ]);
 
   return (
@@ -23,6 +24,7 @@ export default async function Dashboard() {
       initialFavorites={favoritesRes.data || []}
       initialHistory={historyRes.data || []}
       tools={toolsRes.data || []}
+      initialSavedItems={savedItemsRes.data || []}
     />
   );
 }

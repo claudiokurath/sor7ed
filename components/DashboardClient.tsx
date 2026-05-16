@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
@@ -21,7 +21,15 @@ type ToolSummary = {
   color: string;
 };
 
-type ActiveSection = 'overview' | 'saved' | 'history';
+type ActiveSection = 'overview' | 'saved' | 'history' | 'vault';
+
+type SavedItem = {
+  id: string;
+  url: string;
+  title: string;
+  category: string;
+  saved_at: string;
+};
 
 type UserFavorite = {
   id: string;
@@ -50,15 +58,35 @@ export default function DashboardClient({
   initialFavorites,
   initialHistory,
   tools,
+  initialSavedItems = [],
 }: {
   profile: Profile | null;
   initialFavorites: UserFavorite[];
   initialHistory: AssessmentHistory[];
   tools: ToolSummary[];
+  initialSavedItems?: SavedItem[];
 }) {
   const [favorites, setFavorites] = useState<UserFavorite[]>(initialFavorites);
   const [history] = useState<AssessmentHistory[]>(initialHistory);
+  const [savedItems] = useState<SavedItem[]>(initialSavedItems);
   const [activeSection, setActiveSection] = useState<ActiveSection>('overview');
+  const [vaultSearch, setVaultSearch] = useState('');
+  const [vaultCategory, setVaultCategory] = useState('All');
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const vaultCategories = useMemo(() => {
+    const unique = Array.from(new Set(savedItems.map(i => i.category)));
+    return ['All', ...unique.sort()];
+  }, [savedItems]);
+
+  const filteredVault = useMemo(() => {
+    return savedItems.filter(item => {
+      const q = vaultSearch.toLowerCase();
+      const matchesSearch = !q || item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q);
+      const matchesCat = vaultCategory === 'All' || item.category === vaultCategory;
+      return matchesSearch && matchesCat;
+    });
+  }, [savedItems, vaultSearch, vaultCategory]);
 
   const branchCoverage = useMemo(() => {
     const assessedBranches = new Set(
@@ -128,6 +156,7 @@ export default function DashboardClient({
               { key: 'overview', label: 'Overview' },
               { key: 'saved', label: 'Library' },
               { key: 'history', label: 'History' },
+              { key: 'vault', label: `Vault${savedItems.length > 0 ? ` (${savedItems.length})` : ''}` },
             ] as const).map(section => (
               <button
                 key={section.key}
@@ -334,8 +363,164 @@ export default function DashboardClient({
             </motion.div>
           )}
 
+          {activeSection === 'vault' && (
+            <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-10">
+              <div className="flex justify-between items-center">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">WhatsApp Vault</h2>
+                <span className="text-[10px] font-bold text-white/20 uppercase">{savedItems.length} saved</span>
+              </div>
+
+              {savedItems.length === 0 ? (
+                <div className="text-center py-32 border border-dashed border-white/5 rounded-[40px]">
+                  <div className="text-4xl mb-8">📱</div>
+                  <h3 className="text-2xl font-black mb-4">Vault Empty</h3>
+                  <p className="text-white/30 mb-12 max-w-sm mx-auto text-sm leading-relaxed">
+                    Click &ldquo;Save to WhatsApp&rdquo; on any article or tool — it lands here and in your chat.
+                  </p>
+                  <Link href="/tools" className="inline-block bg-white text-black font-black px-10 py-5 rounded-full hover:scale-105 transition-all">
+                    EXPLORE TOOLS →
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {/* Search */}
+                  <div className="relative max-w-md">
+                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      ref={searchRef}
+                      type="text"
+                      value={vaultSearch}
+                      onChange={e => setVaultSearch(e.target.value)}
+                      placeholder="Search saved items..."
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/20 transition-all"
+                    />
+                    {vaultSearch && (
+                      <button onClick={() => setVaultSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">✕</button>
+                    )}
+                  </div>
+
+                  {/* Category pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {vaultCategories.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setVaultCategory(cat)}
+                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                          vaultCategory === cat
+                            ? 'bg-white text-black border-white'
+                            : 'bg-transparent text-white/30 border-white/10 hover:border-white/30 hover:text-white'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Grid */}
+                  {filteredVault.length === 0 ? (
+                    <div className="text-center py-20 border border-dashed border-white/5 rounded-[32px]">
+                      <p className="text-white/20 text-xs font-bold uppercase tracking-widest mb-4">No matches</p>
+                      <button onClick={() => { setVaultSearch(''); setVaultCategory('All'); }} className="text-white/40 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
+                        Clear filters →
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredVault.map((item, i) => (
+                        <VaultCard key={item.id} item={item} index={i} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </div>
     </main>
+  );
+}
+
+function getDomain(url: string) {
+  try { return new URL(url).hostname.replace('www.', ''); } catch { return ''; }
+}
+
+function VaultCard({ item, index }: { item: SavedItem; index: number }) {
+  const [resend, setResend] = useState<'idle' | 'sending' | 'done' | 'err'>('idle');
+
+  const handleResend = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setResend('sending');
+    try {
+      const res = await fetch('/api/save-to-phone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: item.title, pageUrl: item.url }),
+      });
+      setResend(res.ok ? 'done' : 'err');
+    } catch {
+      setResend('err');
+    }
+    setTimeout(() => setResend('idle'), 3000);
+  };
+
+  const age = (() => {
+    const d = Math.floor((Date.now() - new Date(item.saved_at).getTime()) / 86400000);
+    if (d === 0) return 'Today';
+    if (d === 1) return 'Yesterday';
+    if (d < 7) return `${d}d ago`;
+    return new Date(item.saved_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  })();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04 }}
+      className="bg-[#0f0f0f] border border-white/5 rounded-[24px] p-6 flex flex-col gap-4 hover:border-white/10 transition-all group"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 bg-white/5 px-3 py-1 rounded-full">
+          {item.category}
+        </span>
+        <span className="text-[9px] text-white/20 font-bold">{age}</span>
+      </div>
+
+      <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex-1">
+        <h3 className="font-bold text-base leading-snug group-hover:text-white/80 transition-colors line-clamp-2">
+          {item.title}
+        </h3>
+        <p className="text-white/20 text-xs mt-1">{getDomain(item.url)}</p>
+      </a>
+
+      <div className="flex gap-3 pt-2 border-t border-white/5">
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 text-center py-2.5 rounded-xl bg-white/5 text-white/30 hover:bg-white/10 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
+        >
+          Open
+        </a>
+        <button
+          onClick={handleResend}
+          disabled={resend !== 'idle'}
+          className={`flex-1 text-center py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed ${
+            resend === 'idle' ? 'bg-white/5 text-white/30 hover:bg-white/10 hover:text-white' :
+            resend === 'sending' ? 'bg-white/5 text-white/20' :
+            resend === 'done' ? 'bg-green-500/10 text-green-400' :
+            'bg-red-500/10 text-red-400'
+          }`}
+        >
+          {resend === 'idle' && '📱 Send'}
+          {resend === 'sending' && 'Sending…'}
+          {resend === 'done' && '✓ Sent'}
+          {resend === 'err' && 'Failed'}
+        </button>
+      </div>
+    </motion.div>
   );
 }
