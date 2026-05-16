@@ -32,85 +32,323 @@ function analyzeToolAnswers(
   answers: Record<number, string>,
   questions: Question[]
 ): ToolAnalysis | null {
-  const responses = questions.map(q => (answers[q.id] || '').toLowerCase());
+  const r = questions.map(q => (answers[q.id] || '').toLowerCase());
+  // r[0]=Q1, r[1]=Q2, r[2]=Q3, r[3]=Q4
 
-  if (toolSlug === 'friction-finder') {
-    const [bodyResponse = '', clarityIssue = '', helpType = '', duration = ''] = responses;
-    const isChronicOrWeek = duration.includes('chronic') || duration.includes('week') || duration.includes('month');
+  // ── MONEY RESET ──────────────────────────────────────────────
+  if (toolSlug === 'money-reset-(4-accounts)') {
+    const isAvoidance = r[0].includes('avoid') || r[0].includes('stress');
+    const isChaos = r[0].includes('chaos') || r[0].includes('restart');
+    const isImpulse = r[2].includes('impulse');
+    const score = isChaos ? 86 : isAvoidance ? 78 : isImpulse ? 72 : 63;
+    const priority: ScoreLevel = score >= 82 ? 'critical' : score >= 70 ? 'high' : 'medium';
 
-    if (clarityIssue.includes('missing') || clarityIssue.includes('information') || clarityIssue.includes("don't know")) {
-      return {
-        frictionType: 'MISSING_INFO',
-        score: isChronicOrWeek ? 82 : 67,
-        priority: isChronicOrWeek ? 'critical' : 'high',
-        headline: 'Information Gap Friction',
-        subheadline: "Your brain won't start because it doesn't feel safe to.",
-        insight: "Your main friction is missing information. Your brain won't start because it doesn't have all the pieces it needs to feel safe proceeding. This isn't procrastination — it's your executive function correctly identifying that you need more data before you can create a plan.",
-        protocolKeyword: '',
-      };
-    }
-
-    if (helpType.includes('reassure') || bodyResponse.includes('anx') || bodyResponse.includes('scared') || bodyResponse.includes('dread')) {
-      return {
-        frictionType: 'EMOTIONAL_BLOCK',
-        score: isChronicOrWeek ? 85 : 72,
-        priority: 'high',
-        headline: 'Emotional Safety Friction',
-        subheadline: 'Your nervous system is treating this task as a threat.',
-        insight: "Your friction is emotional, not logical. Your nervous system is flooding you with stress hormones that make clear thinking impossible. Forcing yourself to 'just start' makes this worse — you need regulation before execution.",
-        protocolKeyword: '',
-      };
-    }
-
-    if (helpType.includes('gamif') || helpType.includes('reward') || bodyResponse.includes('numb') || bodyResponse.includes('flat') || bodyResponse.includes('nothing')) {
-      return {
-        frictionType: 'DOPAMINE_DEFICIT',
-        score: 65,
-        priority: 'medium',
-        headline: 'Dopamine Deficit Friction',
-        subheadline: "Your brain isn't getting enough signal to engage.",
-        insight: "Your brain isn't getting enough reward signal from this task to engage your attention systems. This is neurological, not motivational. You need to artificially increase the dopamine hit — motivation follows action, but only when there's a signal to act on.",
-        protocolKeyword: '',
-      };
-    }
-
+    if (isAvoidance) return {
+      score, priority, frictionType: 'ANXIETY_AVOIDANCE', protocolKeyword: '',
+      headline: 'Financial Anxiety Avoidance',
+      subheadline: 'Avoiding your accounts is making it worse, not better.',
+      insight: 'The avoidance loop is real: not looking reduces short-term anxiety but increases long-term chaos. Your brain is trying to protect you, but it needs a system that removes the emotional charge from money decisions entirely.',
+    };
+    if (isChaos) return {
+      score, priority, frictionType: 'FULL_RESET', protocolKeyword: '',
+      headline: 'Full Financial System Reset Required',
+      subheadline: 'You need a clean slate, not another tweak.',
+      insight: 'Patching a broken system does not work. The 4-account reset gives your brain a simple, automatic structure — no willpower, no tracking, just money moving where it needs to go without you having to think about it.',
+    };
     return {
-      frictionType: 'EXECUTIVE_OVERLOAD',
-      score: isChronicOrWeek ? 88 : 74,
-      priority: isChronicOrWeek ? 'critical' : 'high',
-      headline: 'Executive Function Overload',
-      subheadline: 'Too many open loops. Your system has shut down.',
-      insight: "You have too many competing priorities and your executive function system has shut down to protect itself. This is your brain's circuit breaker activating — not a character flaw. You need cognitive load reduction before task engagement is possible.",
-      protocolKeyword: '',
+      score, priority, frictionType: 'SYSTEM_FAILURE', protocolKeyword: '',
+      headline: 'Money System Collapse',
+      subheadline: 'You have a system. It just keeps breaking under pressure.',
+      insight: 'The problem is not discipline — it is that your current system requires too many active decisions. The fix is automation: remove human judgment from as many money movements as possible and let the structure hold it for you.',
+    };
+  }
+
+  // ── MELTDOWN FIRST AID ───────────────────────────────────────
+  if (toolSlug === 'meltdown-first-aid') {
+    const isDaysLong = r[3].includes('days');
+    const isNextDay = r[3].includes('next day') || r[3].includes('bleed');
+    const noSolution = r[2].includes('not found') || r[2].includes('nothing');
+    const score = isDaysLong ? 91 : isNextDay ? 81 : noSolution ? 76 : 62;
+    const priority: ScoreLevel = score >= 85 ? 'critical' : score >= 74 ? 'high' : 'medium';
+
+    if (isDaysLong) return {
+      score, priority, frictionType: 'SEVERE_SHUTDOWN', protocolKeyword: '',
+      headline: 'Extended Shutdown Pattern',
+      subheadline: 'Your nervous system is spending days in recovery mode.',
+      insight: 'Multi-day shutdowns signal that your nervous system is running a chronic deficit. The meltdown is the symptom, not the cause. Your kit needs to focus on prevention windows — catching the early warning signs before the point of no return.',
+    };
+    if (noSolution) return {
+      score, priority, frictionType: 'NO_TOOLKIT', protocolKeyword: '',
+      headline: 'No De-escalation Toolkit Yet',
+      subheadline: 'You are navigating meltdowns without a map.',
+      insight: 'Not having a reliable de-escalation strategy is not a personal failure — it means you have not yet found your nervous system specific combination. The kit is built around systematic experimentation: identify your sensory profile, test interventions, and build a personalised first aid sequence.',
+    };
+    return {
+      score, priority, frictionType: 'RECOVERY_GAP', protocolKeyword: '',
+      headline: 'Recovery Window Too Long',
+      subheadline: 'The meltdown itself is manageable. Recovery is not.',
+      insight: 'Your body knows how to come back — but it is taking too long. This usually means the post-meltdown environment is not supporting recovery. Your kit needs a dedicated recovery protocol as much as a de-escalation one.',
+    };
+  }
+
+  // ── MEMORY PALACE ────────────────────────────────────────────
+  if (toolSlug === 'memory-palace-builder') {
+    const nothingWorks = r[3].includes('tried everything') || r[3].includes('nothing works');
+    const neverTried = r[3].includes('never found');
+    const isVisual = r[1].includes('visual') || r[1].includes('place');
+    const score = nothingWorks ? 82 : neverTried ? 68 : 61;
+    const priority: ScoreLevel = score >= 78 ? 'high' : 'medium';
+
+    if (nothingWorks) return {
+      score, priority, frictionType: 'HIGH_NEED', protocolKeyword: '',
+      headline: 'Every System Has Failed You',
+      subheadline: 'Standard memory techniques are not built for your brain.',
+      insight: 'Most memory techniques assume a neurotypical encoding process. If everything has failed, the issue is not your effort — it is the method. The memory palace works differently: it bypasses verbal encoding entirely and uses spatial memory, which tends to be significantly stronger in ADHD and autistic brains.',
+    };
+    if (isVisual) return {
+      score, priority, frictionType: 'VISUAL_LEARNER', protocolKeyword: '',
+      headline: 'Strong Visual Memory Foundation',
+      subheadline: 'You already have the core skill. You just need the structure.',
+      insight: 'The fact that visualisation and location help you remember is the exact mechanism memory palaces exploit. You are well-positioned to build a powerful system — the palace just formalises and scales what your brain already does naturally.',
+    };
+    return {
+      score, priority, frictionType: 'CONSISTENCY_GAP', protocolKeyword: '',
+      headline: 'Inconsistent Memory System',
+      subheadline: 'You know what works. Keeping it going is the hard part.',
+      insight: 'The consistency problem in memory systems is almost always about friction, not motivation. If reviewing your palace takes effort, you will not do it. The fix is reducing the activation cost to near zero — 60-second daily reviews beat hour-long weekly sessions every time.',
+    };
+  }
+
+  // ── MEETING TRANSLATOR ───────────────────────────────────────
+  if (toolSlug === 'meeting-translator') {
+    const isMasking = r[0].includes('masking') || r[0].includes('perform');
+    const isDrained = r[2].includes('drained') || r[2].includes('marathon');
+    const isLargeGroup = r[1].includes('large group') || r[1].includes('many voices');
+    const score = (isMasking && isDrained) ? 84 : isMasking ? 78 : isDrained ? 74 : isLargeGroup ? 70 : 62;
+    const priority: ScoreLevel = score >= 80 ? 'high' : 'medium';
+
+    if (isMasking && isDrained) return {
+      score, priority, frictionType: 'MASKING_EXHAUSTION', protocolKeyword: '',
+      headline: 'Masking-Induced Meeting Exhaustion',
+      subheadline: 'You are doing two jobs in every meeting and getting paid for one.',
+      insight: 'Masking in meetings doubles your cognitive load: you are processing the meeting content while simultaneously managing a performance. The translator addresses this by externalising memory and comprehension — so your working memory can focus on being present instead of trying to hold everything at once.',
+    };
+    if (isMasking) return {
+      score, priority, frictionType: 'PERFORMANCE_LOAD', protocolKeyword: '',
+      headline: 'High Cognitive Load from Social Performance',
+      subheadline: 'Your brain is splitting attention between the meeting and the mask.',
+      insight: 'When masking takes significant working memory, there is less available for actual processing. Transcription tools do not just help you catch what you missed — they free up cognitive bandwidth in real time, so you can be more present rather than frantically trying to keep up.',
+    };
+    return {
+      score, priority, frictionType: 'PROCESSING_GAP', protocolKeyword: '',
+      headline: 'Post-Meeting Processing Gap',
+      subheadline: 'You are in the meeting but leaving without what you need.',
+      insight: 'Your processing style may need more time than meetings allow. Real-time transcription gives you a record to process at your own pace afterwards — transforming meetings from one-shot comprehension tests into recoverable reference documents.',
+    };
+  }
+
+  // ── FINANCIAL AUTOPILOT ──────────────────────────────────────
+  if (toolSlug === 'financial-autopilot') {
+    const isUrgent = r[2].includes('cover this month') || r[2].includes('bills');
+    const isIrregular = r[1].includes('irregular') || r[1].includes('unpredictable') || r[1].includes('between');
+    const isEmotional = r[0].includes('emotional') || r[0].includes('bypass');
+    const score = isUrgent ? 88 : isIrregular ? 80 : isEmotional ? 76 : 65;
+    const priority: ScoreLevel = score >= 84 ? 'critical' : score >= 74 ? 'high' : 'medium';
+
+    if (isUrgent) return {
+      score, priority, frictionType: 'CASH_FLOW_CRISIS', protocolKeyword: '',
+      headline: 'Active Cash Flow Crisis',
+      subheadline: 'This needs immediate structure, not long-term planning.',
+      insight: 'When coverage is in question month to month, automation is not a nice-to-have — it is urgent. The autopilot protocol starts with survival accounts first: a bare-bones version that ensures essentials are covered before anything else gets touched.',
+    };
+    if (isEmotional) return {
+      score, priority, frictionType: 'EMOTIONAL_SPENDING', protocolKeyword: '',
+      headline: 'Emotional Spending Override',
+      subheadline: 'Willpower cannot compete with your nervous system.',
+      insight: 'Emotional spending is not a discipline problem — it is a regulation and friction problem. When your nervous system is in dysregulation, it seeks dopamine and relief. The fix is structural: make the spending you regret physically harder to do, and let automation handle the rest.',
+    };
+    return {
+      score, priority, frictionType: 'IRREGULAR_INCOME', protocolKeyword: '',
+      headline: 'Irregular Income Management',
+      subheadline: 'Standard autopilot systems were not built for your income type.',
+      insight: 'Fixed automation breaks with variable income. The protocol for irregular earners works differently: percentage-based allocations instead of fixed amounts, a buffer account that absorbs the peaks and troughs, and a simplified monthly reset rather than a set-and-forget approach.',
+    };
+  }
+
+  // ── BODY DOUBLE MATCHMAKER ───────────────────────────────────
+  if (toolSlug === 'body-double-matchmaker') {
+    const cantStart = r[2].includes('cannot make myself start') || r[2].includes('can not make myself start');
+    const isAvoidance = r[2].includes('other things') || r[2].includes('guilty');
+    const wantsSilent = r[1].includes('silent') || r[1].includes('zero interaction');
+    const score = cantStart ? 82 : isAvoidance ? 75 : 65;
+    const priority: ScoreLevel = score >= 80 ? 'high' : 'medium';
+
+    if (cantStart) return {
+      score, priority, frictionType: 'START_BLOCK', protocolKeyword: '',
+      headline: 'Initiation Block',
+      subheadline: 'Your brain cannot generate the activation energy to begin alone.',
+      insight: 'Task initiation is an executive function, not a motivation function. When it is impaired, no amount of wanting to start will produce starting. A body double provides external activation energy — the neurological equivalent of a push-start. The match protocol pairs you with someone whose presence alone lowers your start threshold.',
+    };
+    if (isAvoidance) return {
+      score, priority, frictionType: 'AVOIDANCE_LOOP', protocolKeyword: '',
+      headline: 'Avoidance and Guilt Loop',
+      subheadline: 'The guilt is using more energy than the task would have.',
+      insight: 'Avoidance followed by guilt is one of the most energy-expensive patterns in the ADHD experience. A body double breaks the loop by creating a low-stakes commitment structure — showing up for someone else is neurologically easier than showing up for yourself, and that is not a weakness.',
+    };
+    return {
+      score, priority, frictionType: wantsSilent ? 'SILENT_PRESENCE' : 'ACCOUNTABILITY', protocolKeyword: '',
+      headline: wantsSilent ? 'Silent Presence Required' : 'Accountability Structure Required',
+      subheadline: wantsSilent ? 'You work best when observed, not coached.' : 'You need a check-in structure to stay on task.',
+      insight: wantsSilent
+        ? 'Your nervous system responds to social observation without needing interaction. This is one of the most effective body double configurations — shared silent space, no conversation, no distraction. The match protocol finds you someone else in the same mode.'
+        : 'Structured accountability check-ins at the start and end of sessions have a significantly higher completion rate than open-ended working sessions. Your match will set a brief opening intent and a closing report — nothing more.',
+    };
+  }
+
+  // ── SENSORY AUDIT ────────────────────────────────────────────
+  if (toolSlug === 'sensory-audit') {
+    const noSolution = r[3].includes('nothing reliable') || r[3].includes('looking for');
+    const isMultiple = r[0].includes('multiple') || r[0].includes('compound');
+    const isHomeUnsafe = r[1].includes('own home') || r[1].includes('no quiet');
+    const isPhysical = r[2].includes('physical') || r[2].includes('headache') || r[2].includes('nausea');
+    const score = (isMultiple && noSolution) ? 88 : noSolution ? 80 : isHomeUnsafe ? 84 : isPhysical ? 76 : 65;
+    const priority: ScoreLevel = score >= 84 ? 'critical' : score >= 74 ? 'high' : 'medium';
+
+    if (isHomeUnsafe) return {
+      score, priority, frictionType: 'NO_SAFE_SPACE', protocolKeyword: '',
+      headline: 'No Sensory Safe Space',
+      subheadline: 'Constant exposure with no recovery zone is unsustainable.',
+      insight: 'Sensory regulation requires periods of low-input recovery. Without a reliable safe space at home, your nervous system stays in a chronic state of mild to moderate overload — which compounds every other challenge. The audit starts by engineering a minimum viable sensory refuge, even in a shared or restricted environment.',
+    };
+    if (isMultiple && noSolution) return {
+      score, priority, frictionType: 'MULTI_SENSORY_UNMANAGED', protocolKeyword: '',
+      headline: 'Multi-Sensory Overload with No Management System',
+      subheadline: 'You are carrying a full load with no off switch.',
+      insight: 'Multi-sensory sensitivity without a management system means you are in a constant state of sensory debt. The audit maps exactly which inputs are hitting you and at what threshold, then builds a layered management plan — starting with the highest-impact interventions for your specific profile.',
+    };
+    if (noSolution) return {
+      score, priority, frictionType: 'UNMANAGED_SENSITIVITY', protocolKeyword: '',
+      headline: 'Unmanaged Sensory Sensitivity',
+      subheadline: 'You know what overwhelms you. You just do not have a plan yet.',
+      insight: 'Knowing your triggers without a management strategy is frustrating — you can see the problem but not the exit. The sensory audit turns your awareness into a personalised action plan: which environments to avoid, which to modify, and which tools give you the most relief per effort.',
+    };
+    return {
+      score, priority, frictionType: 'PARTIAL_MANAGEMENT', protocolKeyword: '',
+      headline: 'Partially Managed Sensory Profile',
+      subheadline: 'You have some tools. You need a complete system.',
+      insight: 'Having one or two interventions that work is a good start — it confirms your nervous system responds to management strategies. The audit builds on what already works and fills the gaps, creating a complete sensory load management system rather than a collection of individual fixes.',
     };
   }
 
   return null;
 }
 
-function getFrictionProtocolPreview(frictionType: string): ProtocolStep[] {
+function getProtocolPreview(frictionType: string): ProtocolStep[] {
   const previews: Record<string, ProtocolStep[]> = {
-    MISSING_INFO: [
-      { stepNumber: 1, title: "The 2-minute brain dump", description: "Write every question, concern, and unknown without filtering — get them out of your head and onto paper." },
-      { stepNumber: 2, title: "The minimum viable answer", description: "Identify the one piece of information that, if you had it, would let you start. Just that one." },
+    // Money Reset
+    ANXIETY_AVOIDANCE: [
+      { stepNumber: 1, title: "The one-look rule", description: "Open your account for 60 seconds only. No decisions, no judgment — just look. That is the whole task." },
+      { stepNumber: 2, title: "Build the 4-account structure", description: "Separate your money into four named accounts: bills, spending, buffer, and future. The separation removes the emotional charge." },
     ],
-    EMOTIONAL_BLOCK: [
-      { stepNumber: 1, title: "Name the emotion", description: "Your nervous system needs acknowledgment before it will stand down. Name specifically what you're feeling." },
-      { stepNumber: 2, title: "The 5-minute permission slip", description: "Give yourself explicit permission to do a 5-minute version with zero quality requirements." },
+    FULL_RESET: [
+      { stepNumber: 1, title: "Zero-based restart", description: "List every regular outgoing first — rent, subscriptions, bills. That number is your floor. Everything else is negotiable." },
+      { stepNumber: 2, title: "Automate on payday", description: "Set every transfer to fire on the day income lands. Before you can spend it, it is already gone to the right place." },
     ],
-    DOPAMINE_DEFICIT: [
-      { stepNumber: 1, title: "Stack a reward", description: "Pair the task with something that gives you a dopamine hit — specific music, a drink, a new location." },
-      { stepNumber: 2, title: "Create artificial stakes", description: "Tell someone you'll send them the result in 30 minutes. External accountability creates the signal your brain needs." },
+    SYSTEM_FAILURE: [
+      { stepNumber: 1, title: "Remove decisions from the system", description: "Every step that requires you to actively choose is a failure point. Automate anything that can be automated." },
+      { stepNumber: 2, title: "Build the minimum viable system", description: "One account for bills only. One for everything else. That is it for now — add complexity only when basics are stable." },
     ],
-    EXECUTIVE_OVERLOAD: [
-      { stepNumber: 1, title: "The parking lot", description: "Write every other task on a list you won't touch for 2 hours. Your brain needs to know they're captured before it can focus." },
-      { stepNumber: 2, title: "The one-sentence task", description: "Reduce this task to a single action that takes under 5 minutes. That's your only job right now." },
+    // Meltdown First Aid
+    SEVERE_SHUTDOWN: [
+      { stepNumber: 1, title: "Map your early warning system", description: "Identify your 3 earliest physical signals — before the point of no return. These become your intervention triggers." },
+      { stepNumber: 2, title: "Design a 5-minute prevention window", description: "When you spot an early signal, you have a brief window. Your kit goes here: one sensory input, one exit route, one safe phrase." },
+    ],
+    NO_TOOLKIT: [
+      { stepNumber: 1, title: "Sensory input inventory", description: "Test five different sensory inputs this week — cold, pressure, rhythm, darkness, texture. Note which direction each pulls your nervous system." },
+      { stepNumber: 2, title: "Build your sequence", description: "A kit is not one thing — it is a sequence. Something for de-escalation, something for recovery, something for re-entry. Build all three." },
+    ],
+    RECOVERY_GAP: [
+      { stepNumber: 1, title: "Design a recovery environment", description: "Where you go after a meltdown matters as much as the de-escalation. Identify your minimum viable recovery space." },
+      { stepNumber: 2, title: "Set a recovery time boundary", description: "Tell the people around you what recovery looks like and how long it takes. Interrupted recovery extends it significantly." },
+    ],
+    // Memory Palace
+    HIGH_NEED: [
+      { stepNumber: 1, title: "Build your first palace", description: "Choose a building you know perfectly — your childhood home, a route you walk. Place three things there. Walk it in your mind." },
+      { stepNumber: 2, title: "60-second daily review", description: "Walk the palace in your head once per day. Thirty seconds in the morning. That is enough to cement it." },
+    ],
+    VISUAL_LEARNER: [
+      { stepNumber: 1, title: "Scale what already works", description: "You already visualise well. The palace is just a structured container for that. Start with one room, five items, one topic." },
+      { stepNumber: 2, title: "Add spaced repetition", description: "Review on day 1, day 3, day 7, then weekly. The spacing does the work — you do not need to review more, just at the right intervals." },
+    ],
+    CONSISTENCY_GAP: [
+      { stepNumber: 1, title: "Reduce activation cost to zero", description: "Your review needs to happen without any friction. Same time, same trigger, same device. Make starting automatic." },
+      { stepNumber: 2, title: "Shrink the review", description: "If reviewing takes more than 2 minutes, it will not happen consistently. Cut it down until it does." },
+    ],
+    // Meeting Translator
+    MASKING_EXHAUSTION: [
+      { stepNumber: 1, title: "Deploy transcription before the meeting", description: "Have your translation tool running before anyone speaks. When you know it is capturing everything, you can stop performing memory." },
+      { stepNumber: 2, title: "Process after, not during", description: "Stop trying to hold meeting content in real time. Let the transcript hold it. Your job during the meeting is just to be there." },
+    ],
+    PERFORMANCE_LOAD: [
+      { stepNumber: 1, title: "Use the transcript as your working memory", description: "You do not need to remember what was said 10 minutes ago — the transcript has it. This frees you to process what is happening now." },
+      { stepNumber: 2, title: "Allow yourself a processing gap", description: "Tell one trusted person you process better when you can review. Even 5 minutes post-meeting changes the comprehension significantly." },
+    ],
+    PROCESSING_GAP: [
+      { stepNumber: 1, title: "Capture first, review second", description: "Do not try to act on meeting content immediately. Capture everything, then review in your own time and at your own pace." },
+      { stepNumber: 2, title: "Build a 24-hour response buffer", description: "If your environment allows it, delay non-urgent responses until after you have processed the transcript. Clarity improves significantly." },
+    ],
+    // Financial Autopilot
+    CASH_FLOW_CRISIS: [
+      { stepNumber: 1, title: "Essentials first — everything else waits", description: "Split your account immediately: one amount covers non-negotiables for the month. That money does not get touched for anything else." },
+      { stepNumber: 2, title: "Build a 7-day buffer", description: "Even 50 in a separate account creates breathing room. The buffer means one bad week does not cascade into a bad month." },
+    ],
+    EMOTIONAL_SPENDING: [
+      { stepNumber: 1, title: "Add friction to emotional spending", description: "Move discretionary money to a separate account with no card. The extra step breaks the automatic loop in the moment." },
+      { stepNumber: 2, title: "Pre-commit your spending amount", description: "Decide in advance what the discretionary total is for the month. Once it is gone, it is gone — no transfers, no top-ups." },
+    ],
+    IRREGULAR_INCOME: [
+      { stepNumber: 1, title: "Calculate your monthly floor", description: "What is the minimum you need to cover essentials? That number drives everything. Automate to cover floor first on every payment." },
+      { stepNumber: 2, title: "Buffer account as the variable absorber", description: "All income goes into a buffer first. You pay yourself a fixed amount from the buffer each month regardless of what came in." },
+    ],
+    // Body Double
+    START_BLOCK: [
+      { stepNumber: 1, title: "Commit to 10 minutes only", description: "The match session starts with a 10-minute commitment. Not the task — just 10 minutes of starting. The rest usually follows." },
+      { stepNumber: 2, title: "Use the opening check-in as your ignition", description: "Tell your body double exactly what you are starting with in one sentence. Saying it out loud is neurologically different from just thinking it." },
+    ],
+    AVOIDANCE_LOOP: [
+      { stepNumber: 1, title: "Externalise the accountability", description: "Showing up for someone else bypasses the internal resistance. Your session starts with a shared intent — both of you state what you are working on." },
+      { stepNumber: 2, title: "The guilt-free close", description: "Every session ends with a report of what happened — not what you planned. Partial progress counts. No guilt, just data." },
+    ],
+    SILENT_PRESENCE: [
+      { stepNumber: 1, title: "Match with a deep-work partner", description: "Your ideal session: cameras on, no talking, someone also doing focused work. The shared space does the neurological work." },
+      { stepNumber: 2, title: "90-minute silent blocks", description: "No check-ins, no prompts. Just two people in parallel. Set a shared timer and work until it ends." },
+    ],
+    ACCOUNTABILITY: [
+      { stepNumber: 1, title: "The opening intent", description: "State what you are working on and how long it should take. Your body double mirrors back what they heard. That exchange is the activation." },
+      { stepNumber: 2, title: "The 25-minute check", description: "At 25 minutes, a brief pause: still on task? Adjust if not. No judgment, just recalibration." },
+    ],
+    // Sensory Audit
+    NO_SAFE_SPACE: [
+      { stepNumber: 1, title: "Engineer a minimum viable refuge", description: "Even a corner with headphones and a specific light counts. Designate and protect it — this is not optional, it is infrastructure." },
+      { stepNumber: 2, title: "Build a sensory reset ritual", description: "A 10-minute sequence that reliably brings your nervous system down. Same every time, same order — the predictability is part of what works." },
+    ],
+    MULTI_SENSORY_UNMANAGED: [
+      { stepNumber: 1, title: "Audit your daily sensory load", description: "Map your average day hour by hour. Where is the input highest? Where are the natural gaps? You need 3 low-input windows per day minimum." },
+      { stepNumber: 2, title: "Layer interventions by sense", description: "Address your highest-impact sense first. One change at a time — stacking too many interventions at once makes it impossible to know what worked." },
+    ],
+    UNMANAGED_SENSITIVITY: [
+      { stepNumber: 1, title: "Identify your top three triggers", description: "Not everything — just the three inputs that cause the most disruption. Those get addressed first in your management plan." },
+      { stepNumber: 2, title: "Build avoidance and mitigation options", description: "For each trigger: can you avoid it, or can you mitigate it? Both are valid strategies. Your plan needs at least one option per trigger." },
+    ],
+    PARTIAL_MANAGEMENT: [
+      { stepNumber: 1, title: "Document what already works", description: "Write down exactly what helps and under what conditions. This is your foundation — build from what works, not from what should work." },
+      { stepNumber: 2, title: "Identify the gaps", description: "Which environments or triggers still have no management strategy? Rank them by frequency of exposure. Those are next." },
     ],
   };
 
   return previews[frictionType] ?? [
-    { stepNumber: 1, title: "Identify the trigger", description: "Notice exactly when the friction starts." },
-    { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between the urge to avoid and the action of starting." },
+    { stepNumber: 1, title: "Identify the core friction", description: "Notice exactly where and when the difficulty is highest for you specifically." },
+    { stepNumber: 2, title: "Start with the smallest possible change", description: "The most sustainable systems begin with one modification that requires no willpower to maintain." },
   ];
 }
 
@@ -200,7 +438,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
       : generateNarrative(score, branchSlug);
 
     const protocolPreview: ProtocolStep[] = analysis
-      ? getFrictionProtocolPreview(analysis.frictionType)
+      ? getProtocolPreview(analysis.frictionType)
       : [
           { stepNumber: 1, title: "Identify the trigger", description: "Notice exactly when the compulsion starts." },
           { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between urge and action." },
