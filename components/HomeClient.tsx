@@ -140,53 +140,45 @@ export default function HomeClient() {
           Complete a quick assessment to diagnose your specific blocks. Get personalized analysis instantly, then receive the unblocking protocol on WhatsApp.
         </motion.p>
 
-        <div
-          className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 w-full [&::-webkit-scrollbar]:hidden"
-          style={{ scrollbarWidth: 'none' }}
-        >
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {branches.map((branch, i) => (
             <motion.div
               key={branch.slug}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="shrink-0"
+              transition={{ delay: i * 0.06 }}
             >
               <Link
-                href="/tools"
-                className="relative flex flex-col justify-between h-[50vh] min-h-[360px] max-h-[420px] w-[85vw] sm:w-[320px] p-6 sm:p-8 rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
+                href={`/${branch.slug}`}
+                className="relative flex flex-col justify-between h-[200px] p-5 rounded-2xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
               >
-                {/* Glow border + inner glow on hover */}
                 <div
-                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
                     border: `1.5px solid ${branch.color}`,
-                    boxShadow: `0 0 20px ${branch.color}40, inset 0 0 20px ${branch.color}10`,
+                    boxShadow: `0 0 20px ${branch.color}30, inset 0 0 20px ${branch.color}08`,
                     background: `radial-gradient(circle at 70% 30%, ${branch.color}08, transparent 70%)`,
                   }}
                 />
 
-                <div
-                  className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20"
-                  style={{ backgroundColor: branch.color, transform: 'translate(25%, -25%)' }}
-                />
-
-                <div
-                  className="text-6xl sm:text-7xl md:text-8xl font-black opacity-30 group-hover:opacity-50 transition-opacity duration-300 leading-none"
-                  style={{ color: branch.color }}
+                <span
+                  className="absolute -bottom-2 -right-1 text-[90px] font-black leading-none select-none pointer-events-none"
+                  style={{ color: `${branch.color}18` }}
                 >
                   {branch.num}
-                </div>
+                </span>
 
-                <div className="relative z-10 mt-auto">
+                <span className="text-xl relative z-10">{branch.icon}</span>
+
+                <div className="relative z-10">
                   <h3
-                    className="text-xl sm:text-2xl font-bold mb-3 tracking-tight group-hover:brightness-110 transition-all"
+                    className="text-base font-black mb-1 tracking-tight"
                     style={{ color: branch.color }}
                   >
                     {branch.name}
                   </h3>
-                  <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors">
+                  <p className="text-white/35 text-xs leading-relaxed line-clamp-2">
                     {branch.description}
                   </p>
                 </div>

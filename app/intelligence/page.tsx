@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { branches } from "@/lib/constants";
 import IntelligenceGrid from "@/components/IntelligenceGrid";
 
 export default async function IntelligencePage() {
@@ -15,11 +14,6 @@ export default async function IntelligencePage() {
     if (error) console.error('Error fetching protocols:', error);
 
     const allPosts = posts || [];
-    const featured = allPosts[0] ?? null;
-    const rest = allPosts.slice(1);
-
-    const featuredBranch = featured ? branches.find(b => b.name === featured.branch) : null;
-    const featuredColor = featuredBranch?.color ?? '#3B82F6';
 
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white">
@@ -68,79 +62,15 @@ export default async function IntelligencePage() {
 
             <div className="border-t border-white/5" />
 
-            {/* FEATURED ARTICLE */}
-            {featured && (
-                <section className="px-5 py-12 max-w-6xl mx-auto">
-                    <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 mb-6 font-black">Latest Briefing</p>
-                    <Link href={`/intelligence/${featured.slug}`} className="group block">
-                        <div
-                            className="rounded-3xl border border-white/10 p-6 sm:p-10 md:p-14 hover:border-white/20 transition-all duration-500 relative overflow-hidden"
-                            style={{ background: `radial-gradient(ellipse at 80% 0%, ${featuredColor}12, transparent 60%)` }}
-                        >
-                            {/* Ambient glow — desktop only */}
-                            <div
-                                className="hidden md:block absolute top-0 right-0 w-80 h-80 rounded-full blur-[120px] opacity-15 pointer-events-none"
-                                style={{ background: featuredColor }}
-                            />
-
-                            <div className="relative z-10">
-                                {/* Branch tag */}
-                                <span
-                                    className="inline-block text-[9px] px-3 py-1.5 rounded-full tracking-[0.25em] uppercase font-black border mb-5"
-                                    style={{
-                                        backgroundColor: `${featuredColor}18`,
-                                        color: featuredColor,
-                                        borderColor: `${featuredColor}35`,
-                                    }}
-                                >
-                                    {featured.branch}
-                                </span>
-
-                                {/* Title */}
-                                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.05] mb-4 group-hover:text-white/80 transition-colors">
-                                    {featured.title}
-                                </h2>
-
-                                {/* Excerpt */}
-                                <p className="text-white/40 text-sm sm:text-base leading-relaxed max-w-xl mb-8">
-                                    {featured.summary || featured.tldr || featured.excerpt}
-                                </p>
-
-                                {/* Footer row */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-sm font-black uppercase tracking-widest transition-colors" style={{ color: featuredColor }}>
-                                            Read Briefing →
-                                        </span>
-                                        {featured.read_time && (
-                                            <span className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
-                                                · {featured.read_time} read
-                                            </span>
-                                        )}
-                                    </div>
-                                    {/* Keyword token */}
-                                    <div className="bg-black/60 border border-white/15 rounded-xl px-5 py-3 font-mono flex items-center gap-2 self-start sm:self-auto">
-                                        <span>⚡</span>
-                                        <span className="font-black tracking-widest text-base" style={{ color: featuredColor }}>
-                                            {featured.keyword}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </section>
-            )}
-
             {/* ARTICLE GRID */}
-            {rest.length > 0 && (
+            {allPosts.length > 0 && (
                 <section className="px-5 pb-20 max-w-6xl mx-auto">
                     <div className="flex items-center gap-4 mb-8">
                         <p className="text-[9px] uppercase tracking-[0.3em] text-white/20 font-black shrink-0">All Briefings</p>
                         <div className="h-px flex-1 bg-white/5" />
-                        <span className="text-[9px] text-white/15 font-bold uppercase shrink-0">{rest.length}</span>
+                        <span className="text-[9px] text-white/15 font-bold uppercase shrink-0">{allPosts.length}</span>
                     </div>
-                    <IntelligenceGrid posts={rest} />
+                    <IntelligenceGrid posts={allPosts} />
                 </section>
             )}
 
