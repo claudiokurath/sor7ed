@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import ArticleCover from './ArticleCover';
 import ResultsScreen from './ResultsScreen';
+import SaveToPhoneButton from './SaveToPhoneButton';
 import { calculateAcceleratedProgress } from "@/lib/progress-curve";
 import { generateNarrative, getScoreLevel } from "@/lib/narrative-engine";
 import { AssessmentResult, BranchSlug, NarrativeLayer, Recommendation, ProtocolStep, ScoreLevel } from "@/types/assessment";
@@ -568,18 +569,27 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
                 <span>Personalized Result</span>
               </div>
 
-              <motion.button
-                onClick={() => {
-                  setCurrentStep(0);
-                  if (tool.questions.length === 0) handleAssessmentComplete();
-                }}
-                className="w-full sm:w-auto bg-white text-black font-black px-12 py-5 rounded-full transition-all duration-300"
-                style={{ boxShadow: `0 0 50px ${toolColor}40` }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Start Assessment →
-              </motion.button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <motion.button
+                  onClick={() => {
+                    setCurrentStep(0);
+                    if (tool.questions.length === 0) handleAssessmentComplete();
+                  }}
+                  className="w-full sm:w-auto bg-white text-black font-black px-12 py-5 rounded-full transition-all duration-300"
+                  style={{ boxShadow: `0 0 50px ${toolColor}40` }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Start Assessment →
+                </motion.button>
+                {user && (
+                  <SaveToPhoneButton
+                    title={tool.name}
+                    coverImageUrl={tool.cover_image || undefined}
+                    size="md"
+                  />
+                )}
+              </div>
             </motion.div>
           )}
 

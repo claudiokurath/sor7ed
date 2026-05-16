@@ -16,21 +16,24 @@ export async function generateMetadata({
 
   const { data: tool } = await supabase
     .from('tools')
-    .select('name, description, tldr, branch, slug')
+    .select('name, description, tldr, branch, slug, cover_image')
     .eq('slug', resolvedParams.slug)
     .neq('status', 'Draft')
     .single();
 
   if (!tool) {
-    return { 
+    return {
       title: 'Assessment Not Found | SOR7ED',
       description: 'This diagnostic could not be found. Try another one.',
       robots: { index: false }
     };
   }
 
-  const description = tool.description || tool.tldr || 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
+  const description = tool.description || tool.tldr ||
     `Find exactly what's broken in your ${tool.branch} system. Built by someone who's been there.`;
+  const image = tool.cover_image || `${siteUrl}/Images/og-explore.png`;
+  const pageUrl = `${siteUrl}/tools/${resolvedParams.slug}`;
 
   return {
     title: `${tool.name} | SOR7ED`,
@@ -38,8 +41,17 @@ export async function generateMetadata({
     openGraph: {
       title: `${tool.name} | SOR7ED`,
       description,
+      url: pageUrl,
+      siteName: 'SOR7ED',
+      images: [{ url: image, width: 1200, height: 630, alt: tool.name }],
       type: 'website',
-    }
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${tool.name} | SOR7ED`,
+      description,
+      images: [image],
+    },
   };
 }
 

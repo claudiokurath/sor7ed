@@ -2,6 +2,8 @@
 
 import { useState, type CSSProperties } from "react";
 import Link from "next/link";
+import SaveToPhoneButton from "./SaveToPhoneButton";
+
 type Tool = {
   id: string;
   slug: string;
@@ -19,14 +21,11 @@ type Tool = {
 export default function ToolList({ initialTools }: { initialTools: Tool[] }) {
     const [search, setSearch] = useState("");
 
-    const filteredTools = initialTools.filter(tool => 
+    const filteredTools = initialTools.filter(tool =>
         tool.name.toLowerCase().includes(search.toLowerCase()) ||
         tool.branch?.toLowerCase().includes(search.toLowerCase()) ||
         tool.keyword?.toLowerCase().includes(search.toLowerCase())
     );
-
-    const featuredTools = filteredTools.filter(tool => tool.featured);
-    const regularTools = filteredTools.filter(tool => !tool.featured);
 
     return (
         <div className="space-y-10">
@@ -61,10 +60,10 @@ export default function ToolList({ initialTools }: { initialTools: Tool[] }) {
 
 function ToolCard({ tool }: { tool: Tool }) {
     const color = tool.color || '#3B82F6';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
     return (
-        <Link
-            href={`/tools/${tool.slug}`}
+        <div
             className="relative flex flex-col rounded-3xl bg-[#0f0f0f] border border-white/5 hover:border-transparent transition-all duration-500 overflow-hidden group"
             style={{ '--glow-color': color } as CSSProperties}
         >
@@ -78,51 +77,67 @@ function ToolCard({ tool }: { tool: Tool }) {
                 }}
             />
 
-            {/* Cover image */}
-            <div className="w-full h-44 shrink-0 overflow-hidden rounded-t-3xl">
-                {tool.cover_image ? (
-                    <img
-                        src={tool.cover_image}
-                        alt=""
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                ) : (
-                    <div
-                        className="w-full h-full flex items-center justify-center"
-                        style={{ background: `linear-gradient(135deg, ${color}28 0%, #0a0a0a 100%)` }}
-                    >
-                        <span className="text-6xl font-black opacity-10 tracking-tight" style={{ color }}>
-                            {tool.branch?.charAt(0)}
+            {/* Main clickable area */}
+            <Link href={`/tools/${tool.slug}`} className="flex flex-col">
+                {/* Cover image */}
+                <div className="w-full h-44 shrink-0 overflow-hidden rounded-t-3xl">
+                    {tool.cover_image ? (
+                        <img
+                            src={tool.cover_image}
+                            alt=""
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                    ) : (
+                        <div
+                            className="w-full h-full flex items-center justify-center"
+                            style={{ background: `linear-gradient(135deg, ${color}28 0%, #0a0a0a 100%)` }}
+                        >
+                            <span className="text-6xl font-black opacity-10 tracking-tight" style={{ color }}>
+                                {tool.branch?.charAt(0)}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col p-6 pb-3 relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                        <span
+                            className="text-[10px] px-3 py-1 rounded-full tracking-[0.2em] uppercase font-bold border"
+                            style={{ backgroundColor: `${color}20`, color, borderColor: `${color}40` }}
+                        >
+                            {tool.branch}
+                        </span>
+                        <span className="font-mono text-xs font-bold tracking-widest" style={{ color }}>
+                            ⚡ {tool.keyword}
                         </span>
                     </div>
-                )}
-            </div>
 
-            {/* Content */}
-            <div className="flex flex-col flex-1 p-6 relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                    <span
-                        className="text-[10px] px-3 py-1 rounded-full tracking-[0.2em] uppercase font-bold border"
-                        style={{ backgroundColor: `${color}20`, color, borderColor: `${color}40` }}
-                    >
-                        {tool.branch}
-                    </span>
-                    <span className="font-mono text-xs font-bold tracking-widest" style={{ color }}>
-                        ⚡ {tool.keyword}
-                    </span>
+                    <h2 className="text-lg font-black mb-2 group-hover:text-white/80 transition-colors leading-tight tracking-tight">
+                        {tool.name}
+                    </h2>
+                    <p className="text-white/40 text-sm leading-relaxed line-clamp-2">
+                        {tool.short_description || tool.tldr || tool.description}
+                    </p>
                 </div>
+            </Link>
 
-                <h2 className="text-lg font-black mb-2 group-hover:text-white/80 transition-colors leading-tight tracking-tight">
-                    {tool.name}
-                </h2>
-                <p className="text-white/40 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
-                    {tool.short_description || tool.tldr || tool.description}
-                </p>
-
-                <div className="flex items-center gap-1 text-xs font-black uppercase tracking-[0.2em] pt-4 border-t border-white/[0.06]" style={{ color }}>
-                    Start Assessment <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </div>
+            {/* Footer row: Start + Save */}
+            <div className="flex items-center justify-between px-6 pb-5 pt-3 border-t border-white/[0.06] relative z-10">
+                <Link
+                    href={`/tools/${tool.slug}`}
+                    className="flex items-center gap-1 text-xs font-black uppercase tracking-[0.2em] group-hover:opacity-80 transition-opacity"
+                    style={{ color }}
+                >
+                    Start <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </Link>
+                <SaveToPhoneButton
+                    title={tool.name}
+                    pageUrl={`${siteUrl}/tools/${tool.slug}`}
+                    coverImageUrl={tool.cover_image}
+                    size="sm"
+                />
             </div>
-        </Link>
+        </div>
     );
 }
