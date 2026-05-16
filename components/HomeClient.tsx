@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { branches } from '@/lib/constants';
+import UniversalProblemSelector from './UniversalProblemSelector';
 
 const taglines = [
   { word: 'Overwhelmed',     color: '#6366F1' },
@@ -81,7 +82,7 @@ export default function HomeClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            SOR7ED helps neurodivergent adults identify their exact friction points through interactive assessments, then delivers step-by-step protocols to fix them via WhatsApp.
+            Practical tools for when everything feels like too much. Diagnose your friction points, get a personalised protocol, delivered straight to your WhatsApp.
           </motion.p>
 
           <motion.div
@@ -106,6 +107,8 @@ export default function HomeClient() {
           </motion.div>
         </div>
       </section>
+
+      <UniversalProblemSelector />
 
       {/* BRANCHES SECTION */}
       <section id="branches" className="px-4 sm:px-6 md:px-16 py-16">
@@ -214,7 +217,7 @@ export default function HomeClient() {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            ADHD, neurodivergence, and a busy mind aren&apos;t flaws to be fixed. They&apos;re operating systems that need the right software. SOR7ED diagnoses your blocks on the web and delivers the solutions to your phone.
+            Built using neuro-inclusive principles — designed for ADHD brains, used by anyone who needs life to be simpler. SOR7ED diagnoses your blocks on the web and delivers the right protocol to your phone.
           </motion.p>
           <motion.div
             initial={{ opacity: 0 }}

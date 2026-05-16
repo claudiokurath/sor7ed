@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 function normalizeKeyword(raw: string): string {
     const lower = raw.trim().toLowerCase();
     const ALIASES: Record<string, string> = {
+        // Tool spelling variants
         'dopamin':    'dopamine',
         'dopamaine':  'dopamine',
         'burnot':     'burnout',
@@ -25,6 +26,37 @@ function normalizeKeyword(raw: string): string {
         'bodydouble':   'match',
         'financialautopilot': 'autopilot',
         "let's get sorted": 'hi',
+        // Universal entry points → category shortcuts
+        'overwhelm':       'focus',
+        'overwhelmed':     'focus',
+        'stuck':           'focus',
+        'cant start':      'focus',
+        "can't start":     'focus',
+        'procrastinate':   'focus',
+        'procrastinating': 'focus',
+        'too much':        'focus',
+        'can\'t focus':    'focus',
+        'cant focus':      'focus',
+        'exhausted':       'body',
+        'stressed':        'body',
+        'stress':          'body',
+        'tired':           'body',
+        'no energy':       'body',
+        'burnt out':       'body',
+        'burned out':      'body',
+        'argument':        'people',
+        'conflict':        'people',
+        'difficult conversation': 'people',
+        'cant sleep':      'sleep',
+        "can't sleep":     'sleep',
+        'insomnia':        'sleep',
+        'bills':           'money',
+        'money problems':  'money',
+        'money stress':    'money',
+        'broke':           'money',
+        'worried':         'body',
+        'anxious':         'body',
+        'anxiety':         'body',
     };
     return ALIASES[lower] ?? lower;
 }
@@ -187,10 +219,10 @@ export async function POST(req: NextRequest) {
 
             if (!user) {
                 await sendWhatsAppMessage(senderPhone,
-                    `Hey! You just found SOR7ED — practical protocols for neurodivergent adults. 🤍\n\n` +
-                    `Sign up in 30 seconds to unlock your intelligence file:\n` +
+                    `Hey! You just found SOR7ED — practical tools for overwhelmed minds. 🤍\n\n` +
+                    `Sign up free to unlock your intelligence file:\n` +
                     `${process.env.NEXT_PUBLIC_SITE_URL}/signup\n\n` +
-                    `Once you're in, text this number anytime to access your dashboard.`
+                    `Once you're in, text what's wrong anytime and I'll send the right tool.`
                 );
                 return NextResponse.json({ status: "unregistered" });
             }
@@ -394,17 +426,22 @@ async function sendBranchMenu(to: string) {
 
 async function handleHelpCommand(to: string) {
     await sendWhatsAppMessage(to,
-        `Not sure where to start? Text one of these:\n\n` +
-        `*FOCUS* — can't start or finish things\n` +
-        `*BODY* — energy, burnout, sensory\n` +
-        `*MONEY* — financial chaos\n` +
-        `*PEOPLE* — relationships, work\n\n` +
-        `Or:\n` +
-        `*MENU* — browse all 7 branches\n` +
-        `*STATUS* — your progress file\n` +
+        `What's going on? Text any word below:\n\n` +
+        `*OVERWHELMED* • *STUCK* • *FOCUS*\n` +
+        `→ Can't start, too much to do\n\n` +
+        `*EXHAUSTED* • *STRESSED* • *BODY*\n` +
+        `→ Energy, burnout, recovery\n\n` +
+        `*BILLS* • *MONEY*\n` +
+        `→ Financial chaos\n\n` +
+        `*ARGUMENT* • *PEOPLE*\n` +
+        `→ Relationships, hard conversations\n\n` +
+        `*SLEEP* — can't sleep\n\n` +
+        `━━━━━━\n` +
+        `*MENU* — all 7 branches\n` +
+        `*STATUS* — your progress\n` +
         `*PARK* — pause without guilt\n` +
         `*DASHBOARD* — full web view\n\n` +
-        `_Text any keyword (e.g. RESET4, FIRSTAID, AUDIT) to get a protocol._`
+        `_Or just tell me what's wrong — I'll find the right tool._`
     );
 }
 
