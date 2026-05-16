@@ -42,43 +42,27 @@ export default function ExplorePage() {
 
             {/* Branch Grid */}
             <div className="max-w-5xl mx-auto px-6 py-16">
-                <div className="grid grid-cols-1 gap-3">
-                    {branches.map((branch, i) => (
+                <div className="grid grid-cols-1 gap-2.5">
+                    {branches.map((branch) => (
                         <Link
                             key={branch.slug}
                             href={`/${branch.slug}`}
-                            className="group relative rounded-2xl overflow-hidden transition-all duration-300"
-                            style={{ backgroundColor: `${branch.color}18`, border: `1px solid ${branch.color}30` }}
+                            className="group flex items-center gap-4 px-5 py-4 rounded-2xl active:scale-[0.98] transition-all duration-150"
+                            style={{ backgroundColor: `${branch.color}22`, border: `1.5px solid ${branch.color}50` }}
                         >
-                            {/* Hover fill */}
-                            <div
-                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                                style={{ backgroundColor: `${branch.color}25` }}
-                            />
+                            <span className="text-2xl shrink-0">{branch.icon}</span>
 
-                            <div className="relative z-10 flex items-center gap-5 px-6 py-5">
-                                <span className="text-2xl shrink-0">{branch.icon}</span>
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-baseline gap-3">
-                                        <h2
-                                            className="text-base font-black tracking-tight"
-                                            style={{ color: branch.color }}
-                                        >
-                                            {branch.name}
-                                        </h2>
-                                        <span className="text-white/20 font-mono text-[10px]">{branch.num}</span>
-                                    </div>
-                                    <p className="text-white/40 text-xs leading-relaxed mt-0.5 truncate">{branch.description}</p>
-                                </div>
-
-                                <span
-                                    className="shrink-0 text-xs font-bold uppercase tracking-widest opacity-40 group-hover:opacity-80 transition-opacity"
+                            <div className="flex-1 min-w-0">
+                                <p
+                                    className="font-black text-base tracking-tight leading-tight"
                                     style={{ color: branch.color }}
                                 >
-                                    →
-                                </span>
+                                    {branch.name}
+                                </p>
+                                <p className="text-white/35 text-xs mt-0.5 truncate">{branch.description}</p>
                             </div>
+
+                            <span className="text-lg shrink-0 opacity-30 group-hover:opacity-70 transition-opacity" style={{ color: branch.color }}>→</span>
                         </Link>
                     ))}
                 </div>
