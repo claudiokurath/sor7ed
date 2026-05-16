@@ -19,18 +19,58 @@ export default function ResultsScreen({ result, onWhatsAppCTA, isAuthenticated }
   const [revealPhase, setRevealPhase] = useState<'score' | 'narrative' | 'protocol' | 'cta'>('score');
   const branchColor = getBranchColor(result.branch);
 
-  // Orchestrated reveal sequence for maximum psychological impact
   useEffect(() => {
     const sequence = [
       { phase: 'narrative' as const, delay: 1200 },
       { phase: 'protocol' as const, delay: 2800 },
       { phase: 'cta' as const, delay: 4200 },
     ];
-    
     sequence.forEach(({ phase, delay }) => {
       setTimeout(() => setRevealPhase(phase), delay);
     });
   }, []);
+
+  // Gate: non-authenticated users see a signup wall after the score
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
+        <div className="max-w-sm w-full text-center space-y-8">
+          {/* Blurred score teaser */}
+          <div className="relative flex justify-center">
+            <div className="blur-sm opacity-40 pointer-events-none">
+              <ScoreVisualization score={result.score} branchColor={branchColor} branch={result.branch} />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-4xl">🔒</span>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-black tracking-tight mb-3">Your results are ready</h2>
+            <p className="text-white/40 text-sm leading-relaxed">
+              Results are delivered to your WhatsApp. Sign up to see your diagnosis and get the protocol sent directly to your phone.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <Link
+              href="/signup"
+              className="flex items-center justify-center w-full py-4 rounded-full font-black text-black text-sm uppercase tracking-widest transition-all hover:scale-105"
+              style={{ backgroundColor: branchColor }}
+            >
+              Sign up free to unlock →
+            </Link>
+            <p className="text-white/20 text-xs">
+              Already signed up?{' '}
+              <Link href="/signin" className="text-white/40 underline underline-offset-4 hover:text-white transition-colors">
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col snap-y snap-mandatory overflow-y-auto no-scrollbar">
