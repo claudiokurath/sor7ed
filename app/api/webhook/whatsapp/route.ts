@@ -7,6 +7,28 @@ import { branches } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
+// Normalize incoming text: lowercase, trim, expand common misspellings
+function normalizeKeyword(raw: string): string {
+    const lower = raw.trim().toLowerCase();
+    const ALIASES: Record<string, string> = {
+        'dopamin':    'dopamine',
+        'dopamaine':  'dopamine',
+        'burnot':     'burnout',
+        'burn out':   'burnout',
+        'firstaid':   'firstaid',
+        'first aid':  'firstaid',
+        'adhdtax':    'reset4',
+        'adhd tax':   'reset4',
+        'moneyreset': 'reset4',
+        'memorypalace': 'memory',
+        'sensoryaudit': 'audit',
+        'bodydouble':   'match',
+        'financialautopilot': 'autopilot',
+        "let's get sorted": 'hi',
+    };
+    return ALIASES[lower] ?? lower;
+}
+
 const getSupabase = () => createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -79,19 +101,62 @@ export async function POST(req: NextRequest) {
         
         if (message && message.type === "text") {
             const senderPhone = message.from;
-            const keyword = message.text.body.trim().toLowerCase();
+            const rawText = message.text.body.trim();
+            const keyword = normalizeKeyword(rawText);
 
-            console.log(`Received WhatsApp keyword: ${keyword} from ${senderPhone}`);
+            console.log(`Received WhatsApp message: "${rawText}" → normalized: "${keyword}" from ${senderPhone}`);
+
+            // ── CRISIS DETECTION — always first, no auth required ─────────────
+            const CRISIS_PATTERNS = [
+                /suicid/i, /kill myself/i, /end it all/i, /want to die/i,
+                /cant go on/i, /can't go on/i, /hopeless/i, /hurt myself/i,
+                /overdos/i, /no point/i,
+            ];
+            if (CRISIS_PATTERNS.some(p => p.test(rawText))) {
+                await markMessageRead(message.id);
+                await sendWhatsAppMessage(senderPhone,
+                    `You reached out and that matters. 🤍\n\n` +
+                    `SOR7ED is not a crisis service — please reach out to someone who can help right now:\n\n` +
+                    `🆘 *999* — immediate danger\n` +
+                    `💬 *Text SHOUT to 85258* — free, 24/7\n` +
+                    `📞 *Samaritans: 116 123* — free, 24/7\n\n` +
+                    `You don't need to explain yourself. Just reach out.`
+                );
+                return NextResponse.json({ status: "crisis_handled" });
+            }
 
             // Mark message as read (shows blue ticks)
             await markMessageRead(message.id);
 
             const supabase = getSupabase();
             const normalizedPhone = senderPhone.startsWith('+') ? senderPhone : `+${senderPhone}`;
-            
+
+            // ── STOP / GDPR OPT-OUT — before user lookup ─────────────────────
+            if (keyword === 'stop') {
+                await supabase
+                    .from('users')
+                    .update({ whatsapp_opted_out: true })
+                    .eq('whatsapp_number', normalizedPhone);
+                await sendWhatsAppMessage(senderPhone,
+                    `You are unsubscribed from SOR7ED messages.\n\n` +
+                    `Text *START* to re-enable any time.\n` +
+                    `To delete your data: hello@sor7ed.com`
+                );
+                return NextResponse.json({ status: "opted_out" });
+            }
+
+            if (keyword === 'start') {
+                await supabase
+                    .from('users')
+                    .update({ whatsapp_opted_out: false })
+                    .eq('whatsapp_number', normalizedPhone);
+                await sendWhatsAppMessage(senderPhone, `Welcome back. Text *MENU* to see your branches.`);
+                return NextResponse.json({ status: "opted_in" });
+            }
+
             const { data: user } = await supabase
                 .from('users')
-                .select('id, user_id, first_name, whatsapp_onboarded')
+                .select('id, user_id, first_name, whatsapp_onboarded, whatsapp_opted_out')
                 .eq('whatsapp_number', normalizedPhone)
                 .single();
 
@@ -103,6 +168,10 @@ export async function POST(req: NextRequest) {
                     `Once you're in, text this number anytime to access your dashboard.`
                 );
                 return NextResponse.json({ status: "unregistered" });
+            }
+
+            if (user.whatsapp_opted_out) {
+                return NextResponse.json({ status: "opted_out" });
             }
 
             // WhatsApp verification code — check before onboarding
@@ -146,9 +215,14 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "onboarded" });
             }
 
-            // Entry/greeting phrases — show menu
-            const entryPhrases = ['sor7ed', 'sorted', "let's get sorted", 'lets get sorted', 'hello', 'hi', 'hey', 'start'];
+            // Entry/greeting phrases — show compact help
+            const entryPhrases = ['sor7ed', 'sorted', 'lets get sorted', 'hello', 'hi', 'hey'];
             if (entryPhrases.includes(keyword)) {
+                await handleHelpCommand(senderPhone);
+                return NextResponse.json({ status: "ok" });
+            }
+
+            if (keyword === 'help') {
                 await handleHelpCommand(senderPhone);
                 return NextResponse.json({ status: "ok" });
             }
@@ -167,8 +241,24 @@ export async function POST(req: NextRequest) {
                 await sendWhatsAppMessage(senderPhone, `${siteUrl}/${branch.slug}`, true);
                 return NextResponse.json({ status: "ok" });
             }
-            if (keyword === 'help') {
-                await handleHelpCommand(senderPhone);
+
+            // ── CATEGORY SHORTCUTS ────────────────────────────────────────────
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+            const categoryRoutes: Record<string, { slug: string; label: string; tools: string }> = {
+                focus:    { slug: 'keep-going',    label: 'Focus + Momentum',  tools: 'MEMORY • MOMENTUM • BREAKDOWN' },
+                body:     { slug: 'feel-good',     label: 'Body + Energy',     tools: 'BURNOUT • SENSORY • SLEEP' },
+                money:    { slug: 'spend-smart',   label: 'Money',             tools: 'RESET4 • AUTOPILOT • AUDIT' },
+                people:   { slug: 'be-connected',  label: 'Relationships',     tools: 'AUDIT • FIRSTAID • TRANSLATE' },
+                work:     { slug: 'be-yourself',   label: 'Work + Identity',   tools: 'TRANSLATE • MATCH • MEMORY' },
+                sleep:    { slug: 'plan-ahead',    label: 'Planning + Safety', tools: 'FIRSTAID • MATCH' },
+                level:    { slug: 'level-up',      label: 'Growth + Skills',   tools: 'MATCH • MEMORY • MOMENTUM' },
+            };
+            if (keyword in categoryRoutes) {
+                const cat = categoryRoutes[keyword];
+                await sendWhatsAppMessage(senderPhone,
+                    `*${cat.label}* tools:\n\n${cat.tools}\n\nText any keyword to get it delivered here.\n\n${siteUrl}/${cat.slug}`,
+                    true
+                );
                 return NextResponse.json({ status: "ok" });
             }
             if (keyword === 'status') {
@@ -232,17 +322,10 @@ export async function POST(req: NextRequest) {
                         await sendWhatsAppMessage(senderPhone, content);
                     }
                 } else {
-                    // Unknown input — treat as "show me the menu"
                     await sendWhatsAppMessage(senderPhone,
-                        `Hey ${user.first_name ?? 'there'} — here's what you can do:\n\n` +
-                        `*MENU* — your 7 branch dashboard\n` +
-                        `*1–7* — open a specific branch\n` +
-                        `*STATUS* — your progress file\n` +
-                        `*NEW* — latest protocol\n` +
-                        `*HISTORY* — past diagnostics\n` +
-                        `*DASHBOARD* — full web view\n` +
-                        `*PARK* — pause without guilt\n\n` +
-                        `_Or text any protocol keyword (e.g. SPEND, MOMENTUM) to get it delivered here._`
+                        `"${rawText}" is not a keyword I recognise.\n\n` +
+                        `Text *HELP* to find what you need.\n` +
+                        `Text *MENU* to browse your 7 branches.`
                     );
                 }
             }
@@ -262,16 +345,17 @@ async function sendBranchMenu(to: string) {
 
 async function handleHelpCommand(to: string) {
     await sendWhatsAppMessage(to,
-        `*SOR7ED commands:*\n\n` +
-        `*MENU* — your 7 branch dashboard\n` +
-        `*1–7* — open a specific branch\n` +
+        `Not sure where to start? Text one of these:\n\n` +
+        `*FOCUS* — can't start or finish things\n` +
+        `*BODY* — energy, burnout, sensory\n` +
+        `*MONEY* — financial chaos\n` +
+        `*PEOPLE* — relationships, work\n\n` +
+        `Or:\n` +
+        `*MENU* — browse all 7 branches\n` +
         `*STATUS* — your progress file\n` +
-        `*NEW* — latest protocol\n` +
-        `*HISTORY* — past diagnostics\n` +
-        `*DASHBOARD* — full web view\n` +
         `*PARK* — pause without guilt\n` +
-        `*AUDIO [keyword]* — audio version of any protocol\n\n` +
-        `_Or text any keyword (like SPEND, MOMENTUM) to get a protocol delivered here._`
+        `*DASHBOARD* — full web view\n\n` +
+        `_Text any keyword (e.g. RESET4, FIRSTAID, AUDIT) to get a protocol._`
     );
 }
 
