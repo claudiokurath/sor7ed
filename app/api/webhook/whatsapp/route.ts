@@ -105,6 +105,37 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "unregistered" });
             }
 
+            // WhatsApp verification code — check before onboarding
+            if (/^verify\s+\d{6}$/i.test(keyword)) {
+                const code = keyword.split(/\s+/)[1];
+                const { data: userRecord } = await supabase
+                    .from('users')
+                    .select('id, first_name, wa_verify_code, whatsapp_verified')
+                    .eq('whatsapp_number', normalizedPhone)
+                    .single();
+
+                if (!userRecord) {
+                    await sendWhatsAppMessage(senderPhone, `Code not recognised. Make sure you signed up at ${process.env.NEXT_PUBLIC_SITE_URL}/signup first.`);
+                } else if (userRecord.whatsapp_verified) {
+                    await sendWhatsAppMessage(senderPhone, `Your WhatsApp is already verified, ${userRecord.first_name ?? 'there'}. ✅`);
+                } else if (userRecord.wa_verify_code === code) {
+                    await supabase
+                        .from('users')
+                        .update({ whatsapp_verified: true, wa_verify_code: null })
+                        .eq('id', userRecord.id);
+                    await sendWhatsAppMessage(senderPhone,
+                        `✅ WhatsApp verified, ${userRecord.first_name ?? 'there'}!\n\n` +
+                        `Your intelligence file is ready. Text *MENU* to see your 7 branches, or start your first diagnostic:\n` +
+                        `${process.env.NEXT_PUBLIC_SITE_URL}/tools`
+                    );
+                } else {
+                    await sendWhatsAppMessage(senderPhone,
+                        `That code doesn't match. Check your signup confirmation page for the right 6-digit code.`
+                    );
+                }
+                return NextResponse.json({ status: "ok" });
+            }
+
             // First message — send onboarding welcome sequence
             if (!user.whatsapp_onboarded) {
                 await handleOnboarding(senderPhone, normalizedPhone, user.first_name ?? 'there');

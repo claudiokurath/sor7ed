@@ -10,7 +10,7 @@ const getAdminClient = () => createAdminClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-type ActionState = { error: string } | { success: boolean } | null
+export type ActionState = { error: string } | { success: true; waVerifyCode?: string; waNumber?: string } | null
 
 export async function handleSignupOrLogin(prevState: ActionState, formData: FormData) {
   const adminClient = getAdminClient()
@@ -24,6 +24,7 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
   const firstName = formData.get('firstName') as string
   const whatsapp = formData.get('whatsapp') as string
   const isLogin = formData.get('isLogin') === 'true'
+  let pendingWaVerifyCode: string | undefined
 
   if (!email) {
     return { error: 'Email is required.' }
@@ -38,6 +39,8 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
 
     const cleanFirstName = firstName.trim()
     const cleanWhatsapp = whatsapp.trim().replace(/\s+/g, '')
+    const waVerifyCode = Math.floor(100000 + Math.random() * 900000).toString()
+    pendingWaVerifyCode = waVerifyCode
 
     console.log(`Attempting signup for: ${cleanEmail}`)
 
@@ -47,7 +50,8 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
         .insert({
           first_name: cleanFirstName,
           email: cleanEmail,
-          whatsapp_number: cleanWhatsapp
+          whatsapp_number: cleanWhatsapp,
+          wa_verify_code: waVerifyCode,
         })
 
       if (dbError) {
@@ -77,7 +81,10 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
       return { error: authError.message }
     }
 
-    return { success: true }
+    return {
+      success: true as const,
+      ...(pendingWaVerifyCode ? { waVerifyCode: pendingWaVerifyCode, waNumber: '447591922247' } : {}),
+    }
   } catch (err: unknown) {
     console.error('Auth Critical Error:', err)
     return { error: 'Failed to send magic link. Please try again.' }
