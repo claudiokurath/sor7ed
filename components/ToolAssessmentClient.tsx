@@ -3,20 +3,116 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import ArticleCover from './ArticleCover';
 import ResultsScreen from './ResultsScreen';
 import { calculateAcceleratedProgress } from "@/lib/progress-curve";
 import { generateNarrative, getScoreLevel } from "@/lib/narrative-engine";
-import { AssessmentResult, BranchSlug, Recommendation, ProtocolStep } from "@/types/assessment";
+import { AssessmentResult, BranchSlug, NarrativeLayer, Recommendation, ProtocolStep, ScoreLevel } from "@/types/assessment";
 
 type Question = {
   id: number;
   text: string;
   options: string[];
 };
+
+interface ToolAnalysis {
+  score: number;
+  priority: ScoreLevel;
+  frictionType: string;
+  headline: string;
+  subheadline: string;
+  insight: string;
+  protocolKeyword: string;
+}
+
+function analyzeToolAnswers(
+  toolSlug: string,
+  answers: Record<number, string>,
+  questions: Question[]
+): ToolAnalysis | null {
+  const responses = questions.map(q => (answers[q.id] || '').toLowerCase());
+
+  if (toolSlug === 'friction-finder') {
+    const [bodyResponse = '', clarityIssue = '', helpType = '', duration = ''] = responses;
+    const isChronicOrWeek = duration.includes('chronic') || duration.includes('week') || duration.includes('month');
+
+    if (clarityIssue.includes('missing') || clarityIssue.includes('information') || clarityIssue.includes("don't know")) {
+      return {
+        frictionType: 'MISSING_INFO',
+        score: isChronicOrWeek ? 82 : 67,
+        priority: isChronicOrWeek ? 'critical' : 'high',
+        headline: 'Information Gap Friction',
+        subheadline: "Your brain won't start because it doesn't feel safe to.",
+        insight: "Your main friction is missing information. Your brain won't start because it doesn't have all the pieces it needs to feel safe proceeding. This isn't procrastination — it's your executive function correctly identifying that you need more data before you can create a plan.",
+        protocolKeyword: '',
+      };
+    }
+
+    if (helpType.includes('reassure') || bodyResponse.includes('anx') || bodyResponse.includes('scared') || bodyResponse.includes('dread')) {
+      return {
+        frictionType: 'EMOTIONAL_BLOCK',
+        score: isChronicOrWeek ? 85 : 72,
+        priority: 'high',
+        headline: 'Emotional Safety Friction',
+        subheadline: 'Your nervous system is treating this task as a threat.',
+        insight: "Your friction is emotional, not logical. Your nervous system is flooding you with stress hormones that make clear thinking impossible. Forcing yourself to 'just start' makes this worse — you need regulation before execution.",
+        protocolKeyword: '',
+      };
+    }
+
+    if (helpType.includes('gamif') || helpType.includes('reward') || bodyResponse.includes('numb') || bodyResponse.includes('flat') || bodyResponse.includes('nothing')) {
+      return {
+        frictionType: 'DOPAMINE_DEFICIT',
+        score: 65,
+        priority: 'medium',
+        headline: 'Dopamine Deficit Friction',
+        subheadline: "Your brain isn't getting enough signal to engage.",
+        insight: "Your brain isn't getting enough reward signal from this task to engage your attention systems. This is neurological, not motivational. You need to artificially increase the dopamine hit — motivation follows action, but only when there's a signal to act on.",
+        protocolKeyword: '',
+      };
+    }
+
+    return {
+      frictionType: 'EXECUTIVE_OVERLOAD',
+      score: isChronicOrWeek ? 88 : 74,
+      priority: isChronicOrWeek ? 'critical' : 'high',
+      headline: 'Executive Function Overload',
+      subheadline: 'Too many open loops. Your system has shut down.',
+      insight: "You have too many competing priorities and your executive function system has shut down to protect itself. This is your brain's circuit breaker activating — not a character flaw. You need cognitive load reduction before task engagement is possible.",
+      protocolKeyword: '',
+    };
+  }
+
+  return null;
+}
+
+function getFrictionProtocolPreview(frictionType: string): ProtocolStep[] {
+  const previews: Record<string, ProtocolStep[]> = {
+    MISSING_INFO: [
+      { stepNumber: 1, title: "The 2-minute brain dump", description: "Write every question, concern, and unknown without filtering — get them out of your head and onto paper." },
+      { stepNumber: 2, title: "The minimum viable answer", description: "Identify the one piece of information that, if you had it, would let you start. Just that one." },
+    ],
+    EMOTIONAL_BLOCK: [
+      { stepNumber: 1, title: "Name the emotion", description: "Your nervous system needs acknowledgment before it will stand down. Name specifically what you're feeling." },
+      { stepNumber: 2, title: "The 5-minute permission slip", description: "Give yourself explicit permission to do a 5-minute version with zero quality requirements." },
+    ],
+    DOPAMINE_DEFICIT: [
+      { stepNumber: 1, title: "Stack a reward", description: "Pair the task with something that gives you a dopamine hit — specific music, a drink, a new location." },
+      { stepNumber: 2, title: "Create artificial stakes", description: "Tell someone you'll send them the result in 30 minutes. External accountability creates the signal your brain needs." },
+    ],
+    EXECUTIVE_OVERLOAD: [
+      { stepNumber: 1, title: "The parking lot", description: "Write every other task on a list you won't touch for 2 hours. Your brain needs to know they're captured before it can focus." },
+      { stepNumber: 2, title: "The one-sentence task", description: "Reduce this task to a single action that takes under 5 minutes. That's your only job right now." },
+    ],
+  };
+
+  return previews[frictionType] ?? [
+    { stepNumber: 1, title: "Identify the trigger", description: "Notice exactly when the friction starts." },
+    { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between the urge to avoid and the action of starting." },
+  ];
+}
 
 function computeScore(): number {
   return Math.floor(Math.random() * 40) + 40;
@@ -89,20 +185,26 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
 
   const handleAssessmentComplete = async () => {
     setIsAnalyzing(true);
-    
-    const score = computeScore();
-    
-    // 2. Map branch
+
     const branchSlug = tool.branch.toLowerCase().replace(/\s+/g, '-') as BranchSlug;
-    
-    // 3. Generate Narrative
-    const narrative = generateNarrative(score, branchSlug);
-    
-    // 4. Build Protocol Preview (Dummy for now, could come from tool meta)
-    const protocolPreview: ProtocolStep[] = [
-      { stepNumber: 1, title: "Identify the trigger", description: "Notice exactly when the compulsion starts." },
-      { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between urge and action." }
-    ];
+
+    // Analyze actual answers for known tools; fall back to random scoring
+    const analysis = tool.questions.length > 0
+      ? analyzeToolAnswers(tool.slug, answers, tool.questions)
+      : null;
+
+    const score = analysis?.score ?? computeScore();
+
+    const narrative: NarrativeLayer = analysis
+      ? { headline: analysis.headline, subheadline: analysis.subheadline, insight: analysis.insight, urgency: analysis.priority }
+      : generateNarrative(score, branchSlug);
+
+    const protocolPreview: ProtocolStep[] = analysis
+      ? getFrictionProtocolPreview(analysis.frictionType)
+      : [
+          { stepNumber: 1, title: "Identify the trigger", description: "Notice exactly when the compulsion starts." },
+          { stepNumber: 2, title: "The 30-second pause", description: "Create a micro-gap between urge and action." },
+        ];
 
     // 5. Fetch REAL Recommendations from Supabase
     const { data: recTools } = await supabase
@@ -147,7 +249,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
       narrative,
       recommendations,
       protocolPreview,
-      whatsappKeyword: tool.keyword
+      whatsappKeyword: (analysis?.protocolKeyword || tool.keyword),
     };
 
     setAssessmentResult(result);
