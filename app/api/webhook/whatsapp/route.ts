@@ -373,15 +373,42 @@ export async function POST(req: NextRequest) {
                 if (tool) {
                     contentDelivered = true;
                     contentId = tool.slug;
-                    const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, keyword);
-                    const template = getTemplateByKeyword(keyword);
 
-                    if (template) {
-                        await sendWhatsAppTemplate(senderPhone, keyword, token);
+                    // Check if this user has completed the assessment for this tool
+                    const { data: lastAssessment } = await supabase
+                        .from('assessment_history')
+                        .select('score, level, friction_type, completed_at')
+                        .eq('user_id', user.id)
+                        .eq('tool_slug', tool.slug)
+                        .order('completed_at', { ascending: false })
+                        .limit(1)
+                        .single();
+
+                    if (lastAssessment?.friction_type) {
+                        // Deliver the personalized protocol based on their assessment
+                        await sendPersonalizedProtocol(
+                            senderPhone,
+                            user.first_name ?? 'there',
+                            tool.name,
+                            lastAssessment.friction_type,
+                            lastAssessment.score,
+                            tool.slug,
+                        );
                     } else {
-                        const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
-                        const content = `Hi ${user.first_name ?? 'there'}, I've prepared your assessment for *${tool.name}*.\n\n${tool.tldr}\n\n*START ASSESSMENT:*\n${bridgeUrl}\n\n(This link expires in 30 minutes)`;
-                        await sendWhatsAppMessage(senderPhone, content);
+                        // No assessment yet — send the bridge link to start one
+                        const { token } = await createWhatsAppSession(normalizedPhone, tool.slug, keyword);
+                        const template = getTemplateByKeyword(keyword);
+
+                        if (template) {
+                            await sendWhatsAppTemplate(senderPhone, keyword, token);
+                        } else {
+                            const bridgeUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/bridge?token=${token}`;
+                            const content =
+                                `Hi ${user.first_name ?? 'there'}. To unlock your personalised protocol for *${tool.name}*, complete the 2-minute diagnostic first:\n\n` +
+                                `${bridgeUrl}\n\n` +
+                                `_(Link expires in 30 minutes)_`;
+                            await sendWhatsAppMessage(senderPhone, content);
+                        }
                     }
                 } else {
                     await sendWhatsAppMessage(senderPhone,
@@ -417,6 +444,67 @@ export async function POST(req: NextRequest) {
         console.error("Webhook Error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
+}
+
+const PROTOCOL_STEPS: Record<string, { headline: string; steps: [string, string][] }> = {
+    ANXIETY_AVOIDANCE:        { headline: 'Financial Anxiety Avoidance', steps: [['The one-look rule', 'Open your account for 60 seconds only. No decisions, no judgment — just look. That is the whole task.'], ['Build the 4-account structure', 'Separate your money into four named accounts: bills, spending, buffer, and future. The separation removes the emotional charge.']] },
+    FULL_RESET:               { headline: 'Full Financial Reset', steps: [['Zero-based restart', 'List every regular outgoing first — rent, subscriptions, bills. That number is your floor. Everything else is negotiable.'], ['Automate on payday', 'Set every transfer to fire on the day income lands. Before you can spend it, it is already gone to the right place.']] },
+    SYSTEM_FAILURE:           { headline: 'Money System Collapse', steps: [['Remove decisions from the system', 'Every step that requires you to actively choose is a failure point. Automate anything that can be automated.'], ['Build the minimum viable system', 'One account for bills only. One for everything else. Add complexity only when basics are stable.']] },
+    SEVERE_SHUTDOWN:          { headline: 'Extended Shutdown Pattern', steps: [['Map your early warning system', 'Identify your 3 earliest physical signals — before the point of no return. These become your intervention triggers.'], ['Design a 5-minute prevention window', 'When you spot an early signal, you have a brief window. Your kit: one sensory input, one exit route, one safe phrase.']] },
+    NO_TOOLKIT:               { headline: 'No De-escalation Toolkit', steps: [['Sensory input inventory', 'Test five different sensory inputs this week — cold, pressure, rhythm, darkness, texture. Note which direction each pulls your nervous system.'], ['Build your sequence', 'A kit is a sequence: something for de-escalation, something for recovery, something for re-entry. Build all three.']] },
+    RECOVERY_GAP:             { headline: 'Recovery Window Too Long', steps: [['Design a recovery environment', 'Where you go after a meltdown matters as much as de-escalation. Identify your minimum viable recovery space.'], ['Set a recovery time boundary', 'Tell the people around you what recovery looks like and how long it takes. Interrupted recovery extends it significantly.']] },
+    HIGH_NEED:                { headline: 'Every System Has Failed', steps: [['Build your first palace', 'Choose a building you know perfectly. Place three things there. Walk it in your mind.'], ['60-second daily review', 'Walk the palace in your head once per day. Thirty seconds in the morning. That is enough to cement it.']] },
+    VISUAL_LEARNER:           { headline: 'Strong Visual Foundation', steps: [['Scale what already works', 'You already visualise well. Start with one room, five items, one topic.'], ['Add spaced repetition', 'Review on day 1, day 3, day 7, then weekly. The spacing does the work.']] },
+    CONSISTENCY_GAP:          { headline: 'Inconsistent Memory System', steps: [['Reduce activation cost to zero', 'Same time, same trigger, same device. Make starting automatic.'], ['Shrink the review', 'If reviewing takes more than 2 minutes, it will not happen consistently. Cut it down.']] },
+    MASKING_EXHAUSTION:       { headline: 'Masking-Induced Exhaustion', steps: [['Deploy transcription before the meeting', 'Have your tool running before anyone speaks. When you know it is capturing everything, you can stop performing memory.'], ['Process after, not during', 'Let the transcript hold it. Your job during the meeting is just to be there.']] },
+    PERFORMANCE_LOAD:         { headline: 'High Cognitive Load', steps: [['Use the transcript as your working memory', 'You do not need to remember what was said 10 minutes ago — the transcript has it.'], ['Allow yourself a processing gap', 'Even 5 minutes post-meeting changes comprehension significantly.']] },
+    PROCESSING_GAP:           { headline: 'Post-Meeting Processing Gap', steps: [['Capture first, review second', 'Do not try to act on meeting content immediately. Capture everything, then review at your own pace.'], ['Build a 24-hour response buffer', 'Delay non-urgent responses until after you have processed the transcript.']] },
+    CASH_FLOW_CRISIS:         { headline: 'Active Cash Flow Crisis', steps: [['Essentials first — everything else waits', 'Split your account immediately: one amount covers non-negotiables for the month. That money does not get touched.'], ['Build a 7-day buffer', 'Even £50 in a separate account creates breathing room.']] },
+    EMOTIONAL_SPENDING:       { headline: 'Emotional Spending Override', steps: [['Add friction to emotional spending', 'Move discretionary money to a separate account with no card. The extra step breaks the automatic loop.'], ['Pre-commit your spending amount', 'Decide in advance what the discretionary total is for the month. Once it is gone, it is gone.']] },
+    IRREGULAR_INCOME:         { headline: 'Irregular Income', steps: [['Calculate your monthly floor', 'What is the minimum you need for essentials? Automate to cover floor first on every payment.'], ['Buffer account as the variable absorber', 'All income goes into a buffer first. Pay yourself a fixed amount from it each month.']] },
+    START_BLOCK:              { headline: 'Initiation Block', steps: [['Commit to 10 minutes only', 'The match session starts with a 10-minute commitment. Not the task — just 10 minutes of starting.'], ['Use the opening check-in as your ignition', 'Tell your body double exactly what you are starting with in one sentence. Saying it out loud is neurologically different from thinking it.']] },
+    AVOIDANCE_LOOP:           { headline: 'Avoidance and Guilt Loop', steps: [['Externalise the accountability', 'Showing up for someone else bypasses the internal resistance. Your session starts with a shared intent.'], ['The guilt-free close', 'Every session ends with a report of what happened — not what you planned. Partial progress counts.']] },
+    SILENT_PRESENCE:          { headline: 'Silent Presence Required', steps: [['Match with a deep-work partner', 'Cameras on, no talking, someone also doing focused work. The shared space does the neurological work.'], ['90-minute silent blocks', 'No check-ins, no prompts. Just two people in parallel. Set a shared timer and work until it ends.']] },
+    ACCOUNTABILITY:           { headline: 'Accountability Structure', steps: [['The opening intent', 'State what you are working on and how long it should take. Your body double mirrors back what they heard.'], ['The 25-minute check', 'At 25 minutes, a brief pause: still on task? Adjust if not. No judgment, just recalibration.']] },
+    NO_SAFE_SPACE:            { headline: 'No Sensory Safe Space', steps: [['Engineer a minimum viable refuge', 'Even a corner with headphones and a specific light counts. Designate and protect it — this is not optional, it is infrastructure.'], ['Build a sensory reset ritual', 'A 10-minute sequence that reliably brings your nervous system down. Same every time, same order.']] },
+    MULTI_SENSORY_UNMANAGED:  { headline: 'Multi-Sensory Overload', steps: [['Audit your daily sensory load', 'Map your average day hour by hour. Where is input highest? You need 3 low-input windows per day minimum.'], ['Layer interventions by sense', 'Address your highest-impact sense first. One change at a time.']] },
+    UNMANAGED_SENSITIVITY:    { headline: 'Unmanaged Sensory Sensitivity', steps: [['Identify your top three triggers', 'Not everything — just the three inputs that cause the most disruption. Those get addressed first.'], ['Build avoidance and mitigation options', 'For each trigger: can you avoid it, or can you mitigate it? Your plan needs at least one option per trigger.']] },
+    PARTIAL_MANAGEMENT:       { headline: 'Partially Managed Profile', steps: [['Document what already works', 'Write down exactly what helps and under what conditions. Build from what works, not from what should work.'], ['Identify the gaps', 'Which environments still have no management strategy? Rank by frequency of exposure. Those are next.']] },
+};
+
+async function sendPersonalizedProtocol(
+    to: string,
+    firstName: string,
+    toolName: string,
+    frictionType: string,
+    score: number,
+    toolSlug: string,
+) {
+    const protocol = PROTOCOL_STEPS[frictionType];
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+    const toolUrl = `${siteUrl}/tools/${toolSlug}`;
+
+    if (!protocol) {
+        await sendWhatsAppMessage(to,
+            `Here's your protocol for *${toolName}*, ${firstName}.\n\n` +
+            `Your full assessment and personalised steps are at:\n${toolUrl}`
+        , true);
+        return;
+    }
+
+    const stepsText = protocol.steps
+        .map(([title, desc], i) => `*Step ${i + 1}: ${title}*\n${desc}`)
+        .join('\n\n');
+
+    const message =
+        `*${protocol.headline.toUpperCase()}*\n` +
+        `Your score: ${score}/100\n\n` +
+        `${stepsText}\n\n` +
+        `━━━━━━\n` +
+        `Full assessment + progress tracking:\n${toolUrl}\n\n` +
+        `_Text the keyword again any time to get this protocol back._`;
+
+    await sendWhatsAppMessage(to, message, true);
 }
 
 async function sendBranchMenu(to: string) {

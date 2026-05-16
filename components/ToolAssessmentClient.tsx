@@ -409,16 +409,17 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     checkUser();
   }, [tool.slug]);
 
-  const saveHistory = async (result: AssessmentResult) => {
+  const saveHistory = async (result: AssessmentResult, frictionType?: string) => {
     if (!user) return;
-    
+
     await supabase.from('assessment_history').insert({
       user_id: user.id,
       tool_slug: tool.slug,
       tool_name: tool.name,
       score: result.score,
       level: result.level,
-      answers: answers
+      answers: answers,
+      friction_type: frictionType ?? null,
     });
   };
 
@@ -492,7 +493,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     };
 
     setAssessmentResult(result);
-    if (user) await saveHistory(result);
+    if (user) await saveHistory(result, analysis?.frictionType);
     
     setTimeout(() => {
       setIsAnalyzing(false);
