@@ -42,37 +42,42 @@ export default function ExplorePage() {
 
             {/* Branch Grid */}
             <div className="max-w-5xl mx-auto px-6 py-16">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-3">
                     {branches.map((branch, i) => (
                         <Link
                             key={branch.slug}
                             href={`/${branch.slug}`}
-                            className="group relative rounded-3xl border border-white/5 hover:border-white/15 bg-[#0f0f0f] p-8 transition-all duration-300 overflow-hidden"
+                            className="group relative rounded-2xl overflow-hidden transition-all duration-300"
+                            style={{ backgroundColor: `${branch.color}18`, border: `1px solid ${branch.color}30` }}
                         >
-                            {/* Glow */}
+                            {/* Hover fill */}
                             <div
-                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"
-                                style={{ background: `radial-gradient(ellipse at 0% 0%, ${branch.color}12, transparent 70%)` }}
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                style={{ backgroundColor: `${branch.color}25` }}
                             />
 
-                            <div className="relative z-10">
-                                <div className="flex items-start justify-between mb-6">
-                                    <span className="text-4xl">{branch.icon}</span>
-                                    <span className="text-white/15 font-mono text-sm">0{i + 1}</span>
+                            <div className="relative z-10 flex items-center gap-5 px-6 py-5">
+                                <span className="text-2xl shrink-0">{branch.icon}</span>
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-baseline gap-3">
+                                        <h2
+                                            className="text-base font-black tracking-tight"
+                                            style={{ color: branch.color }}
+                                        >
+                                            {branch.name}
+                                        </h2>
+                                        <span className="text-white/20 font-mono text-[10px]">{branch.num}</span>
+                                    </div>
+                                    <p className="text-white/40 text-xs leading-relaxed mt-0.5 truncate">{branch.description}</p>
                                 </div>
-                                <h2
-                                    className="text-xl font-black mb-2 tracking-tight"
+
+                                <span
+                                    className="shrink-0 text-xs font-bold uppercase tracking-widest opacity-40 group-hover:opacity-80 transition-opacity"
                                     style={{ color: branch.color }}
                                 >
-                                    {branch.name}
-                                </h2>
-                                <p className="text-white/35 text-sm leading-relaxed">{branch.description}</p>
-
-                                <div className="mt-6 flex items-center gap-2">
-                                    <span className="text-xs text-white/20 group-hover:text-white/40 transition-colors font-bold uppercase tracking-widest">
-                                        Explore →
-                                    </span>
-                                </div>
+                                    →
+                                </span>
                             </div>
                         </Link>
                     ))}
