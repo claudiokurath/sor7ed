@@ -12,6 +12,32 @@ const getAdminClient = () => createAdminClient(
 
 export type ActionState = { error: string } | { success: true; waVerifyCode?: string; waNumber?: string } | null
 
+async function syncToNotionCRM(firstName: string, email: string, whatsapp: string) {
+  const dbId = process.env.NOTION_CRM_DB_ID
+  const apiKey = process.env.NOTION_API_KEY
+  if (!dbId || !apiKey) return
+
+  await fetch('https://api.notion.com/v1/pages', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      parent: { database_id: dbId },
+      properties: {
+        Name: { title: [{ text: { content: firstName } }] },
+        Email: { email },
+        WhatsApp: { phone_number: whatsapp },
+        Status: { select: { name: 'Active' } },
+        Source: { select: { name: 'Website' } },
+        'Signed Up': { date: { start: new Date().toISOString().split('T')[0] } },
+      },
+    }),
+  })
+}
+
 export async function handleSignupOrLogin(prevState: ActionState, formData: FormData) {
   const adminClient = getAdminClient()
   const supabase = await createServerClient()
@@ -61,6 +87,11 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
         }
         return { error: `Database error: ${dbError.message}` }
       }
+
+      // Mirror to Notion CRM — fire-and-forget, never blocks signup
+      syncToNotionCRM(cleanFirstName, cleanEmail, cleanWhatsapp).catch(err =>
+        console.error('Notion CRM sync failed (non-critical):', err)
+      )
     } catch (err: unknown) {
       console.error('Signup DB Critical Error:', err)
       return { error: 'Something went wrong saving your details.' }
