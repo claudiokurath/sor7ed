@@ -219,10 +219,10 @@ export async function POST(req: NextRequest) {
             if (!user) {
                 await sendWhatsAppMessage(senderPhone,
                     `Hey! You just found SOR7ED — practical tools for overwhelmed minds. 🤍\n\n` +
-                    `Sign up free to unlock your intelligence file:\n` +
-                    `${process.env.NEXT_PUBLIC_SITE_URL}/signup\n\n` +
-                    `Once you're in, text what's wrong anytime and I'll send the right tool.`
+                    `Pick your branch below, then sign up free to unlock your personalised protocol.`
                 );
+                await new Promise(r => setTimeout(r, 600));
+                await sendWhatsAppMessage(senderPhone, `${process.env.NEXT_PUBLIC_SITE_URL}/explore`, true);
                 return NextResponse.json({ status: "unregistered" });
             }
 
