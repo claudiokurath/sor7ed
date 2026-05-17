@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 export const dynamic = 'force-dynamic';
 
 const NOTION_DB_ID = process.env.NOTION_BLOG_DB_ID!;
+const STORAGE_BUCKET = 'notion-files';
+const STORAGE_PREFIX = 'covers';
 
 const getSupabase = () => createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,12 +15,15 @@ const getSupabase = () => createClient(
 // ---- Notion property extractors ----
 
 type RichTextItem = { text: { content: string } };
+type NotionFile =
+  | { type: 'file'; file: { url: string } }
+  | { type: 'external'; external: { url: string } };
 type NotionProp =
   | { type: 'title'; title: RichTextItem[] }
   | { type: 'rich_text'; rich_text: RichTextItem[] }
   | { type: 'select'; select: { name: string } | null }
   | { type: 'status'; status: { name: string } | null }
-  | { type: 'files'; files: Array<{ type: 'file'; file: { url: string } } | { type: 'external'; external: { url: string } }> }
+  | { type: 'files'; files: NotionFile[] }
   | { type: 'date'; date: { start: string } | null };
 
 function text(p: NotionProp | undefined): string {
@@ -38,10 +43,50 @@ function status(p: NotionProp | undefined): string {
   return p.status?.name ?? '';
 }
 
-function fileUrl(p: NotionProp | undefined): string {
-  if (!p || p.type !== 'files' || p.files.length === 0) return '';
+function notionFile(p: NotionProp | undefined): { url: string; isHosted: boolean } | null {
+  if (!p || p.type !== 'files' || p.files.length === 0) return null;
   const f = p.files[0];
-  return f.type === 'file' ? f.file.url : f.type === 'external' ? f.external.url : '';
+  if (f.type === 'file') return { url: f.file.url, isHosted: true };
+  if (f.type === 'external') return { url: f.external.url, isHosted: false };
+  return null;
+}
+
+// ---- Cover image: download from Notion → upload to Supabase Storage ----
+
+async function persistCoverImage(slug: string, notionUrl: string): Promise<string> {
+  const supabase = getSupabase();
+  const storagePath = `${STORAGE_PREFIX}/${slug}.jpg`;
+
+  // Skip re-upload if already stored (check by path existence)
+  const { data: existing } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .list(STORAGE_PREFIX, { search: `${slug}.jpg` });
+
+  if (existing && existing.length > 0) {
+    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
+    return data.publicUrl;
+  }
+
+  // Download from Notion
+  const imgRes = await fetch(notionUrl);
+  if (!imgRes.ok) return notionUrl; // fallback to temp URL
+
+  const contentType = imgRes.headers.get('content-type') ?? 'image/jpeg';
+  const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+  const path = `${STORAGE_PREFIX}/${slug}.${ext}`;
+  const buffer = await imgRes.arrayBuffer();
+
+  const { error } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(path, buffer, { contentType, upsert: true });
+
+  if (error) {
+    console.error(`[sync-notion] Storage upload failed for ${slug}:`, error.message);
+    return notionUrl; // fallback
+  }
+
+  const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+  return data.publicUrl;
 }
 
 // ---- Sync handler ----
@@ -74,33 +119,53 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Notion API failed' }, { status: 500 });
     }
 
-    const json = await res.json() as { results: NotionPage[]; has_more: boolean; next_cursor: string | null };
+    const json = await res.json() as {
+      results: NotionPage[];
+      has_more: boolean;
+      next_cursor: string | null;
+    };
     pages.push(...json.results);
     cursor = json.has_more && json.next_cursor ? json.next_cursor : undefined;
   } while (cursor);
 
-  // Map Notion pages to Supabase rows
-  const rows = pages
-    .map(page => {
-      const p = page.properties as Record<string, NotionProp>;
-      return {
-        title: text(p['Title']),
-        slug: text(p['Slug']),
-        branch: select(p['Branch']),
-        status: status(p['Status']),
-        summary: text(p['Summary']),
-        excerpt: text(p['Excerpt']),
-        problem: text(p['Blog Post']),
-        cta: text(p['CTA']),
-        protocol: text(p['Protocol']),
-        keyword: text(p['WhatsApp Trigger']),
-        cover_image: fileUrl(p['Cover Image 1']),
-        read_time: text(p['Read Time']),
-        meta_description: text(p['Meta Description']),
-        seo_title: text(p['SEO Title']),
-      };
-    })
-    .filter(r => r.slug.length > 0);
+  // Map Notion pages → Supabase rows (with cover image persistence)
+  const rows = await Promise.all(
+    pages
+      .map(page => {
+        const p = page.properties as Record<string, NotionProp>;
+        return { page, p, slug: text(p['Title'] ? undefined : undefined) || text(p['Slug']) };
+      })
+      .filter(({ p }) => text(p['Slug']).length > 0)
+      .map(async ({ p }) => {
+        const slug = text(p['Slug']);
+        const file = notionFile(p['Cover Image 1']);
+
+        let cover_image = '';
+        if (file) {
+          // Notion-hosted files: download once, store permanently in Supabase Storage
+          cover_image = file.isHosted
+            ? await persistCoverImage(slug, file.url)
+            : file.url; // external URLs used as-is
+        }
+
+        return {
+          title: text(p['Title']),
+          slug,
+          branch: select(p['Branch']),
+          status: status(p['Status']),
+          summary: text(p['Summary']),
+          excerpt: text(p['Excerpt']),
+          problem: text(p['Blog Post']),
+          cta: text(p['CTA']),
+          protocol: text(p['Protocol']),
+          keyword: text(p['WhatsApp Trigger']),
+          cover_image,
+          read_time: text(p['Read Time']),
+          meta_description: text(p['Meta Description']),
+          seo_title: text(p['SEO Title']),
+        };
+      })
+  );
 
   if (rows.length === 0) {
     return NextResponse.json({ synced: 0 });
