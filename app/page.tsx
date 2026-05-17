@@ -2,20 +2,20 @@ import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
-      <nav className="fixed w-full z-50 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-bold text-xl tracking-tight">Sor7ed</div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-            <Link href="/assessments" className="hover:text-white transition-colors">
-              Assessments
+      <nav className="fixed w-full z-50 border-b-2 border-white bg-black">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="display-md">SOR7ED</div>
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="/assessments" className="label hover:text-[#FFD107] transition-colors">
+              ASSESSMENTS
             </Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">
-              Pricing
+            <Link href="/pricing" className="label hover:text-[#FFD107] transition-colors">
+              PRICING
             </Link>
-            <Link href="/login" className="px-4 py-2 rounded-full bg-white text-black hover:bg-zinc-200 transition-all font-semibold">
-              Sign In
+            <Link href="/login" className="btn-outline">
+              SIGN IN
             </Link>
           </div>
         </div>
@@ -23,99 +23,186 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <main className="pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto stagger">
+          
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-zinc-300 mb-8">
-            <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-            Interactive assessments with read-aloud technology
+          <div className="inline-flex items-center gap-2 px-4 py-2 border-2 border-[#FFD107] bg-black mb-8 animate-pulse-yellow">
+            <span className="flex h-2 w-2 bg-[#FFD107]"></span>
+            <span className="label-yellow">INTERACTIVE READ-ALOUD TECHNOLOGY</span>
           </div>
           
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 max-w-5xl mx-auto">
-            Master your skills with{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
-              intelligent assessments
-            </span>
+          <h1 className="display-xl mb-6 max-w-5xl">
+            MASTER YOUR SKILLS WITH{' '}
+            <span className="text-[#FFD107]">INTELLIGENT ASSESSMENTS</span>
           </h1>
           
           {/* Subheadline */}
-          <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto mb-12 leading-relaxed">
-            The premium platform for deep-dive evaluations. Sync with Notion, track progress, 
-            and unlock your potential with AI-powered feedback.
+          <p className="text-lg text-white/70 max-w-2xl mb-12 font-body leading-relaxed">
+            Deep-dive evaluations with read-aloud technology, instant Notion sync, 
+            and credit-based flexibility. Built for people who take growth seriously.
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Link 
-              href="/start-assessment" 
-              className="px-8 py-4 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-all shadow-[0_0_40px_-12px_rgba(79,70,229,0.6)] hover:shadow-[0_0_50px_-12px_rgba(79,70,229,0.8)]"
-            >
-              Start Free Assessment
+          <div className="flex flex-col sm:flex-row items-start gap-6 mb-20">
+            <Link href="/start-assessment" className="btn-yellow">
+              START FREE ASSESSMENT
             </Link>
-            <Link 
-              href="/demo" 
-              className="px-8 py-4 rounded-full bg-white/5 text-white font-semibold border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all"
-            >
-              View Demo
+            <Link href="/demo" className="btn-outline">
+              VIEW DEMO
             </Link>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-3 gap-0 border-2 border-white max-w-2xl">
+            <div className="p-6 border-r-2 border-white text-center">
+              <p className="display-lg text-[#FFD107]">500+</p>
+              <p className="label mt-2">QUESTIONS</p>
+            </div>
+            <div className="p-6 border-r-2 border-white text-center">
+              <p className="display-lg text-[#FFD107]">12</p>
+              <p className="label mt-2">SUBJECTS</p>
+            </div>
+            <div className="p-6 text-center">
+              <p className="display-lg text-[#FFD107]">98%</p>
+              <p className="label mt-2">ACCURACY</p>
+            </div>
           </div>
         </div>
       </main>
 
-      {/* Features Section */}
-      <section className="py-24 px-6 bg-gradient-to-b from-zinc-950 to-zinc-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Everything you need to excel
+      {/* How It Works */}
+      <section className="py-24 px-6 border-t-2 border-white">
+        <div className="max-w-7xl mx-auto stagger">
+          <div className="mb-16">
+            <p className="label-yellow mb-4">PROCESS</p>
+            <h2 className="display-lg mb-4 max-w-xl">
+              THREE STEPS TO CLARITY
             </h2>
-            <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-              Comprehensive assessment tools designed for serious learners
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="group p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all hover:bg-zinc-900/80">
-              <div className="h-12 w-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:border-indigo-500/30 transition-colors">
-                <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Deep Analytics</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Get comprehensive insights into your performance with detailed metrics and personalized improvement recommendations.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-2 border-white">
+            <div className="card-interactive p-8 border-r-2 border-white">
+              <p className="display-xl text-[#FFD107] mb-6">01</p>
+              <h3 className="display-sm mb-3">CHOOSE</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Select your subject and difficulty level. From quick 10-minute 
+                checks to comprehensive deep-dive sessions.
               </p>
             </div>
 
-            {/* Feature 2 */}
-            <div className="group p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all hover:bg-zinc-900/80">
-              <div className="h-12 w-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-6 border border-cyan-500/20 group-hover:border-cyan-500/30 transition-colors">
-                <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Notion Sync</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Seamlessly integrate with your Notion workspace. Assessment results and study materials sync automatically.
+            <div className="card-interactive p-8 border-r-2 border-white">
+              <p className="display-xl text-[#FFD107] mb-6">02</p>
+              <h3 className="display-sm mb-3">ASSESS</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Answer questions with optional read-aloud support. 
+                No time pressure - just honest, thorough evaluation.
               </p>
             </div>
 
-            {/* Feature 3 */}
-            <div className="group p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all hover:bg-zinc-900/80">
-              <div className="h-12 w-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6 border border-purple-500/20 group-hover:border-purple-500/30 transition-colors">
-                <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Flexible Credits</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Purchase assessment credits through secure Stripe integration. Use them whenever you're ready to test your skills.
+            <div className="card-interactive p-8">
+              <p className="display-xl text-[#FFD107] mb-6">03</p>
+              <h3 className="display-sm mb-3">IMPROVE</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Get instant results synced to your Notion workspace. 
+                See exactly where to focus your efforts next.
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Features */}
+      <section className="py-24 px-6 border-t-2 border-white">
+        <div className="max-w-7xl mx-auto stagger">
+          <div className="mb-16">
+            <p className="label-yellow mb-4">FEATURES</p>
+            <h2 className="display-lg mb-4">
+              EVERYTHING BUILT IN
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="card-interactive p-8">
+              <h3 className="display-sm mb-3 text-[#FFD107]">READ-ALOUD TECHNOLOGY</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Every question can be read aloud so you can focus entirely on thinking, 
+                not reading. Perfect for accessibility and deep concentration.
+              </p>
+            </div>
+
+            <div className="card-interactive p-8">
+              <h3 className="display-sm mb-3 text-[#FFD107]">NOTION SYNC</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Results automatically sync to your Notion database after every session. 
+                No exports, no manual copying - just seamless integration.
+              </p>
+            </div>
+
+            <div className="card-interactive p-8">
+              <h3 className="display-sm mb-3 text-[#FFD107]">DEEP-DIVE ASSESSMENTS</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Go beyond surface knowledge with comprehensive evaluations 
+                that reveal real understanding and identify specific gaps.
+              </p>
+            </div>
+
+            <div className="card-interactive p-8">
+              <h3 className="display-sm mb-3 text-[#FFD107]">CREDIT-BASED SYSTEM</h3>
+              <p className="text-white/70 font-body leading-relaxed">
+                Buy assessment credits through Stripe integration. 
+                No subscriptions - use them on your schedule when you're ready.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 px-6 border-t-2 border-white bg-[#FFD107]">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="display-lg text-black mb-6">
+            STOP GUESSING. START KNOWING.
+          </h2>
+          <p className="text-lg text-black/70 mb-12 font-body max-w-2xl mx-auto">
+            Join professionals who use Sor7ed to identify knowledge gaps 
+            and accelerate their learning with precision.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Link 
+              href="/start-assessment" 
+              className="btn bg-black text-white border-2 border-black hover:bg-white hover:text-black px-8 py-4"
+            >
+              START FIRST ASSESSMENT
+            </Link>
+            <Link 
+              href="/pricing" 
+              className="btn bg-transparent text-black border-2 border-black hover:bg-black hover:text-white px-8 py-4"
+            >
+              VIEW PRICING
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t-2 border-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <span className="display-md">SOR7ED</span>
+          <div className="flex flex-wrap gap-8">
+            <Link href="/privacy" className="label hover:text-[#FFD107] transition-colors">
+              PRIVACY
+            </Link>
+            <Link href="/terms" className="label hover:text-[#FFD107] transition-colors">
+              TERMS
+            </Link>
+            <Link href="/contact" className="label hover:text-[#FFD107] transition-colors">
+              CONTACT
+            </Link>
+          </div>
+          <p className="label">© 2024 SOR7ED. ALL RIGHTS RESERVED.</p>
+        </div>
+      </footer>
     </div>
   );
 }
