@@ -24,15 +24,26 @@ export async function GET(request: Request) {
 
     if (user?.email) {
       console.log('✅ Auth callback: session exchanged for', user.email);
-      // Link the auth user to their row in the users table
       const adminClient = getAdminClient();
-      const { error: updateError } = await adminClient
-        .from('users')
-        .update({ user_id: user.id })
-        .eq('email', user.email.toLowerCase().trim());
+      const email = user.email.toLowerCase().trim();
 
-      if (updateError) {
-        console.error('Error linking user profile:', updateError);
+      const { data: existing } = await adminClient
+        .from('users')
+        .select('user_id')
+        .eq('email', email)
+        .single();
+
+      if (existing) {
+        // Email/magic-link signup: link auth user to existing profile row
+        await adminClient.from('users').update({ user_id: user.id }).eq('email', email);
+      } else {
+        // OAuth signup (Google): create profile row from Google metadata
+        const meta = user.user_metadata ?? {};
+        await adminClient.from('users').insert({
+          user_id: user.id,
+          email,
+          first_name: meta.given_name ?? meta.name?.split(' ')[0] ?? null,
+        });
       }
     }
   }
