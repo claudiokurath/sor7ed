@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import VisualCard from "@/components/ui/VisualCard";
+import Image from "next/image";
+import Link from "next/link";
 import FilterPill from "@/components/ui/FilterPill";
-import { branches } from "@/lib/constants";
 
 type Post = {
   id: string;
@@ -21,71 +21,86 @@ type Post = {
   featured?: boolean;
 };
 
+function ArticleCard({ post, priority }: { post: Post; priority?: boolean }) {
+  return (
+    <Link
+      href={`/intelligence/${post.slug}`}
+      className="group flex flex-col sm:flex-row border-2 border-ps-white hover:border-ps-yellow hover:shadow-hard-yellow transition-all"
+    >
+      {/* Image */}
+      <div className="relative w-full sm:w-56 md:w-72 aspect-[16/9] sm:aspect-auto sm:h-44 shrink-0 overflow-hidden bg-ps-black">
+        {post.cover_image ? (
+          <Image
+            src={post.cover_image}
+            alt={post.title}
+            fill
+            priority={priority}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, 300px"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-ps-yellow/10">
+            <span className="font-display text-5xl text-ps-yellow/30 uppercase">{(post.branch || 'A')[0]}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Text — outside/below image, no overlay */}
+      <div className="flex flex-col justify-between p-4 flex-1 bg-ps-black">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <span className="label-yellow">{post.branch || 'Article'}</span>
+            {post.read_time && (
+              <span className="text-ps-white/40 text-[10px] font-display uppercase tracking-wider">{post.read_time} min read</span>
+            )}
+          </div>
+          <h3 className="font-display uppercase text-ps-white text-base leading-tight mb-2 group-hover:text-ps-yellow transition-colors">
+            {post.title}
+          </h3>
+          <p className="text-ps-white/60 text-sm leading-relaxed line-clamp-3">
+            {post.summary || post.tldr || post.excerpt}
+          </p>
+        </div>
+        <div className="mt-4 flex items-center gap-1.5 text-ps-yellow text-[10px] font-display uppercase tracking-widest">
+          Read article
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+            <path d="M1 6H11M11 6L6 1M11 6L6 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function IntelligenceGrid({ posts }: { posts: Post[] }) {
   const [activeFilter, setActiveFilter] = useState('ALL');
 
-  const presentBranches = ['ALL', ...Array.from(new Set(posts.map(p => p.branch).filter(Boolean)))];
-  const featured = posts.find(p => p.featured);
-  const filtered  = activeFilter === 'ALL'
-    ? posts.filter(p => !p.featured)
-    : posts.filter(p => p.branch === activeFilter);
+  const branchFilters = ['ALL', ...Array.from(new Set(posts.map(p => p.branch).filter(Boolean)))];
 
-  const getBranchColor = (b: string) => branches.find(br => br.name === b)?.color ?? '#FFD107';
+  const visible = activeFilter === 'ALL'
+    ? posts
+    : posts.filter(p => p.branch === activeFilter);
 
   return (
     <div>
       {/* Filters */}
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide mb-10 border-b-2 border-ps-white/20 pb-6">
-        {presentBranches.map(b => (
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide mb-8 border-b-2 border-ps-white/20 pb-6">
+        {branchFilters.map(b => (
           <FilterPill key={b} label={b} isActive={activeFilter === b} onClick={() => setActiveFilter(b)} />
         ))}
       </div>
 
-      {/* Featured */}
-      {featured && activeFilter === 'ALL' && (
-        <section className="mb-12">
-          <h2 className="display-sm text-ps-white mb-4">Featured</h2>
-          <VisualCard
-            title={featured.title}
-            category={featured.branch || 'FEATURED'}
-            subtitle={featured.summary || featured.tldr || featured.excerpt}
-            readTime={featured.read_time ? `${featured.read_time} MIN` : undefined}
-            imageUrl={featured.cover_image}
-            fallbackColor={getBranchColor(featured.branch)}
-            href={`/intelligence/${featured.slug}`}
-            aspectRatio="featured"
-            priority
-          />
-        </section>
-      )}
-
-      {/* Grid */}
-      {filtered.length === 0 ? (
+      {/* List */}
+      {visible.length === 0 ? (
         <div className="text-center py-16 border-2 border-ps-white">
-          <p className="text-ps-white/40 font-display uppercase tracking-widest">No briefings match</p>
+          <p className="text-ps-white/40 font-display uppercase tracking-widest">No articles match</p>
         </div>
       ) : (
-        <section>
-          <h2 className="display-sm text-ps-white mb-4">
-            {activeFilter === 'ALL' ? 'All Briefings' : activeFilter}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
-            {filtered.map((post, i) => (
-              <VisualCard
-                key={post.slug}
-                title={post.title}
-                category={post.branch || 'Intelligence'}
-                subtitle={post.summary || post.tldr || post.excerpt}
-                readTime={post.read_time ? `${post.read_time} MIN` : undefined}
-                imageUrl={post.cover_image}
-                fallbackColor={getBranchColor(post.branch)}
-                href={`/intelligence/${post.slug}`}
-                aspectRatio="blog"
-                priority={i < 3}
-              />
-            ))}
-          </div>
-        </section>
+        <div className="flex flex-col gap-4 stagger">
+          {visible.map((post, i) => (
+            <ArticleCard key={post.slug} post={post} priority={i < 3} />
+          ))}
+        </div>
       )}
     </div>
   );

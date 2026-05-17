@@ -32,18 +32,23 @@ export default function HomeClient() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.style.scrollSnapType = 'y proximity';
+    return () => { document.documentElement.style.scrollSnapType = ''; };
+  }, []);
+
   return (
     <div className="bg-ps-black text-ps-white overflow-x-hidden">
 
       {/* HERO */}
-      <section className="relative min-h-[94dvh] flex flex-col justify-end px-5 sm:px-8 md:px-16 pb-14 pt-16 md:pt-20 border-b-2 border-ps-white">
+      <section className="relative min-h-[94dvh] flex flex-col justify-end px-5 sm:px-8 md:px-16 pb-14 pt-16 md:pt-20 border-b-2 border-ps-white [scroll-snap-align:start]">
         <div className="max-w-5xl">
           <motion.p className="label-yellow mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
             Diagnose here. Solutions on WhatsApp.
           </motion.p>
 
           <motion.p
-            className="font-display text-ps-white mb-2 leading-none"
+            className="font-display uppercase text-ps-white mb-2 leading-none"
             style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,7 +61,7 @@ export default function HomeClient() {
             <AnimatePresence mode="wait">
               <motion.p
                 key={taglineIndex}
-                className="font-display text-ps-yellow leading-none"
+                className="font-display uppercase text-ps-yellow leading-none"
                 initial={{ y: 64, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -64, opacity: 0 }}
@@ -114,7 +119,7 @@ export default function HomeClient() {
       </section>
 
       {/* WHAT'S GOING ON */}
-      <section id="what-now" className="px-5 sm:px-8 md:px-16 py-16 border-b-2 border-ps-white">
+      <section id="what-now" className="px-5 sm:px-8 md:px-16 py-16 border-b-2 border-ps-white [scroll-snap-align:start]">
         <motion.p className="label-yellow mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           Text what&apos;s wrong
         </motion.p>
@@ -142,14 +147,14 @@ export default function HomeClient() {
               href={`${WA}?text=${encodeURIComponent(p.keyword)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="card-interactive flex flex-col gap-1.5 p-4 cursor-pointer"
+              className="flex flex-col gap-1.5 p-4 cursor-pointer bg-ps-yellow border-2 border-ps-black hover:shadow-hard-white transition-all"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
             >
-              <p className="text-ps-white text-sm font-bold leading-tight">{p.text}</p>
-              <p className="text-ps-white/40 text-xs">{p.sub}</p>
+              <p className="font-display uppercase text-ps-black text-sm leading-tight">{p.text}</p>
+              <p className="text-ps-black/60 text-xs">{p.sub}</p>
             </motion.a>
           ))}
         </div>
@@ -166,13 +171,13 @@ export default function HomeClient() {
       </section>
 
       {/* 7 BRANCHES */}
-      <section className="py-16 border-b-2 border-ps-white">
+      <section className="py-16 border-b-2 border-ps-white [scroll-snap-align:start]">
         <div className="px-5 sm:px-8 md:px-16 mb-6">
           <motion.p className="label-yellow mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             7 Branches of Life
           </motion.p>
           <motion.h2
-            className="display-lg text-ps-white"
+            className="display-lg text-ps-white uppercase"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -193,14 +198,14 @@ export default function HomeClient() {
             >
               <Link
                 href={`/${branch.slug}`}
-                className="card-interactive flex flex-col justify-between h-[150px] p-5 block"
+                className="flex flex-col justify-between h-[150px] p-5 block bg-ps-yellow border-2 border-ps-black hover:shadow-hard-white transition-all"
               >
-                <div className="label text-ps-white/30">{branch.num}</div>
+                <div className="label text-ps-black/40">{branch.num}</div>
                 <div>
-                  <h3 className="text-ps-white text-sm font-display uppercase tracking-wide mb-1 group-hover:text-ps-yellow transition-colors">
+                  <h3 className="text-ps-black text-sm font-display uppercase tracking-wide mb-1">
                     {branch.name}
                   </h3>
-                  <p className="text-ps-white/40 text-xs leading-relaxed line-clamp-2">{branch.description}</p>
+                  <p className="text-ps-black/60 text-xs leading-relaxed line-clamp-2">{branch.description}</p>
                 </div>
               </Link>
             </motion.div>
@@ -209,7 +214,7 @@ export default function HomeClient() {
       </section>
 
       {/* MISSION */}
-      <section className="px-5 sm:px-8 md:px-16 py-20">
+      <section className="px-5 sm:px-8 md:px-16 py-20 [scroll-snap-align:start]">
         <div className="max-w-4xl">
           <motion.p className="label-yellow mb-6" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             Our Mission

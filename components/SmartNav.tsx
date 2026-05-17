@@ -77,7 +77,7 @@ export default function SmartNav() {
 
           <div className="flex items-center gap-6 text-[11px] font-display uppercase tracking-widest text-ps-white/60">
             <Link href="/tools" className="hover:text-ps-white transition-colors">Tools</Link>
-            <Link href="/intelligence" className="hover:text-ps-white transition-colors">Intelligence</Link>
+            <Link href="/intelligence" className="hover:text-ps-white transition-colors">Articles</Link>
           </div>
 
           <div className="flex items-center gap-2">
