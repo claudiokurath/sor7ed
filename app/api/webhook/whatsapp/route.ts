@@ -359,15 +359,11 @@ export async function POST(req: NextRequest) {
                 contentDelivered = true;
                 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
                 const articleUrl = `${siteUrl}/intelligence/${protocol.slug}`;
-                // Protocol text first
                 const content =
                     `Hi ${user.first_name ?? 'there'} — here's your *${protocol.title}* protocol:\n\n` +
-                    `${protocol.protocol}`;
-                await sendWhatsAppMessage(senderPhone, content);
-                // Then the article URL as a standalone message — WhatsApp scrapes og:image
-                // from the article page and renders it as the link card thumbnail
-                await new Promise(r => setTimeout(r, 500));
-                await sendWhatsAppMessage(senderPhone, articleUrl, true);
+                    `${protocol.protocol}\n\n` +
+                    `${articleUrl}`;
+                await sendWhatsAppMessage(senderPhone, content, true);
             } else {
                 // 2. Fall back to Supabase tools
                 const { data: tool } = await supabase
