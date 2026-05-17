@@ -14,6 +14,8 @@ import { ScoreLevel } from '@/types/assessment';
 type Profile = {
   first_name: string | null;
   whatsapp_number: string | null;
+  wa_verify_code: string | null;
+  whatsapp_verified: boolean | null;
   email: string | null;
   weekly_opted_in: boolean | null;
   whatsapp_opted_out: boolean | null;
@@ -118,8 +120,10 @@ export default function DashboardClient({
   const [waOptOut, setWaOptOut] = useState(profile?.whatsapp_opted_out ?? false);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
-  const [verifyCode, setVerifyCode] = useState<string | null>(null);
-  const [verifyWaNumber, setVerifyWaNumber] = useState<string | null>(null);
+  // Pre-populate from DB so the code survives page reloads
+  const hasExistingCode = !profile?.whatsapp_verified && !!profile?.wa_verify_code;
+  const [verifyCode, setVerifyCode] = useState<string | null>(hasExistingCode ? (profile?.wa_verify_code ?? null) : null);
+  const [verifyWaNumber, setVerifyWaNumber] = useState<string | null>(hasExistingCode ? '447591922247' : null);
   const [deletePhase, setDeletePhase] = useState<'idle' | 'confirm'>('idle');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
@@ -162,8 +166,8 @@ export default function DashboardClient({
     setSaving(true);
     setSaveMsg('');
 
-    // If adding a new WhatsApp number, use the dedicated endpoint
-    if (whatsappNumber && !profile?.whatsapp_number) {
+    // If adding a new WhatsApp number (and no code already in DB), use the dedicated endpoint
+    if (whatsappNumber && !profile?.whatsapp_number && !profile?.wa_verify_code) {
       const res = await fetch('/api/account/add-whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
