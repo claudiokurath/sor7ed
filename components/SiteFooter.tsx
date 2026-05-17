@@ -5,11 +5,11 @@ export default function SiteFooter() {
     <footer className="mt-20 border-t border-white/10 px-6 md:px-16 py-16 bg-[#050505]">
       <div className="max-w-6xl mx-auto">
         <div className="grid gap-12 md:grid-cols-4">
-          
+
           <div className="md:col-span-2">
             <h3 className="text-white font-black text-xl mb-4 tracking-tight">SOR7ED</h3>
             <p className="text-white/50 leading-relaxed mb-6 max-w-md">
-              Practical protocols for neurodivergent adults. We build the systems and tools 
+              Practical protocols for neurodivergent adults. We build the systems and tools
               that work with your brain, not against it.
             </p>
             <div className="flex gap-4">
@@ -52,9 +52,17 @@ export default function SiteFooter() {
           <p className="text-white/30 text-xs">
             © 2026 SOR7ED. Built for minds that work differently.
           </p>
-          <p className="text-white/30 text-xs">
-            Questions? We&apos;re here to help: hello@sor7ed.com
-          </p>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="text-white/20 hover:text-white/50 text-xs transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-white/20 hover:text-white/50 text-xs transition-colors">
+              Terms of Service
+            </Link>
+            <p className="text-white/30 text-xs">
+              hello@sor7ed.com
+            </p>
+          </div>
         </div>
       </div>
     </footer>

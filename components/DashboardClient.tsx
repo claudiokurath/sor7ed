@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
@@ -69,10 +70,14 @@ export default function DashboardClient({
   tools: ToolSummary[];
   initialSavedItems?: SavedItem[];
 }) {
+  const searchParams = useSearchParams();
   const [favorites, setFavorites] = useState<UserFavorite[]>(initialFavorites);
   const [history] = useState<AssessmentHistory[]>(initialHistory);
   const [savedItems] = useState<SavedItem[]>(initialSavedItems);
-  const [activeSection, setActiveSection] = useState<ActiveSection>('overview');
+  const [activeSection, setActiveSection] = useState<ActiveSection>(() => {
+    const tab = searchParams.get('tab');
+    return (tab === 'settings' || tab === 'saved' || tab === 'history' || tab === 'vault') ? tab : 'overview';
+  });
 
   // Settings state
   const [firstName, setFirstName] = useState(profile?.first_name ?? '');
