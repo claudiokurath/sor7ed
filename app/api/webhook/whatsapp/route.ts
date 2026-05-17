@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import { getTemplateByKeyword } from "@/lib/whatsapp-templates";
-import { cacheNotionFile } from "@/lib/notion-file-cache";
 import { branches } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -346,22 +345,25 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ status: "ok" });
             }
 
-            // 1. Look up keyword in Notion BLOG database (WhatsApp Trigger field)
-            const notionArticle = await lookupNotionArticle(keyword);
+            // 1. Look up keyword in Supabase protocols table
+            const { data: protocol } = await supabase
+                .from('protocols')
+                .select('title, slug, protocol, summary')
+                .ilike('keyword', keyword)
+                .eq('status', 'Published')
+                .single();
             let contentDelivered = false;
             let contentId = keyword;
 
-            if (notionArticle) {
+            if (protocol?.protocol) {
                 contentDelivered = true;
-                if (notionArticle.pdfUrl) {
-                    await sendWhatsAppDocument(senderPhone, notionArticle.pdfUrl, notionArticle.title, notionArticle.excerpt || '');
-                } else if (notionArticle.gammaUrl) {
-                    const content = `Hi ${user.first_name ?? 'there'}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}\n\n${notionArticle.gammaUrl}`;
-                    await sendWhatsAppMessage(senderPhone, content);
-                } else {
-                    const content = `Hi ${user.first_name ?? 'there'}, here's your protocol: *${notionArticle.title}*\n\n${notionArticle.excerpt || ''}`;
-                    await sendWhatsAppMessage(senderPhone, content);
-                }
+                const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
+                const articleUrl = `${siteUrl}/intelligence/${protocol.slug}`;
+                const content =
+                    `Hi ${user.first_name ?? 'there'} — here's your *${protocol.title}* protocol:\n\n` +
+                    `${protocol.protocol}\n\n` +
+                    `Read the full article: ${articleUrl}`;
+                await sendWhatsAppMessage(senderPhone, content, true);
             } else {
                 // 2. Fall back to Supabase tools
                 const { data: tool } = await supabase
@@ -423,7 +425,7 @@ export async function POST(req: NextRequest) {
             if (contentDelivered) {
                 await supabase.from('whatsapp_message_log').insert({
                     user_phone: normalizedPhone,
-                    message_type: notionArticle ? 'protocol' : 'tool',
+                    message_type: protocol?.protocol ? 'protocol' : 'tool',
                     content_id: contentId,
                 });
 
@@ -731,51 +733,6 @@ async function sendWhatsAppAudio(to: string, audioUrl: string) {
     });
 }
 
-async function lookupNotionArticle(keyword: string): Promise<{ title: string; excerpt: string; pdfUrl: string | null; gammaUrl: string | null } | null> {
-    const databaseId = process.env.NOTION_BLOG_DATABASE_ID;
-    const apiKey = process.env.NOTION_API_KEY;
-    if (!databaseId || !apiKey) return null;
-
-    const res = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${apiKey}`,
-            "Notion-Version": "2022-06-28",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            filter: {
-                property: "WhatsApp Trigger",
-                rich_text: { equals: keyword },
-            },
-            page_size: 1,
-        }),
-    });
-
-    if (!res.ok) return null;
-    const data = await res.json();
-    const page = data.results?.[0];
-    if (!page) return null;
-
-    const props = page.properties;
-    const title = props["Title"]?.title?.[0]?.plain_text ?? "";
-    const excerpt = props["Excerpt"]?.rich_text?.[0]?.plain_text ?? "";
-    const gammaUrl = props["Gamma URL"]?.url ?? null;
-
-    // Get PDF URL from Gamma App File property — cache via Supabase to avoid 1-hour Notion expiry
-    const files = props["Gamma App File"]?.files ?? [];
-    let pdfUrl: string | null = null;
-    if (files.length > 0) {
-        const file = files[0];
-        const rawUrl = file.type === "external" ? file.external?.url : file.file?.url ?? null;
-        if (rawUrl) {
-            const pageId = page.id.replace(/-/g, '');
-            pdfUrl = await cacheNotionFile(rawUrl, pageId, "application/pdf");
-        }
-    }
-
-    return { title, excerpt, pdfUrl, gammaUrl };
-}
 
 async function sendWhatsAppTemplate(to: string, keyword: string, token: string) {
     const templateName = `sor7ed_${keyword.toLowerCase()}_entry_v1`;
