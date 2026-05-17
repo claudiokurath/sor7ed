@@ -59,6 +59,9 @@ export default function SiteFooter() {
             <Link href="/terms" className="text-white/20 hover:text-white/50 text-xs transition-colors">
               Terms of Service
             </Link>
+            <Link href="/cookies" className="text-white/20 hover:text-white/50 text-xs transition-colors">
+              Cookie Policy
+            </Link>
             <p className="text-white/30 text-xs">
               hello@sor7ed.com
             </p>

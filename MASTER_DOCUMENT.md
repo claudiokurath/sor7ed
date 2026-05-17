@@ -195,7 +195,7 @@ components/
 
 ## SEO Strategy
 - **Brand challenge:** "SOR7ED" is not a natural search term; "sorted" is. Solution: target both.
-- `Organization` schema JSON-LD in `<head>` with `alternateName: ['sorted', 'Sorted', 'sor7ed']`
+- `Organization` + `WebSite` schema JSON-LD in `<head>` with `alternateName: ['sorted', 'Sorted', 'sor7ed']`
 - Dynamic `sitemap.xml` (`/app/sitemap.ts`) — fetches live `Published` protocol slugs from Supabase
 - `robots.txt` (`/app/robots.ts`) — allows all public content, blocks `/api/`, `/dashboard`, `/signup`
 - `metadataBase` set to `NEXT_PUBLIC_SITE_URL` for correct OG/canonical URLs
@@ -218,7 +218,9 @@ Auth: `Authorization: Bearer ${CRON_SECRET}` header (Vercel sets this automatica
 ## Legal Pages
 - `/privacy` — GDPR privacy policy (data collection, WhatsApp consent, Supabase storage, user rights)
 - `/terms` — Terms of service (medical disclaimer: protocols are educational, not medical advice)
-- Linked in `SiteFooter` bottom bar
+- `/cookies` — Cookie policy (essential session cookies only; no analytics/tracking/advertising cookies)
+- All three linked in `SiteFooter` bottom bar
+- No cookie consent banner needed — only strictly necessary cookies are used
 
 ---
 
@@ -250,7 +252,7 @@ Auth: `Authorization: Bearer ${CRON_SECRET}` header (Vercel sets this automatica
 ---
 
 ## Last Updated
-- **Timestamp:** 2026-05-17
+- **Timestamp:** 2026-05-17 (Cookie Policy page, WebSite schema)
 
 ---
 

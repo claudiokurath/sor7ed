@@ -45,20 +45,30 @@ export function TextureOverlay() {
   );
 }
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'SOR7ED',
-  alternateName: ['sorted', 'Sorted', 'sor7ed'],
-  description: 'Practical protocols for neurodivergent adults across 7 branches of life, delivered via WhatsApp.',
-  url: 'https://sor7ed.com',
-  logo: 'https://sor7ed.com/Images/Logo2026.png',
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer support',
-    email: 'hello@sor7ed.com',
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'SOR7ED',
+    alternateName: ['sorted', 'Sorted', 'sor7ed'],
+    description: 'Practical protocols for neurodivergent adults across 7 branches of life, delivered via WhatsApp.',
+    url: 'https://sor7ed.com',
+    logo: 'https://sor7ed.com/Images/Logo2026.png',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'hello@sor7ed.com',
+    },
   },
-};
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'SOR7ED',
+    alternateName: 'sorted',
+    url: 'https://sor7ed.com',
+    description: 'Practical protocols for neurodivergent minds — get sorted with SOR7ED',
+  },
+];
 
 export default function RootLayout({
   children,
