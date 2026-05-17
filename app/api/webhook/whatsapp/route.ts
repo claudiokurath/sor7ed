@@ -146,11 +146,11 @@ export async function POST(req: NextRequest) {
             if (CRISIS_PATTERNS.some(p => p.test(rawText))) {
                 await markMessageRead(message.id);
                 await sendWhatsAppMessage(senderPhone,
-                    `You reached out and that matters. 🤍\n\n` +
+                    `You reached out and that matters.\n\n` +
                     `SOR7ED is not a crisis service — please reach out to someone who can help right now:\n\n` +
-                    `🆘 *999* — immediate danger\n` +
-                    `💬 *Text SHOUT to 85258* — free, 24/7\n` +
-                    `📞 *Samaritans: 116 123* — free, 24/7\n\n` +
+                    `*999* — immediate danger\n` +
+                    `*Text SHOUT to 85258* — free, 24/7\n` +
+                    `*Samaritans: 116 123* — free, 24/7\n\n` +
                     `You don't need to explain yourself. Just reach out.`
                 );
                 return NextResponse.json({ status: "crisis_handled" });
@@ -169,9 +169,9 @@ export async function POST(req: NextRequest) {
                     .update({ whatsapp_opted_out: true, weekly_opted_in: false })
                     .eq('whatsapp_number', normalizedPhone);
                 await sendWhatsAppMessage(senderPhone,
-                    `✋ *All done.*\n\n` +
-                    `You're unsubscribed from all SOR7ED messages. No hard feelings.\n\n` +
-                    `Text *START* any time to come back 🤍\n` +
+                    `*All done.*\n\n` +
+                    `You're unsubscribed from all SOR7ED messages.\n\n` +
+                    `Text *START* any time to come back.\n` +
                     `To delete your data: hello@sor7ed.com`
                 );
                 return NextResponse.json({ status: "opted_out" });
@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
                     .update({ whatsapp_opted_out: false })
                     .eq('whatsapp_number', normalizedPhone);
                 await sendWhatsAppMessage(senderPhone,
-                    `Welcome back! 🎉\n\nText *MENU* to see your 7 branches whenever you're ready.`
+                    `Welcome back.\n\nText *MENU* to see your 7 branches whenever you're ready.`
                 );
                 return NextResponse.json({ status: "opted_in" });
             }
@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
                     .update({ weekly_opted_in: false })
                     .eq('whatsapp_number', normalizedPhone);
                 await sendWhatsAppMessage(senderPhone,
-                    `⏸️ *Weekly updates paused.*\n\n` +
+                    `*Weekly updates paused.*\n\n` +
                     `You'll still get protocols when you text keywords — that never stops.\n\n` +
                     `Text *STARTWEEKLY* to turn Tuesdays back on.`
                 );
@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
                     .update({ weekly_opted_in: true, weekly_opted_in_at: new Date().toISOString() })
                     .eq('whatsapp_number', normalizedPhone);
                 await sendWhatsAppMessage(senderPhone,
-                    `📬 *You're in for Tuesdays!*\n\n` +
+                    `*You're in for Tuesdays.*\n\n` +
                     `Every week — one useful thing, zero fluff. Lands right here.\n\n` +
                     `Text *STOPWEEKLY* any time to pause.`
                 );
@@ -291,7 +291,7 @@ export async function POST(req: NextRequest) {
             if (/^[1-7]$/.test(keyword)) {
                 const branch = branches[parseInt(keyword) - 1];
                 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
-                await sendWhatsAppMessage(senderPhone, `${branch.icon} *${branch.name}*\n${branch.description}`, false);
+                await sendWhatsAppMessage(senderPhone, `*${branch.name.toUpperCase()}*\n${branch.description}`, false);
                 await new Promise(r => setTimeout(r, 400));
                 await sendWhatsAppMessage(senderPhone, `${siteUrl}/${branch.slug}`, true);
                 return NextResponse.json({ status: "ok" });
@@ -299,22 +299,22 @@ export async function POST(req: NextRequest) {
 
             // ── CATEGORY SHORTCUTS ────────────────────────────────────────────
             const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
-            const categoryRoutes: Record<string, { slug: string; emoji: string; label: string; tools: string }> = {
-                focus:    { slug: 'keep-going',    emoji: '🚀', label: 'Focus + Momentum',  tools: '*MEMORY* · *MOMENTUM* · *BREAKDOWN*' },
-                body:     { slug: 'feel-good',     emoji: '🧠', label: 'Body + Energy',     tools: '*BURNOUT* · *SENSORY* · *SLEEP*' },
-                money:    { slug: 'spend-smart',   emoji: '💰', label: 'Money',             tools: '*RESET4* · *AUTOPILOT* · *AUDIT*' },
-                people:   { slug: 'be-connected',  emoji: '🤝', label: 'Relationships',     tools: '*AUDIT* · *FIRSTAID* · *TRANSLATE*' },
-                work:     { slug: 'be-yourself',   emoji: '🌈', label: 'Work + Identity',   tools: '*TRANSLATE* · *MATCH* · *MEMORY*' },
-                sleep:    { slug: 'plan-ahead',    emoji: '📅', label: 'Planning + Safety', tools: '*FIRSTAID* · *MATCH*' },
-                level:    { slug: 'level-up',      emoji: '⚡', label: 'Growth + Skills',   tools: '*MATCH* · *MEMORY* · *MOMENTUM*' },
+            const categoryRoutes: Record<string, { slug: string; label: string; tools: string }> = {
+                focus:    { slug: 'keep-going',    label: 'Focus + Momentum',  tools: '*MEMORY* · *MOMENTUM* · *BREAKDOWN*' },
+                body:     { slug: 'feel-good',     label: 'Body + Energy',     tools: '*BURNOUT* · *SENSORY* · *SLEEP*' },
+                money:    { slug: 'spend-smart',   label: 'Money',             tools: '*RESET4* · *AUTOPILOT* · *AUDIT*' },
+                people:   { slug: 'be-connected',  label: 'Relationships',     tools: '*AUDIT* · *FIRSTAID* · *TRANSLATE*' },
+                work:     { slug: 'be-yourself',   label: 'Work + Identity',   tools: '*TRANSLATE* · *MATCH* · *MEMORY*' },
+                sleep:    { slug: 'plan-ahead',    label: 'Planning + Safety', tools: '*FIRSTAID* · *MATCH*' },
+                level:    { slug: 'level-up',      label: 'Growth + Skills',   tools: '*MATCH* · *MEMORY* · *MOMENTUM*' },
             };
             if (keyword in categoryRoutes) {
                 const cat = categoryRoutes[keyword];
                 await sendWhatsAppMessage(senderPhone,
-                    `${cat.emoji} *${cat.label.toUpperCase()}*\n\n` +
+                    `*${cat.label.toUpperCase()}*\n\n` +
                     `Text any keyword to get the protocol delivered here:\n\n` +
                     `${cat.tools}\n\n` +
-                    `Or browse the full branch 👇`,
+                    `Or browse the full branch:`,
                     false
                 );
                 await new Promise(r => setTimeout(r, 400));
@@ -437,10 +437,9 @@ export async function POST(req: NextRequest) {
                 if (!user.weekly_opted_in) {
                     await new Promise(r => setTimeout(r, 800));
                     await sendWhatsAppMessage(senderPhone,
-                        `📬 *Quick question —*\n\n` +
-                        `Want one useful thing every Tuesday? Just one message, always actionable, easy to stop.\n\n` +
-                        `Text *STARTWEEKLY* to get them 👍\n` +
-                        `Or ignore this and nothing changes 👌`
+                        `*Quick question —*\n\n` +
+                        `Want one useful thing every Tuesday? One message, always actionable, easy to stop.\n\n` +
+                        `Text *STARTWEEKLY* to get them, or ignore this and nothing changes.`
                     );
                 }
             }
@@ -499,20 +498,19 @@ async function sendPersonalizedProtocol(
         return;
     }
 
-    const stepEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
     const stepsText = protocol.steps
-        .map(([title, desc], i) => `${stepEmojis[i] ?? '▶️'} *${title}*\n_${desc}_`)
+        .map(([title, desc], i) => `*Step ${i + 1}: ${title}*\n_${desc}_`)
         .join('\n\n');
 
-    const scoreEmoji = score >= 70 ? '🔴' : score >= 40 ? '🟡' : '🟢';
+    const scoreBand = score >= 70 ? 'high friction' : score >= 40 ? 'some friction' : 'well calibrated';
 
     const message =
-        `✨ *${protocol.headline.toUpperCase()}*\n` +
-        `${scoreEmoji} Score: ${score}/100\n\n` +
+        `*${protocol.headline.toUpperCase()}*\n` +
+        `Score: ${score}/100 — ${scoreBand}\n\n` +
         `${stepsText}\n\n` +
         `━━━━━━━━\n` +
-        `📊 Full report + progress:\n${toolUrl}\n\n` +
-        `_Text the keyword again any time to replay this_ 🔁`;
+        `Full report + progress:\n${toolUrl}\n\n` +
+        `_Text the keyword again any time to get this back._`;
 
     await sendWhatsAppMessage(to, message, true);
 }
@@ -524,23 +522,23 @@ async function sendBranchMenu(to: string) {
 
 async function handleHelpCommand(to: string) {
     await sendWhatsAppMessage(to,
-        `What's going on? Text any word 👇\n\n` +
-        `🚀 *OVERWHELMED · STUCK · FOCUS*\n` +
+        `What's going on? Text any word below.\n\n` +
+        `*OVERWHELMED · STUCK · FOCUS*\n` +
         `_Can't start, too much on your plate_\n\n` +
-        `🧠 *EXHAUSTED · STRESSED · BODY*\n` +
+        `*EXHAUSTED · STRESSED · BODY*\n` +
         `_Energy, burnout, nervous system_\n\n` +
-        `💰 *BILLS · MONEY*\n` +
+        `*BILLS · MONEY*\n` +
         `_Financial chaos, spending loops_\n\n` +
-        `🤝 *ARGUMENT · PEOPLE*\n` +
+        `*ARGUMENT · PEOPLE*\n` +
         `_Relationships, hard conversations_\n\n` +
-        `📅 *SLEEP*\n` +
+        `*SLEEP*\n` +
         `_Can't wind down_\n\n` +
         `━━━━━━━━\n` +
-        `📋 *MENU* — all 7 branches\n` +
-        `📊 *STATUS* — your progress\n` +
-        `🌿 *PARK* — pause without guilt\n` +
-        `🖥️ *DASHBOARD* — full web view\n\n` +
-        `_Or just tell me what's wrong — I'll find the right tool_ 🤍`
+        `*MENU* — all 7 branches\n` +
+        `*STATUS* — your progress\n` +
+        `*PARK* — pause without guilt\n` +
+        `*DASHBOARD* — full web view\n\n` +
+        `_Or just tell me what's wrong — I'll find the right tool._`
     );
 }
 
@@ -550,14 +548,13 @@ async function handleOnboarding(
     firstName: string,
 ) {
     await sendWhatsAppMessage(to,
-        `🎉 *${firstName}, you're in!*\n\n` +
-        `This thread is your intelligence file.\n` +
-        `No app. No inbox. No faff. Just this. 🤍\n\n` +
-        `Here's how it works:\n` +
-        `1️⃣ Pick a branch below\n` +
-        `2️⃣ Text any keyword to get the protocol\n` +
-        `3️⃣ It lands right here, instantly\n\n` +
-        `Your 7 branches 👇`
+        `*${firstName}, you're in.*\n\n` +
+        `This thread is your intelligence file. No app. No inbox. Just this.\n\n` +
+        `How it works:\n` +
+        `1. Pick a branch below\n` +
+        `2. Text any keyword to get the protocol\n` +
+        `3. It lands right here, instantly\n\n` +
+        `Your 7 branches:`
     );
 
     await new Promise(r => setTimeout(r, 700));
@@ -588,25 +585,24 @@ async function handleStatusCommand(
     const assessmentLines = history?.length
         ? history.map(h => {
             const score = h.score ?? null;
-            const emoji = score === null ? '⬜' : score >= 70 ? '🔴' : score >= 40 ? '🟡' : '🟢';
-            return `${emoji} *${h.tool_name}* — ${score ?? 'done'}`;
+            const band = score === null ? '' : score >= 70 ? ' [high friction]' : score >= 40 ? ' [some friction]' : ' [calibrated]';
+            return `*${h.tool_name}* — ${score ?? 'completed'}${band}`;
           }).join('\n')
-        : '_No assessments yet — text a keyword to start_ 👇';
+        : '_No assessments yet. Text a keyword to start._';
 
     const recentLine = usage?.length
-        ? `\n\n✨ *Recent protocols:* ${usage.map(u => u.keyword.toUpperCase()).join(' · ')}`
+        ? `\n\n*Recent protocols:* ${usage.map(u => u.keyword.toUpperCase()).join(' · ')}`
         : '';
 
     const msg =
-        `📂 *${firstName.toUpperCase()}'S INTELLIGENCE FILE*\n\n` +
+        `*${firstName.toUpperCase()}'S INTELLIGENCE FILE*\n\n` +
         assessmentLines +
         recentLine +
-        `\n\n🔴 High friction  🟡 Some  🟢 Calibrated\n\n` +
-        `━━━━━━━━\n` +
-        `🖥️ *DASHBOARD* — full web view\n` +
-        `🆕 *NEW* — latest protocol\n` +
-        `📜 *HISTORY* — all diagnostics\n` +
-        `🌿 *PARK* — pause without guilt`;
+        `\n\n━━━━━━━━\n` +
+        `*DASHBOARD* — full web view\n` +
+        `*NEW* — latest protocol\n` +
+        `*HISTORY* — all diagnostics\n` +
+        `*PARK* — pause without guilt`;
 
     await sendWhatsAppMessage(to, msg);
 }
@@ -631,11 +627,9 @@ async function handleDashboardCommand(to: string, normalizedPhone: string) {
 
 async function handleParkCommand(to: string, firstName: string) {
     const msg =
-        `🌿 *PARKED.*\n\n` +
+        `*Parked.*\n\n` +
         `Everything stays exactly where you left it, ${firstName}.\n\n` +
-        `⏸️ No timers\n` +
-        `😮‍💨 No pressure\n` +
-        `🙅 No guilt\n\n` +
+        `No timers. No pressure. No guilt.\n\n` +
         `When you're ready — just say hi. I'll find you one tiny next step.`;
     await sendWhatsAppMessage(to, msg);
 }
@@ -660,7 +654,7 @@ async function handleNewCommand(
 
     const url = `${process.env.NEXT_PUBLIC_SITE_URL}/protocols/${protocol.slug}`;
     const keywordHint = protocol.keyword ? `\n\nText *${protocol.keyword.toUpperCase()}* to get the protocol delivered here.` : '';
-    const msg = `🆕 *Latest protocol for you, ${firstName}*\n\n*${protocol.title}*\n\n${protocol.excerpt || ''}${keywordHint}\n\n${url}`;
+    const msg = `*Latest protocol for you, ${firstName}*\n\n*${protocol.title}*\n\n${protocol.excerpt || ''}${keywordHint}\n\n${url}`;
     await sendWhatsAppMessage(to, msg, true);
 }
 
