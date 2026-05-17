@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
@@ -28,7 +27,6 @@ export default function SmartNav() {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -41,18 +39,15 @@ export default function SmartNav() {
 
   useEffect(() => {
     const supabase = createClient();
-
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
       if (data.user) fetchProfile(data.user.id);
     });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
       else setProfile(null);
     });
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -76,42 +71,39 @@ export default function SmartNav() {
 
   return (
     <>
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="fixed top-0 inset-x-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10"
-      >
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/">
-            <Image src="/Images/Logo2026.png" alt="SOR7ED — practical protocols for neurodivergent minds" width={240} height={96} className="h-20 w-auto" />
+      <nav className="fixed top-0 inset-x-0 z-50 bg-ps-white border-b-4 border-ps-black">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+          <Link href="/" className="font-anton text-2xl tracking-wider text-ps-black uppercase leading-none">
+            SOR7ED
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-zinc-500 hover:text-white hover:border-white/20 transition-all group"
+              className="flex items-center gap-2 border-2 border-ps-gray-300 bg-ps-white px-3 py-1.5 text-ps-gray-500 hover:border-ps-black hover:text-ps-black transition-all"
               aria-label="Search (⌘K)"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="text-sm hidden sm:block">Search</span>
-              <kbd className="hidden lg:flex items-center gap-0.5 text-xs text-zinc-700 group-hover:text-zinc-500 transition-colors font-mono">⌘K</kbd>
+              <span className="text-xs font-bold uppercase tracking-widest hidden sm:block">Search</span>
+              <kbd className="hidden lg:block text-xs text-ps-gray-400 font-mono">⌘K</kbd>
             </button>
 
             {user ? (
               <div ref={dropdownRef} className="relative">
                 <button
                   onClick={() => setDropdownOpen(v => !v)}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2 hover:border-white/25 transition-all"
+                  className="flex items-center gap-2 border-2 border-ps-black bg-ps-white px-3 py-1.5 hover:bg-ps-black hover:text-ps-white transition-all group"
                 >
-                  <span className="w-7 h-7 rounded-full bg-white text-black text-xs font-black flex items-center justify-center shrink-0">
+                  <span className="w-6 h-6 bg-ps-black text-ps-white text-xs font-black flex items-center justify-center shrink-0 group-hover:bg-ps-white group-hover:text-ps-black transition-all">
                     {initial}
                   </span>
-                  <span className="text-sm text-white/70 hidden sm:block max-w-[100px] truncate">
+                  <span className="text-xs font-bold uppercase tracking-widest hidden sm:block max-w-[80px] truncate">
                     {profile?.first_name ?? 'Account'}
                   </span>
-                  <svg className={`w-3 h-3 text-white/30 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-3 h-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
@@ -119,15 +111,15 @@ export default function SmartNav() {
                 <AnimatePresence>
                   {dropdownOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-52 bg-[#111] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={{ duration: 0.1 }}
+                      className="absolute right-0 mt-1 w-52 bg-ps-white border-2 border-ps-black shadow-brutal overflow-hidden"
                     >
-                      <div className="px-4 py-3 border-b border-white/5">
-                        <p className="text-xs font-black text-white truncate">{profile?.first_name ?? 'Account'}</p>
-                        <p className="text-[10px] text-white/30 truncate mt-0.5">{user.email}</p>
+                      <div className="px-4 py-3 border-b-2 border-ps-gray-200">
+                        <p className="text-xs font-black text-ps-black truncate uppercase tracking-widest">{profile?.first_name ?? 'Account'}</p>
+                        <p className="text-[10px] text-ps-gray-500 truncate mt-0.5">{user.email}</p>
                       </div>
 
                       {[
@@ -138,16 +130,16 @@ export default function SmartNav() {
                           key={item.href}
                           href={item.href}
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center px-4 py-3 text-sm text-white/60 hover:text-white hover:bg-white/5 transition-all"
+                          className="flex items-center px-4 py-3 text-xs font-bold uppercase tracking-widest text-ps-gray-600 hover:bg-ps-black hover:text-ps-white transition-all"
                         >
                           {item.label}
                         </Link>
                       ))}
 
-                      <div className="border-t border-white/5">
+                      <div className="border-t-2 border-ps-gray-200">
                         <button
                           onClick={handleSignOut}
-                          className="w-full text-left px-4 py-3 text-sm text-red-400/70 hover:text-red-400 hover:bg-red-500/5 transition-all"
+                          className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-ps-danger hover:bg-ps-danger hover:text-ps-white transition-all"
                         >
                           Sign Out
                         </button>
@@ -159,14 +151,14 @@ export default function SmartNav() {
             ) : (
               <Link
                 href="/signup"
-                className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm hover:scale-105 transition-all shadow-lg"
+                className="btn-primary text-xs px-5 py-2"
               >
                 Sign Up
               </Link>
             )}
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
       <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

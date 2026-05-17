@@ -1,25 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import SmartNav from "@/components/SmartNav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const anton = Anton({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-anton-var',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter-var',
+  weight: ['400', '500', '600', '700', '800', '900'],
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5, // Allow zoom for accessibility
-  userScalable: true, // Important for accessibility
-}
+  maximumScale: 5,
+  userScalable: true,
+};
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
@@ -33,17 +35,6 @@ export const metadata: Metadata = {
     locale: 'en_GB',
   },
 };
-
-export function TextureOverlay() {
-  return (
-    <div 
-      className="pointer-events-none fixed inset-0 z-[100] h-full w-full opacity-[0.015] mix-blend-mode-screen"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-      }}
-    />
-  );
-}
 
 const jsonLd = [
   {
@@ -70,26 +61,18 @@ const jsonLd = [
   },
 ];
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${anton.variable} ${inter.variable} h-full antialiased`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white">
-        <TextureOverlay />
+      <body className="min-h-full flex flex-col bg-ps-gray-100 text-ps-black">
         <SmartNav />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pt-16">{children}</main>
         <SiteFooter />
       </body>
     </html>

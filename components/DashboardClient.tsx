@@ -22,17 +22,12 @@ type Profile = {
   created_at: string | null;
 };
 
-type ToolSummary = {
-  slug: string;
-  branch: string;
-  color: string;
-};
-
+type ToolSummary = { slug: string; branch: string; color: string };
 type ActiveSection = 'overview' | 'saved' | 'history' | 'vault' | 'settings';
 
 type DashboardMeta = {
   currentStreak: number;
-  weeklyActivity: number[]; // [0] = 6 days ago … [6] = today
+  weeklyActivity: number[];
   totalAssessments: number;
 };
 
@@ -120,7 +115,6 @@ export default function DashboardClient({
   const [waOptOut, setWaOptOut] = useState(profile?.whatsapp_opted_out ?? false);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
-  // Pre-populate from DB so the code survives page reloads
   const hasExistingCode = !profile?.whatsapp_verified && !!profile?.wa_verify_code;
   const [verifyCode, setVerifyCode] = useState<string | null>(hasExistingCode ? (profile?.wa_verify_code ?? null) : null);
   const [verifyWaNumber, setVerifyWaNumber] = useState<string | null>(hasExistingCode ? '447591922247' : null);
@@ -166,7 +160,6 @@ export default function DashboardClient({
     setSaving(true);
     setSaveMsg('');
 
-    // If adding a new WhatsApp number (and no code already in DB), use the dedicated endpoint
     if (whatsappNumber && !profile?.whatsapp_number && !profile?.wa_verify_code) {
       const res = await fetch('/api/account/add-whatsapp', {
         method: 'POST',
@@ -184,7 +177,6 @@ export default function DashboardClient({
       setVerifyWaNumber(data.waNumber);
     }
 
-    // Update remaining profile fields using authenticated user_id via RLS
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setSaving(false); setSaveMsg('Not signed in.'); return; }
 
@@ -206,78 +198,92 @@ export default function DashboardClient({
     window.location.href = '/';
   };
 
-  return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
+  const NAV_TABS = [
+    { key: 'overview', label: 'Overview' },
+    { key: 'saved',    label: 'Library' },
+    { key: 'history',  label: 'History' },
+    { key: 'vault',    label: `Vault${savedItems.length > 0 ? ` (${savedItems.length})` : ''}` },
+    { key: 'settings', label: 'Settings' },
+  ] as const;
 
-      {/* Header */}
-      <div className="border-b border-white/5 px-4 sm:px-12 md:px-16 py-8 sm:py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+  return (
+    <main className="min-h-screen bg-ps-gray-100 text-ps-black font-sans">
+
+      {/* ── HEADER ── */}
+      <div className="relative border-b-4 border-ps-black overflow-hidden bg-ps-amber-500" style={{ minHeight: 220 }}>
+        <Image
+          src="/Images/chaos-strip.png"
+          alt="The chaos before SOR7ED"
+          fill
+          className="object-cover object-center opacity-40"
+          priority
+        />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-12 md:px-16 py-10 sm:py-14">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <div className="flex items-center gap-3 mb-6">
-                <Link href="/" className="text-white/20 text-[10px] tracking-[0.3em] uppercase font-bold hover:text-white/40 transition-colors">
+              <div className="flex items-center gap-3 mb-4">
+                <Link href="/" className="text-ps-black/40 text-[10px] tracking-[0.3em] uppercase font-black hover:text-ps-black transition-colors">
                   SOR7ED
                 </Link>
-                <span className="text-white/10">/</span>
-                <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase font-bold">INTELLIGENCE PROFILE</span>
+                <span className="text-ps-black/20">/</span>
+                <span className="text-ps-black/60 text-[10px] tracking-[0.3em] uppercase font-black">Intelligence Profile</span>
               </div>
               {greeting && (
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-ps-black/50 mb-2">
                   {greeting}{profile?.first_name ? `, ${profile.first_name}` : ''}
                 </p>
               )}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4">
+              <h1 className="font-anton text-5xl sm:text-6xl md:text-7xl uppercase tracking-wider text-ps-black leading-none mb-4">
                 {profile?.first_name || 'Archive'}
               </h1>
-              <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/30">
-                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="bg-ps-black text-ps-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                   ID: {profile?.whatsapp_number || 'PENDING'}
                 </span>
-                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
+                <span className="bg-ps-black text-ps-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                   STATUS: ACTIVE
                 </span>
-                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/10 text-white/40">
+                <span className="border-2 border-ps-black bg-ps-white text-ps-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                   ◆ {sortedLevel.name}
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
               <Link
                 href="/tools"
-                className="bg-white text-black px-5 sm:px-8 py-3 sm:py-4 rounded-full text-xs sm:text-sm font-black transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
+                className="bg-ps-black text-ps-white border-2 border-ps-black px-5 py-3 text-xs font-black uppercase tracking-widest hover:bg-ps-white hover:text-ps-black transition-all"
               >
                 + Assessment
               </Link>
               <form action="/auth/signout" method="post">
-                <button type="submit" className="p-4 rounded-full border border-white/10 hover:bg-white/5 transition-all group">
+                <button type="submit" className="p-3 border-2 border-ps-black bg-ps-white hover:bg-ps-black hover:text-ps-white transition-all group">
                   <span className="sr-only">Sign Out</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/30 group-hover:text-white transition-colors">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-ps-black group-hover:text-ps-white transition-colors">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
                   </svg>
                 </button>
               </form>
             </div>
           </div>
+        </div>
+      </div>
 
-          <nav className="flex gap-6 sm:gap-8 mt-10 sm:mt-16 border-b border-white/5">
-            {([
-              { key: 'overview', label: 'Overview' },
-              { key: 'saved', label: 'Library' },
-              { key: 'history', label: 'History' },
-              { key: 'vault', label: `Vault${savedItems.length > 0 ? ` (${savedItems.length})` : ''}` },
-              { key: 'settings', label: 'Settings' },
-            ] as const).map(section => (
+      {/* ── NAV TABS ── */}
+      <div className="bg-ps-white border-b-4 border-ps-black">
+        <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16">
+          <nav className="flex gap-0">
+            {NAV_TABS.map(section => (
               <button
                 key={section.key}
                 onClick={() => setActiveSection(section.key)}
-                className={`pb-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative ${
-                  activeSection === section.key ? 'text-white' : 'text-white/20 hover:text-white/40'
+                className={`relative px-4 py-4 text-xs font-black uppercase tracking-[0.2em] transition-colors ${
+                  activeSection === section.key ? 'text-ps-black' : 'text-ps-gray-400 hover:text-ps-gray-700'
                 }`}
               >
                 {section.label}
                 {activeSection === section.key && (
-                  <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
+                  <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-1 bg-ps-black" />
                 )}
               </button>
             ))}
@@ -285,204 +291,186 @@ export default function DashboardClient({
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16 py-10 sm:py-16">
+      {/* ── CONTENT ── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16 py-10 sm:py-14">
         <AnimatePresence mode="wait">
 
+          {/* ── OVERVIEW ── */}
           {activeSection === 'overview' && (
-            <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-12">
+            <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-10">
 
-              {/* Chaos banner */}
-              <div className="relative rounded-3xl overflow-hidden h-36 sm:h-44">
-                <Image
-                  src="/Images/chaos-strip.png"
-                  alt="The chaos before SOR7ED"
-                  fill
-                  className="object-cover object-center"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-between px-8">
-                  <div>
-                    <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/30 mb-2">YOUR MISSION</p>
-                    <p className="text-lg sm:text-xl font-black text-white leading-tight">Turn the chaos<br className="sm:hidden" /> into clarity.</p>
-                  </div>
-                  {dashboardMeta.currentStreak > 0 && (
-                    <div className="text-right shrink-0">
-                      <p className="text-3xl font-black text-white">{dashboardMeta.currentStreak}🔥</p>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mt-1">day streak</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* WhatsApp missing nudge */}
+              {/* WhatsApp nudge */}
               {!profile?.whatsapp_number && (
-                <div className="flex items-center justify-between gap-4 bg-[#25D366]/5 border border-[#25D366]/20 rounded-2xl px-6 py-4">
+                <div className="flex items-center justify-between gap-4 bg-ps-white border-2 border-[#25D366] px-6 py-4">
                   <div>
-                    <p className="text-sm font-black text-white mb-0.5">Add your WhatsApp number</p>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Required to receive protocols</p>
+                    <p className="text-sm font-black text-ps-black mb-0.5">Add your WhatsApp number</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-ps-gray-500">Required to receive protocols</p>
                   </div>
                   <button
                     onClick={() => setActiveSection('settings')}
-                    className="shrink-0 px-5 py-2.5 rounded-full bg-[#25D366] text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                    className="shrink-0 px-5 py-2.5 bg-[#25D366] text-ps-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
                   >
                     Add now →
                   </button>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              <div className="lg:col-span-2 space-y-12">
-                <section>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Branch Coverage</h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {branchCoverage.map((branch, i) => (
-                      <motion.div
-                        key={branch.slug}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.05 }}
-                        className={`aspect-square rounded-3xl p-6 flex flex-col justify-between border transition-all duration-500 ${
-                          branch.isAssessed ? 'bg-[#0f0f0f] border-white/10' : 'bg-transparent border-white/5 grayscale opacity-30'
-                        }`}
-                      >
-                        <span className="text-2xl">{branch.icon}</span>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: branch.isAssessed ? branch.color : 'inherit' }}>
-                            {branch.name}
-                          </p>
-                          <p className="text-[8px] font-bold text-white/20 uppercase tracking-tighter">
-                            {branch.isAssessed ? 'CALIBRATED' : 'UNTOUCHED'}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))}
-                    <div className="aspect-square rounded-3xl p-6 flex flex-col items-center justify-center border border-dashed border-white/10 opacity-20">
-                      <span className="text-xl font-black">+</span>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="lg:col-span-2 space-y-10">
+
+                  {/* Branch coverage */}
+                  <section>
+                    <h2 className="text-label mb-6">Branch Coverage</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {branchCoverage.map((branch, i) => (
+                        <motion.div
+                          key={branch.slug}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: i * 0.04 }}
+                          className={`aspect-square p-5 flex flex-col justify-between border-2 transition-all ${
+                            branch.isAssessed
+                              ? 'bg-ps-white border-ps-black'
+                              : 'bg-ps-gray-100 border-ps-gray-200 opacity-40'
+                          }`}
+                        >
+                          <span className="text-xl">{branch.icon}</span>
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: branch.isAssessed ? branch.color : 'inherit' }}>
+                              {branch.name}
+                            </p>
+                            <p className="text-[8px] font-bold text-ps-gray-500 uppercase tracking-tighter">
+                              {branch.isAssessed ? 'CALIBRATED' : 'UNTOUCHED'}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                      <div className="aspect-square border-2 border-dashed border-ps-gray-300 flex items-center justify-center opacity-30">
+                        <span className="text-xl font-black text-ps-black">+</span>
+                      </div>
                     </div>
-                  </div>
-                </section>
+                  </section>
 
-                <section>
-                  <div className="flex justify-between items-end mb-8">
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Intelligence Feed</h2>
-                    <button onClick={() => setActiveSection('history')} className="text-[10px] font-bold text-white/20 hover:text-white transition-colors">
-                      VIEW ALL →
-                    </button>
-                  </div>
-                  <div className="space-y-4">
-                    {history.length === 0 ? (
-                      <div className="py-12 text-center border border-dashed border-white/5 rounded-3xl">
-                        <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No transmissions recorded.</p>
-                      </div>
-                    ) : (
-                      history.slice(0, 3).map(item => (
-                        <div key={item.id} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-6 flex items-center justify-between group hover:border-white/10 transition-all">
-                          <div className="flex items-center gap-6">
-                            <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-sm font-black"
-                              style={{ color: getBranchColor(favorites.find(f => f.item_slug === item.tool_slug)?.item_branch || '') }}>
-                              {item.score}
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-base group-hover:text-white/90 transition-colors">{item.tool_name}</h3>
-                              <p className="text-white/30 text-[10px] font-black uppercase tracking-widest mt-1">
-                                {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
-                              </p>
-                            </div>
-                          </div>
-                          <Link href={`/tools/${item.tool_slug}`} className="text-white/20 group-hover:text-white transition-colors">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                          </Link>
+                  {/* Intelligence feed */}
+                  <section>
+                    <div className="flex justify-between items-end mb-6">
+                      <h2 className="text-label">Intelligence Feed</h2>
+                      <button onClick={() => setActiveSection('history')} className="text-[10px] font-bold text-ps-gray-500 hover:text-ps-black transition-colors uppercase tracking-widest">
+                        View All →
+                      </button>
+                    </div>
+                    <div className="space-y-3">
+                      {history.length === 0 ? (
+                        <div className="py-12 text-center border-2 border-dashed border-ps-gray-300">
+                          <p className="text-ps-gray-400 text-xs font-bold uppercase tracking-widest">No transmissions recorded.</p>
                         </div>
-                      ))
-                    )}
-                  </div>
-                </section>
-              </div>
-
-              <div className="space-y-12">
-                <section>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">System Stats</h2>
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Saved Protocols', value: favorites.length },
-                      { label: 'Assessments', value: history.length },
-                      { label: 'Coverage', value: `${Math.round((branchCoverage.filter(b => b.isAssessed).length / 7) * 100)}%` },
-                    ].map(stat => (
-                      <div key={stat.label} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-5 flex justify-between items-center">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{stat.label}</span>
-                        <span className="text-xl font-black">{stat.value}</span>
-                      </div>
-                    ))}
-                    {dashboardMeta.currentStreak > 0 && (
-                      <div className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-5 flex justify-between items-center">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Day Streak</span>
-                        <span className="text-xl font-black">{dashboardMeta.currentStreak}🔥</span>
-                      </div>
-                    )}
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6">This Week</h2>
-                  <WeeklyChart data={dashboardMeta.weeklyActivity} />
-                </section>
-
-                <section>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Active Keywords</h2>
-                  <div className="bg-[#0f0f0f] border border-white/5 rounded-3xl p-8">
-                    {favorites.length === 0 ? (
-                      <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest text-center py-4">No active keywords.</p>
-                    ) : (
-                      <div className="space-y-6">
-                        {favorites.slice(0, 5).map(item => (
-                          <div key={item.id} className="flex items-center justify-between gap-4">
-                            <KeywordToken keyword={item.item_keyword} color={item.item_color} size="small" />
-                            <span className="text-[10px] text-white/20 font-bold uppercase tracking-tighter truncate max-w-[100px]">{item.item_name}</span>
+                      ) : (
+                        history.slice(0, 3).map(item => (
+                          <div key={item.id} className="bg-ps-white border-2 border-ps-gray-200 hover:border-ps-black p-5 flex items-center justify-between group transition-all">
+                            <div className="flex items-center gap-5">
+                              <div className="w-10 h-10 border-2 border-ps-gray-200 flex items-center justify-center text-sm font-black"
+                                style={{ color: getBranchColor(favorites.find(f => f.item_slug === item.tool_slug)?.item_branch || '') }}>
+                                {item.score}
+                              </div>
+                              <div>
+                                <h3 className="font-black text-sm text-ps-black">{item.tool_name}</h3>
+                                <p className="text-ps-gray-500 text-[10px] font-bold uppercase tracking-widest mt-0.5">
+                                  {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
+                                </p>
+                              </div>
+                            </div>
+                            <Link href={`/tools/${item.tool_slug}`} className="text-ps-gray-400 group-hover:text-ps-black transition-colors">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                            </Link>
                           </div>
-                        ))}
-                        <button onClick={() => setActiveSection('saved')} className="w-full text-center py-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/20 hover:text-white transition-colors mt-4">
-                          VIEW ALL →
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </section>
+                        ))
+                      )}
+                    </div>
+                  </section>
+                </div>
+
+                {/* Right column */}
+                <div className="space-y-10">
+                  <section>
+                    <h2 className="text-label mb-6">System Stats</h2>
+                    <div className="space-y-2">
+                      {[
+                        { label: 'Saved Protocols', value: favorites.length },
+                        { label: 'Assessments',     value: history.length },
+                        { label: 'Coverage',        value: `${Math.round((branchCoverage.filter(b => b.isAssessed).length / 7) * 100)}%` },
+                      ].map(stat => (
+                        <div key={stat.label} className="bg-ps-white border-2 border-ps-gray-200 p-4 flex justify-between items-center">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-ps-gray-600">{stat.label}</span>
+                          <span className="text-xl font-black text-ps-black">{stat.value}</span>
+                        </div>
+                      ))}
+                      {dashboardMeta.currentStreak > 0 && (
+                        <div className="bg-ps-black border-2 border-ps-black p-4 flex justify-between items-center">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-ps-white/60">Day Streak</span>
+                          <span className="text-xl font-black text-ps-white">{dashboardMeta.currentStreak} days</span>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  <section>
+                    <h2 className="text-label mb-4">This Week</h2>
+                    <WeeklyChart data={dashboardMeta.weeklyActivity} />
+                  </section>
+
+                  <section>
+                    <h2 className="text-label mb-6">Active Keywords</h2>
+                    <div className="bg-ps-white border-2 border-ps-gray-200 p-6">
+                      {favorites.length === 0 ? (
+                        <p className="text-ps-gray-400 text-[10px] font-bold uppercase tracking-widest text-center py-4">No active keywords.</p>
+                      ) : (
+                        <div className="space-y-5">
+                          {favorites.slice(0, 5).map(item => (
+                            <div key={item.id} className="flex items-center justify-between gap-4">
+                              <KeywordToken keyword={item.item_keyword} color={item.item_color} size="small" />
+                              <span className="text-[10px] text-ps-gray-500 font-bold uppercase tracking-tighter truncate max-w-[100px]">{item.item_name}</span>
+                            </div>
+                          ))}
+                          <button onClick={() => setActiveSection('saved')} className="w-full text-center py-3 text-[10px] font-black uppercase tracking-[0.2em] text-ps-gray-500 hover:text-ps-black transition-colors">
+                            View All →
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                </div>
               </div>
-              </div>{/* end grid */}
             </motion.div>
           )}
 
+          {/* ── SAVED ── */}
           {activeSection === 'saved' && (
-            <motion.div key="saved" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-16">
+            <motion.div key="saved" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
               {favorites.length === 0 ? (
-                <div className="text-center py-32 border border-dashed border-white/5 rounded-[40px]">
-                  <div className="text-4xl mb-8">🔖</div>
-                  <h3 className="text-2xl font-black mb-4">Library Empty</h3>
-                  <p className="text-white/30 mb-12 max-w-sm mx-auto text-sm leading-relaxed">Build your intelligence archive by saving tools and protocols.</p>
-                  <Link href="/tools" className="inline-block bg-white text-black font-black px-10 py-5 rounded-full hover:scale-105 transition-all">
-                    INITIATE DISCOVERY →
-                  </Link>
+                <div className="text-center py-24 border-2 border-dashed border-ps-gray-300">
+                  <h3 className="text-2xl font-black mb-4 text-ps-black">Library Empty</h3>
+                  <p className="text-ps-gray-600 mb-10 max-w-sm mx-auto text-sm leading-relaxed">Build your intelligence archive by saving tools and protocols.</p>
+                  <Link href="/tools" className="btn-primary px-8 py-4 inline-flex">Initiate Discovery →</Link>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {favorites.map(item => (
-                    <div key={item.id} className="bg-[#0f0f0f] border border-white/5 rounded-[32px] p-8 group transition-all hover:border-white/10">
-                      <div className="flex justify-between items-start mb-8">
+                    <div key={item.id} className="bg-ps-white border-2 border-ps-gray-200 hover:border-ps-black p-7 group transition-all">
+                      <div className="flex justify-between items-start mb-6">
                         <KeywordToken keyword={item.item_keyword} color={item.item_color} size="medium" />
-                        <button onClick={() => removeFavorite(item.id)} className="p-3 rounded-full hover:bg-red-500/10 text-white/10 hover:text-red-500 transition-all">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <button onClick={() => removeFavorite(item.id)} className="p-2 border-2 border-transparent hover:border-ps-danger hover:text-ps-danger text-ps-gray-400 transition-all">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                             <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                           </svg>
                         </button>
                       </div>
-                      <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{item.item_name}</h3>
-                      <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em] mb-8">{item.item_branch} · {item.item_type}</p>
+                      <h3 className="text-lg font-black mb-1 text-ps-black">{item.item_name}</h3>
+                      <p className="text-ps-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">{item.item_branch} · {item.item_type}</p>
                       <Link
                         href={item.item_type === 'tool' ? `/tools/${item.item_slug}` : `/intelligence/${item.item_slug}`}
-                        className="block w-full text-center py-4 rounded-2xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
+                        className="block w-full text-center py-3 border-2 border-ps-black text-ps-black text-[10px] font-black uppercase tracking-widest hover:bg-ps-black hover:text-ps-white transition-all"
                       >
-                        {item.item_type === 'tool' ? 'RETAKE ASSESSMENT' : 'READ PROTOCOL'}
+                        {item.item_type === 'tool' ? 'Retake Assessment' : 'Read Protocol'}
                       </Link>
                     </div>
                   ))}
@@ -491,34 +479,35 @@ export default function DashboardClient({
             </motion.div>
           )}
 
+          {/* ── HISTORY ── */}
           {activeSection === 'history' && (
-            <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
-              <div className="flex justify-between items-center mb-12">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Transmission History</h2>
-                <span className="text-[10px] font-bold text-white/20 uppercase">Showing {history.length} events</span>
+            <motion.div key="history" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-label">Transmission History</h2>
+                <span className="text-[10px] font-bold text-ps-gray-500 uppercase tracking-widest">{history.length} events</span>
               </div>
               {history.length === 0 ? (
-                <div className="text-center py-32 border border-dashed border-white/5 rounded-[40px]">
-                  <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No transmissions recorded.</p>
+                <div className="text-center py-24 border-2 border-dashed border-ps-gray-300">
+                  <p className="text-ps-gray-400 text-xs font-bold uppercase tracking-widest">No transmissions recorded.</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {history.map(item => (
-                    <div key={item.id} className="bg-[#0f0f0f] border border-white/5 rounded-[24px] p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:border-white/10 transition-all group">
-                      <div className="flex items-center gap-8">
+                    <div key={item.id} className="bg-ps-white border-2 border-ps-gray-200 hover:border-ps-black p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-all">
+                      <div className="flex items-center gap-6">
                         <div className="text-center shrink-0">
-                          <p className="text-2xl font-black mb-1">{item.score}</p>
-                          <p className="text-[8px] font-bold text-white/20 uppercase tracking-widest">SCORE</p>
+                          <p className="text-2xl font-black text-ps-black">{item.score}</p>
+                          <p className="text-[8px] font-bold text-ps-gray-500 uppercase tracking-widest">Score</p>
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold group-hover:text-white transition-colors">{item.tool_name}</h3>
-                          <p className="text-white/30 text-[10px] font-black uppercase tracking-widest mt-2">
+                          <h3 className="text-base font-black text-ps-black">{item.tool_name}</h3>
+                          <p className="text-ps-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">
                             {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
                           </p>
                         </div>
                       </div>
-                      <Link href={`/tools/${item.tool_slug}`} className="px-6 py-3 rounded-full border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/30 hover:bg-white hover:text-black hover:border-white transition-all text-center">
-                        VIEW REPORT →
+                      <Link href={`/tools/${item.tool_slug}`} className="btn-secondary text-[10px] px-5 py-2.5 text-center whitespace-nowrap">
+                        View Report →
                       </Link>
                     </div>
                   ))}
@@ -527,29 +516,26 @@ export default function DashboardClient({
             </motion.div>
           )}
 
+          {/* ── VAULT ── */}
           {activeSection === 'vault' && (
-            <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-10">
+            <motion.div key="vault" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
               <div className="flex justify-between items-center">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">WhatsApp Vault</h2>
-                <span className="text-[10px] font-bold text-white/20 uppercase">{savedItems.length} saved</span>
+                <h2 className="text-label">WhatsApp Vault</h2>
+                <span className="text-[10px] font-bold text-ps-gray-500 uppercase tracking-widest">{savedItems.length} saved</span>
               </div>
 
               {savedItems.length === 0 ? (
-                <div className="text-center py-32 border border-dashed border-white/5 rounded-[40px]">
-                  <div className="text-4xl mb-8">📱</div>
-                  <h3 className="text-2xl font-black mb-4">Vault Empty</h3>
-                  <p className="text-white/30 mb-12 max-w-sm mx-auto text-sm leading-relaxed">
+                <div className="text-center py-24 border-2 border-dashed border-ps-gray-300">
+                  <h3 className="text-2xl font-black mb-4 text-ps-black">Vault Empty</h3>
+                  <p className="text-ps-gray-600 mb-10 max-w-sm mx-auto text-sm leading-relaxed">
                     Click &ldquo;Save to WhatsApp&rdquo; on any article or tool — it lands here and in your chat.
                   </p>
-                  <Link href="/tools" className="inline-block bg-white text-black font-black px-10 py-5 rounded-full hover:scale-105 transition-all">
-                    EXPLORE TOOLS →
-                  </Link>
+                  <Link href="/tools" className="btn-primary px-8 py-4 inline-flex">Explore Tools →</Link>
                 </div>
               ) : (
                 <>
-                  {/* Search */}
                   <div className="relative max-w-md">
-                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ps-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input
@@ -558,23 +544,22 @@ export default function DashboardClient({
                       value={vaultSearch}
                       onChange={e => setVaultSearch(e.target.value)}
                       placeholder="Search saved items..."
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/20 transition-all"
+                      className="w-full bg-ps-white border-2 border-ps-gray-300 focus:border-ps-black pl-11 pr-4 py-3 text-sm text-ps-black placeholder-ps-gray-400 focus:outline-none transition-all"
                     />
                     {vaultSearch && (
-                      <button onClick={() => setVaultSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors">✕</button>
+                      <button onClick={() => setVaultSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ps-gray-400 hover:text-ps-black transition-colors">✕</button>
                     )}
                   </div>
 
-                  {/* Category pills */}
                   <div className="flex flex-wrap gap-2">
                     {vaultCategories.map(cat => (
                       <button
                         key={cat}
                         onClick={() => setVaultCategory(cat)}
-                        className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                        className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border-2 transition-all ${
                           vaultCategory === cat
-                            ? 'bg-white text-black border-white'
-                            : 'bg-transparent text-white/30 border-white/10 hover:border-white/30 hover:text-white'
+                            ? 'bg-ps-black text-ps-white border-ps-black'
+                            : 'bg-ps-white text-ps-gray-600 border-ps-gray-300 hover:border-ps-black hover:text-ps-black'
                         }`}
                       >
                         {cat}
@@ -582,16 +567,15 @@ export default function DashboardClient({
                     ))}
                   </div>
 
-                  {/* Grid */}
                   {filteredVault.length === 0 ? (
-                    <div className="text-center py-20 border border-dashed border-white/5 rounded-[32px]">
-                      <p className="text-white/20 text-xs font-bold uppercase tracking-widest mb-4">No matches</p>
-                      <button onClick={() => { setVaultSearch(''); setVaultCategory('All'); }} className="text-white/40 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
+                    <div className="text-center py-16 border-2 border-dashed border-ps-gray-300">
+                      <p className="text-ps-gray-400 text-xs font-bold uppercase tracking-widest mb-4">No matches</p>
+                      <button onClick={() => { setVaultSearch(''); setVaultCategory('All'); }} className="text-ps-gray-600 hover:text-ps-black text-xs font-bold uppercase tracking-widest transition-colors">
                         Clear filters →
                       </button>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {filteredVault.map((item, i) => (
                         <VaultCard key={item.id} item={item} index={i} />
                       ))}
@@ -602,59 +586,59 @@ export default function DashboardClient({
             </motion.div>
           )}
 
+          {/* ── SETTINGS ── */}
           {activeSection === 'settings' && (
-            <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-16 max-w-xl">
+            <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-14 max-w-xl">
 
-              {/* Profile */}
               <section>
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Profile</h2>
-                <div className="space-y-4">
+                <h2 className="text-label border-b-4 border-ps-black pb-4 mb-8">Profile</h2>
+                <div className="space-y-5">
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">Name</label>
+                    <label className="text-label block mb-2">Name</label>
                     <input
                       type="text"
                       value={firstName}
                       onChange={e => setFirstName(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-white/30 transition-all"
+                      className="w-full bg-ps-white border-2 border-ps-gray-300 focus:border-ps-black px-4 py-3 text-ps-black text-sm focus:outline-none transition-all"
                       placeholder="Your name"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">Email</label>
+                    <label className="text-label block mb-2">Email</label>
                     <input
                       type="email"
                       value={profile?.email ?? ''}
                       disabled
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white/30 text-sm cursor-not-allowed"
+                      className="w-full bg-ps-gray-100 border-2 border-ps-gray-200 px-4 py-3 text-ps-gray-500 text-sm cursor-not-allowed"
                     />
-                    <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Email changes require re-signup</p>
+                    <p className="text-[9px] text-ps-gray-400 mt-2 font-bold uppercase tracking-widest">Email changes require re-signup</p>
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">WhatsApp Number</label>
+                    <label className="text-label block mb-2">WhatsApp Number</label>
                     {profile?.whatsapp_number ? (
                       <>
                         <input
                           type="text"
                           value={profile.whatsapp_number}
                           disabled
-                          className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white/30 text-sm cursor-not-allowed"
+                          className="w-full bg-ps-gray-100 border-2 border-ps-gray-200 px-4 py-3 text-ps-gray-500 text-sm cursor-not-allowed"
                         />
-                        <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
+                        <p className="text-[9px] text-ps-gray-400 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
                       </>
                     ) : verifyCode && verifyWaNumber ? (
-                      <div className="bg-[#25D366]/5 border border-[#25D366]/20 rounded-2xl p-6 space-y-4">
+                      <div className="border-2 border-[#25D366] bg-ps-white p-5 space-y-4">
                         <div>
-                          <p className="text-sm font-black text-white mb-1">Number saved — verify it now</p>
-                          <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Send the message below from your WhatsApp</p>
+                          <p className="text-sm font-black text-ps-black mb-1">Number saved — verify it now</p>
+                          <p className="text-[10px] text-ps-gray-500 font-bold uppercase tracking-widest">Send the message below from your WhatsApp</p>
                         </div>
-                        <div className="bg-black/30 rounded-xl px-5 py-4 font-mono text-white/80 text-base tracking-widest">
+                        <div className="bg-ps-gray-100 border-2 border-ps-gray-200 px-4 py-3 font-mono text-ps-black text-base tracking-widest">
                           VERIFY {verifyCode}
                         </div>
                         <a
                           href={`https://wa.me/${verifyWaNumber}?text=VERIFY%20${verifyCode}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#25D366] text-black text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-ps-black text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
                         >
                           Open WhatsApp to Verify →
                         </a>
@@ -666,97 +650,93 @@ export default function DashboardClient({
                           value={whatsappNumber}
                           onChange={e => setWhatsappNumber(e.target.value)}
                           placeholder="+44 7700 900000"
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-white/30 transition-all placeholder-white/20"
+                          className="w-full bg-ps-white border-2 border-ps-gray-300 focus:border-ps-black px-4 py-3 text-ps-black text-sm focus:outline-none transition-all placeholder-ps-gray-400"
                         />
-                        <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Include country code — required to receive protocols</p>
+                        <p className="text-[9px] text-ps-gray-400 mt-2 font-bold uppercase tracking-widest">Include country code — required to receive protocols</p>
                       </>
                     )}
                   </div>
                 </div>
               </section>
 
-              {/* WhatsApp preferences */}
               <section>
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">WhatsApp Preferences</h2>
-                <div className="space-y-3">
+                <h2 className="text-label border-b-4 border-ps-black pb-4 mb-8">WhatsApp Preferences</h2>
+                <div className="space-y-2">
                   {([
                     { label: 'Weekly Intelligence Briefings', sub: 'Get one protocol delivered every Tuesday', value: weeklyOptIn, set: setWeeklyOptIn },
-                    { label: 'Pause All WhatsApp Messages', sub: 'Re-enable anytime by texting START', value: waOptOut, set: setWaOptOut },
+                    { label: 'Pause All WhatsApp Messages',   sub: 'Re-enable anytime by texting START',      value: waOptOut,    set: setWaOptOut },
                   ] as const).map(item => (
-                    <div key={item.label} className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5">
+                    <div key={item.label} className="flex items-center justify-between bg-ps-white border-2 border-ps-gray-200 px-5 py-4">
                       <div>
-                        <p className="text-sm font-bold text-white">{item.label}</p>
-                        <p className="text-[10px] text-white/30 mt-0.5 font-bold uppercase tracking-widest">{item.sub}</p>
+                        <p className="text-sm font-black text-ps-black">{item.label}</p>
+                        <p className="text-[10px] text-ps-gray-500 mt-0.5 font-bold uppercase tracking-widest">{item.sub}</p>
                       </div>
                       <button
                         onClick={() => item.set(!item.value)}
-                        className={`relative w-12 h-6 rounded-full transition-all duration-300 shrink-0 ${item.value ? 'bg-white' : 'bg-white/10'}`}
+                        className={`relative w-11 h-6 border-2 border-ps-black transition-colors shrink-0 ${item.value ? 'bg-ps-black' : 'bg-ps-white'}`}
                       >
-                        <span className={`absolute top-1 w-4 h-4 rounded-full bg-black transition-all duration-300 ${item.value ? 'left-7' : 'left-1'}`} />
+                        <span className={`absolute top-0.5 w-4 h-4 bg-ps-white border border-ps-black transition-all ${item.value ? 'left-5' : 'left-0.5'}`} />
                       </button>
                     </div>
                   ))}
                 </div>
               </section>
 
-              {/* Save button */}
               <button
                 onClick={saveProfile}
                 disabled={saving}
-                className="w-full py-4 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-40"
+                className="w-full btn-primary py-4 disabled:opacity-40"
               >
                 {saving ? 'Saving…' : saveMsg || 'Save Changes'}
               </button>
 
-              {/* Member since */}
               {profile?.created_at && (
-                <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
+                <p className="text-[10px] text-ps-gray-400 font-bold uppercase tracking-widest">
                   Member since {new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
                 </p>
               )}
 
-              {/* Danger zone */}
-              <section className="border-t border-white/5 pt-16">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500/60 mb-8">Danger Zone</h2>
+              <section className="border-t-4 border-ps-danger pt-12">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-ps-danger mb-6">Danger Zone</h2>
 
                 {deletePhase === 'idle' && (
                   <button
                     onClick={() => setDeletePhase('confirm')}
-                    className="px-6 py-3 rounded-2xl border border-red-500/20 text-red-400 text-xs font-black uppercase tracking-widest hover:bg-red-500/10 transition-all"
+                    className="px-5 py-3 border-2 border-ps-danger text-ps-danger text-xs font-black uppercase tracking-widest hover:bg-ps-danger hover:text-ps-white transition-all"
                   >
                     Delete Account
                   </button>
                 )}
 
                 {deletePhase === 'confirm' && (
-                  <div className="bg-red-500/5 border border-red-500/20 rounded-3xl p-8 space-y-6">
+                  <div className="border-2 border-ps-danger p-6 space-y-5">
                     <div>
-                      <p className="text-sm font-bold text-white mb-2">This is permanent.</p>
-                      <p className="text-xs text-white/40 leading-relaxed">
+                      <p className="text-sm font-black text-ps-black mb-2">This is permanent.</p>
+                      <p className="text-xs text-ps-gray-600 leading-relaxed">
                         Your account, saved protocols, assessment history, and all data will be deleted immediately. This cannot be undone.
                       </p>
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">Type DELETE to confirm</label>
+                      <label className="text-label block mb-2">Type DELETE to confirm</label>
                       <input
                         type="text"
                         value={deleteInput}
                         onChange={e => setDeleteInput(e.target.value)}
                         placeholder="DELETE"
-                        className="w-full bg-white/5 border border-red-500/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-red-500/50 transition-all font-mono"
+                        className="w-full bg-ps-white border-2 border-ps-danger px-4 py-3 text-ps-black text-sm focus:outline-none font-mono"
                       />
                     </div>
                     <div className="flex gap-3">
                       <button
                         onClick={deleteAccount}
                         disabled={deleteInput !== 'DELETE' || isDeleting}
-                        className="flex-1 py-3 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="flex-1 py-3 bg-ps-danger text-ps-white text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         {isDeleting ? 'Deleting…' : 'Delete My Account'}
                       </button>
                       <button
                         onClick={() => { setDeletePhase('idle'); setDeleteInput(''); }}
-                        className="px-6 py-3 rounded-xl border border-white/10 text-white/40 text-xs font-black uppercase tracking-widest hover:border-white/30 hover:text-white transition-all"
+                        className="px-5 py-3 border-2 border-ps-gray-300 text-ps-gray-600 text-xs font-black uppercase tracking-widest hover:border-ps-black hover:text-ps-black transition-all"
                       >
                         Cancel
                       </button>
@@ -778,20 +758,20 @@ function WeeklyChart({ data }: { data: number[] }) {
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   const max = Math.max(...data, 1);
   return (
-    <div className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-5">
-      <div className="flex items-end justify-between gap-1.5 h-12 mb-3">
+    <div className="bg-ps-white border-2 border-ps-gray-200 p-4">
+      <div className="flex items-end justify-between gap-1.5 h-10 mb-2">
         {data.map((val, i) => (
           <div key={i} className="flex-1 flex flex-col justify-end">
             <div
-              className="w-full rounded-sm bg-white/80 transition-all duration-500"
-              style={{ height: `${Math.max((val / max) * 100, val > 0 ? 15 : 4)}%`, opacity: val === 0 ? 0.08 : 1 }}
+              className="w-full bg-ps-black transition-all duration-500"
+              style={{ height: `${Math.max((val / max) * 100, val > 0 ? 15 : 4)}%`, opacity: val === 0 ? 0.1 : 1 }}
             />
           </div>
         ))}
       </div>
       <div className="flex justify-between">
         {days.map((d, i) => (
-          <span key={i} className="flex-1 text-center text-[8px] font-black uppercase text-white/20">{d}</span>
+          <span key={i} className="flex-1 text-center text-[8px] font-black uppercase text-ps-gray-400">{d}</span>
         ))}
       </div>
     </div>
@@ -834,44 +814,42 @@ function VaultCard({ item, index }: { item: SavedItem; index: number }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
-      className="bg-[#0f0f0f] border border-white/5 rounded-[24px] p-6 flex flex-col gap-4 hover:border-white/10 transition-all group"
+      className="bg-ps-white border-2 border-ps-gray-200 hover:border-ps-black p-5 flex flex-col gap-4 transition-all group"
     >
       <div className="flex items-center justify-between">
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 bg-white/5 px-3 py-1 rounded-full">
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-ps-gray-500 border border-ps-gray-200 px-2 py-0.5">
           {item.category}
         </span>
-        <span className="text-[9px] text-white/20 font-bold">{age}</span>
+        <span className="text-[9px] text-ps-gray-400 font-bold">{age}</span>
       </div>
 
       <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex-1">
-        <h3 className="font-bold text-base leading-snug group-hover:text-white/80 transition-colors line-clamp-2">
-          {item.title}
-        </h3>
-        <p className="text-white/20 text-xs mt-1">{getDomain(item.url)}</p>
+        <h3 className="font-black text-sm text-ps-black leading-snug line-clamp-2">{item.title}</h3>
+        <p className="text-ps-gray-500 text-xs mt-1">{getDomain(item.url)}</p>
       </a>
 
-      <div className="flex gap-3 pt-2 border-t border-white/5">
+      <div className="flex gap-2 pt-2 border-t-2 border-ps-gray-100">
         <a
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 text-center py-2.5 rounded-xl bg-white/5 text-white/30 hover:bg-white/10 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
+          className="flex-1 text-center py-2 border-2 border-ps-gray-200 text-ps-gray-600 hover:border-ps-black hover:text-ps-black text-[10px] font-black uppercase tracking-widest transition-all"
         >
           Open
         </a>
         <button
           onClick={handleResend}
           disabled={resend !== 'idle'}
-          className={`flex-1 text-center py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed ${
-            resend === 'idle' ? 'bg-white/5 text-white/30 hover:bg-white/10 hover:text-white' :
-            resend === 'sending' ? 'bg-white/5 text-white/20' :
-            resend === 'done' ? 'bg-green-500/10 text-green-400' :
-            'bg-red-500/10 text-red-400'
+          className={`flex-1 text-center py-2 border-2 text-[10px] font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed ${
+            resend === 'idle' ? 'border-ps-gray-200 text-ps-gray-600 hover:border-ps-black hover:text-ps-black' :
+            resend === 'sending' ? 'border-ps-gray-200 text-ps-gray-400' :
+            resend === 'done'    ? 'border-ps-success text-ps-success' :
+            'border-ps-danger text-ps-danger'
           }`}
         >
-          {resend === 'idle' && '📱 Send'}
+          {resend === 'idle' && 'Send'}
           {resend === 'sending' && 'Sending…'}
-          {resend === 'done' && '✓ Sent'}
+          {resend === 'done' && 'Sent'}
           {resend === 'err' && 'Failed'}
         </button>
       </div>
