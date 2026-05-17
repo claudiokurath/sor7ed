@@ -16,7 +16,7 @@ export default function UniversalProblemSelector() {
   const waBase = `https://wa.me/${siteConfig.whatsappNumber}`;
 
   return (
-    <section className="px-4 sm:px-6 md:px-16 py-16 border-t-2 border-ps-gray-200">
+    <section className="px-5 sm:px-8 md:px-16 py-16 border-t border-surface-border">
       <motion.p
         className="text-label mb-4"
         initial={{ opacity: 0 }}
@@ -26,19 +26,19 @@ export default function UniversalProblemSelector() {
         Text what&apos;s wrong
       </motion.p>
       <motion.h2
-        className="heading-section text-ps-black mb-3"
-        initial={{ opacity: 0, y: 20 }}
+        className="heading-section text-text-primary mb-3"
+        initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
         What&apos;s going on?
       </motion.h2>
       <motion.p
-        className="text-ps-gray-600 text-base max-w-md leading-relaxed mb-10"
+        className="text-text-muted text-sm max-w-md leading-relaxed mb-8"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.15 }}
+        transition={{ delay: 0.1 }}
       >
         Tap what fits. We&apos;ll send the right tool to your WhatsApp — no app, no login.
       </motion.p>
@@ -50,30 +50,30 @@ export default function UniversalProblemSelector() {
             href={`${waBase}?text=${encodeURIComponent(p.whatsapp)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col items-start gap-2 p-5 bg-ps-white border-2 border-ps-black transition-all duration-150 cursor-pointer"
-            initial={{ opacity: 0, y: 12 }}
+            className="group flex flex-col items-start gap-1.5 p-4 bg-surface-card border border-surface-border rounded-xl transition-all duration-200 cursor-pointer"
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
-            style={{ ['--c' as string]: p.color }}
-            whileHover={{ boxShadow: `3px 3px 0px 0px ${p.color}`, transform: 'translate(-1.5px,-1.5px)' }}
+            transition={{ delay: i * 0.04 }}
+            whileHover={{
+              boxShadow: `0 0 20px ${p.color}30`,
+              borderColor: `${p.color}60`,
+            }}
           >
-            <div>
-              <p className="text-ps-black text-sm font-black leading-tight">{p.text}</p>
-              <p className="text-ps-gray-500 text-xs mt-0.5">{p.sub}</p>
-            </div>
+            <p className="text-text-primary text-sm font-bold leading-tight">{p.text}</p>
+            <p className="text-text-muted text-xs">{p.sub}</p>
           </motion.a>
         ))}
       </div>
 
       <motion.p
-        className="mt-6 text-ps-gray-400 text-xs"
+        className="mt-5 text-text-muted text-xs"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.3 }}
       >
-        Or text anything — &quot;too much to do&quot;, &quot;can&apos;t sleep&quot;, &quot;burnt out&quot; — and I&apos;ll route you to the right tool.
+        Or text anything — &ldquo;too much to do&rdquo;, &ldquo;can&apos;t sleep&rdquo;, &ldquo;burnt out&rdquo; — and I&apos;ll route you to the right tool.
       </motion.p>
     </section>
   );

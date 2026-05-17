@@ -71,39 +71,45 @@ export default function SmartNav() {
 
   return (
     <>
-      <nav className="fixed top-0 inset-x-0 z-50 bg-ps-white border-b-4 border-ps-black">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* Desktop only — hidden on mobile (BottomNav handles mobile) */}
+      <nav className="hidden md:flex fixed top-0 inset-x-0 z-50 bg-surface-glass backdrop-blur-xl border-b border-surface-border">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between w-full">
 
-          <Link href="/" className="font-anton text-2xl tracking-wider text-ps-black uppercase leading-none">
+          <Link href="/" className="font-display text-xl tracking-wider text-text-primary uppercase leading-none">
             SOR7ED
           </Link>
+
+          <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-text-muted">
+            <Link href="/tools" className="hover:text-text-primary transition-colors">Tools</Link>
+            <Link href="/intelligence" className="hover:text-text-primary transition-colors">Intelligence</Link>
+          </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 border-2 border-ps-gray-300 bg-ps-white px-3 py-1.5 text-ps-gray-500 hover:border-ps-black hover:text-ps-black transition-all"
+              className="flex items-center gap-2 border border-surface-border bg-surface-elevated px-3 py-1.5 text-text-muted hover:border-text-muted hover:text-text-primary transition-all rounded-lg"
               aria-label="Search (⌘K)"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="text-xs font-bold uppercase tracking-widest hidden sm:block">Search</span>
-              <kbd className="hidden lg:block text-xs text-ps-gray-400 font-mono">⌘K</kbd>
+              <span className="text-[10px] font-bold uppercase tracking-widest">Search</span>
+              <kbd className="text-[10px] text-text-muted font-mono">⌘K</kbd>
             </button>
 
             {user ? (
               <div ref={dropdownRef} className="relative">
                 <button
                   onClick={() => setDropdownOpen(v => !v)}
-                  className="flex items-center gap-2 border-2 border-ps-black bg-ps-white px-3 py-1.5 hover:bg-ps-black hover:text-ps-white transition-all group"
+                  className="flex items-center gap-2 border border-surface-border bg-surface-elevated px-3 py-1.5 hover:border-brand-amber transition-all rounded-lg"
                 >
-                  <span className="w-6 h-6 bg-ps-black text-ps-white text-xs font-black flex items-center justify-center shrink-0 group-hover:bg-ps-white group-hover:text-ps-black transition-all">
+                  <span className="w-5 h-5 rounded-full bg-brand-amber text-surface-bg text-[10px] font-black flex items-center justify-center shrink-0">
                     {initial}
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-widest hidden sm:block max-w-[80px] truncate">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary hidden sm:block max-w-[80px] truncate">
                     {profile?.first_name ?? 'Account'}
                   </span>
-                  <svg className={`w-3 h-3 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-3 h-3 text-text-muted transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
@@ -115,31 +121,31 @@ export default function SmartNav() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.1 }}
-                      className="absolute right-0 mt-1 w-52 bg-ps-white border-2 border-ps-black shadow-brutal overflow-hidden"
+                      className="absolute right-0 mt-1 w-48 bg-surface-elevated border border-surface-border shadow-card rounded-xl overflow-hidden"
                     >
-                      <div className="px-4 py-3 border-b-2 border-ps-gray-200">
-                        <p className="text-xs font-black text-ps-black truncate uppercase tracking-widest">{profile?.first_name ?? 'Account'}</p>
-                        <p className="text-[10px] text-ps-gray-500 truncate mt-0.5">{user.email}</p>
+                      <div className="px-4 py-3 border-b border-surface-border">
+                        <p className="text-[10px] font-black text-text-primary truncate uppercase tracking-widest">{profile?.first_name ?? 'Account'}</p>
+                        <p className="text-[10px] text-text-muted truncate mt-0.5">{user.email}</p>
                       </div>
 
                       {[
                         { label: 'Dashboard', href: '/dashboard' },
-                        { label: 'Settings', href: '/dashboard?tab=settings' },
+                        { label: 'Settings',  href: '/dashboard?tab=settings' },
                       ].map(item => (
                         <Link
                           key={item.href}
                           href={item.href}
                           onClick={() => setDropdownOpen(false)}
-                          className="flex items-center px-4 py-3 text-xs font-bold uppercase tracking-widest text-ps-gray-600 hover:bg-ps-black hover:text-ps-white transition-all"
+                          className="flex items-center px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:bg-surface-bg hover:text-text-primary transition-all"
                         >
                           {item.label}
                         </Link>
                       ))}
 
-                      <div className="border-t-2 border-ps-gray-200">
+                      <div className="border-t border-surface-border">
                         <button
                           onClick={handleSignOut}
-                          className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-widest text-ps-danger hover:bg-ps-danger hover:text-ps-white transition-all"
+                          className="w-full text-left px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-ps-danger hover:bg-ps-danger hover:text-white transition-all"
                         >
                           Sign Out
                         </button>
@@ -151,7 +157,7 @@ export default function SmartNav() {
             ) : (
               <Link
                 href="/signup"
-                className="btn-primary text-xs px-5 py-2"
+                className="btn-primary text-[10px] px-5 py-2 rounded-lg"
               >
                 Sign Up
               </Link>

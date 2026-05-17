@@ -3,6 +3,7 @@ import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import SmartNav from "@/components/SmartNav";
+import BottomNav from "@/components/BottomNav";
 
 const anton = Anton({
   weight: '400',
@@ -70,10 +71,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-ps-gray-100 text-ps-black">
+      <body className="min-h-full flex flex-col bg-surface-bg text-text-primary">
         <SmartNav />
-        <main className="flex-1 pt-16">{children}</main>
+        {/* pt-0 on mobile (no top nav), pt-16 on desktop (SmartNav height) */}
+        <main className="flex-1 pt-0 md:pt-16 pb-20 md:pb-0">{children}</main>
         <SiteFooter />
+        <BottomNav />
       </body>
     </html>
   );
