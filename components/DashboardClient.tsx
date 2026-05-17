@@ -263,7 +263,7 @@ export default function DashboardClient({
               {/* Chaos banner */}
               <div className="relative rounded-3xl overflow-hidden h-36 sm:h-44">
                 <Image
-                  src="/Images/chaos-strip.jpg"
+                  src="/Images/chaos-strip.png"
                   alt="The chaos before SOR7ED"
                   fill
                   className="object-cover object-center"

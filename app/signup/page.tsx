@@ -294,7 +294,7 @@ function SignupForm() {
       {/* Image panel — desktop only */}
       <div className="hidden lg:block lg:w-[45%] xl:w-1/2 relative bg-[#EBA904]">
         <Image
-          src="/Images/chaos-portrait.jpg"
+          src="/Images/chaos-portrait.png"
           alt="Life before SOR7ED — chaotic desk"
           fill
           className="object-cover object-bottom"
