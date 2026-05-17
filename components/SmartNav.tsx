@@ -49,15 +49,6 @@ export default function SmartNav() {
             <Image src="/Images/Logo2026.png" alt="SOR7ED" width={240} height={96} className="h-20 w-auto" />
           </Link>
 
-          <div className="hidden md:flex items-center gap-6 text-sm">
-            <Link href="/tools" className="text-white/60 hover:text-white transition-colors">
-              Assessments
-            </Link>
-            <Link href="/intelligence" className="text-white/60 hover:text-white transition-colors">
-              Articles
-            </Link>
-          </div>
-
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSearchOpen(true)}
