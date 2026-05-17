@@ -113,11 +113,13 @@ export default function DashboardClient({
 
   // Settings state
   const [firstName, setFirstName] = useState(profile?.first_name ?? '');
-  const [whatsappNumber, setWhatsappNumber] = useState(profile?.whatsapp_number ?? '');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [weeklyOptIn, setWeeklyOptIn] = useState(profile?.weekly_opted_in ?? false);
   const [waOptOut, setWaOptOut] = useState(profile?.whatsapp_opted_out ?? false);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [verifyCode, setVerifyCode] = useState<string | null>(null);
+  const [verifyWaNumber, setVerifyWaNumber] = useState<string | null>(null);
   const [deletePhase, setDeletePhase] = useState<'idle' | 'confirm'>('idle');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
@@ -159,12 +161,34 @@ export default function DashboardClient({
   const saveProfile = async () => {
     setSaving(true);
     setSaveMsg('');
-    const updates: Record<string, unknown> = { first_name: firstName, weekly_opted_in: weeklyOptIn, whatsapp_opted_out: waOptOut };
-    if (whatsappNumber && !profile?.whatsapp_number) updates.whatsapp_number = whatsappNumber;
+
+    // If adding a new WhatsApp number, use the dedicated endpoint
+    if (whatsappNumber && !profile?.whatsapp_number) {
+      const res = await fetch('/api/account/add-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ whatsapp_number: whatsappNumber }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaving(false);
+        setSaveMsg('Failed to save number.');
+        setTimeout(() => setSaveMsg(''), 3000);
+        return;
+      }
+      setVerifyCode(data.waVerifyCode);
+      setVerifyWaNumber(data.waNumber);
+    }
+
+    // Update remaining profile fields using authenticated user_id via RLS
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSaving(false); setSaveMsg('Not signed in.'); return; }
+
     const { error } = await supabase
       .from('users')
-      .update(updates)
-      .eq('email', profile?.email ?? '');
+      .update({ first_name: firstName, weekly_opted_in: weeklyOptIn, whatsapp_opted_out: waOptOut })
+      .eq('user_id', user.id);
+
     setSaving(false);
     setSaveMsg(error ? 'Failed to save.' : 'Saved.');
     setTimeout(() => setSaveMsg(''), 3000);
@@ -613,6 +637,24 @@ export default function DashboardClient({
                         />
                         <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
                       </>
+                    ) : verifyCode && verifyWaNumber ? (
+                      <div className="bg-[#25D366]/5 border border-[#25D366]/20 rounded-2xl p-6 space-y-4">
+                        <div>
+                          <p className="text-sm font-black text-white mb-1">Number saved — verify it now</p>
+                          <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Send the message below from your WhatsApp</p>
+                        </div>
+                        <div className="bg-black/30 rounded-xl px-5 py-4 font-mono text-white/80 text-base tracking-widest">
+                          VERIFY {verifyCode}
+                        </div>
+                        <a
+                          href={`https://wa.me/${verifyWaNumber}?text=VERIFY%20${verifyCode}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-[#25D366] text-black text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                        >
+                          Open WhatsApp to Verify →
+                        </a>
+                      </div>
                     ) : (
                       <>
                         <input
