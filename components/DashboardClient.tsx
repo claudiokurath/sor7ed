@@ -13,6 +13,9 @@ type Profile = {
   first_name: string | null;
   whatsapp_number: string | null;
   email: string | null;
+  weekly_opted_in: boolean | null;
+  whatsapp_opted_out: boolean | null;
+  created_at: string | null;
 };
 
 type ToolSummary = {
@@ -21,7 +24,7 @@ type ToolSummary = {
   color: string;
 };
 
-type ActiveSection = 'overview' | 'saved' | 'history' | 'vault';
+type ActiveSection = 'overview' | 'saved' | 'history' | 'vault' | 'settings';
 
 type SavedItem = {
   id: string;
@@ -70,6 +73,16 @@ export default function DashboardClient({
   const [history] = useState<AssessmentHistory[]>(initialHistory);
   const [savedItems] = useState<SavedItem[]>(initialSavedItems);
   const [activeSection, setActiveSection] = useState<ActiveSection>('overview');
+
+  // Settings state
+  const [firstName, setFirstName] = useState(profile?.first_name ?? '');
+  const [weeklyOptIn, setWeeklyOptIn] = useState(profile?.weekly_opted_in ?? false);
+  const [waOptOut, setWaOptOut] = useState(profile?.whatsapp_opted_out ?? false);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');
+  const [deletePhase, setDeletePhase] = useState<'idle' | 'confirm'>('idle');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteInput, setDeleteInput] = useState('');
   const [vaultSearch, setVaultSearch] = useState('');
   const [vaultCategory, setVaultCategory] = useState('All');
   const searchRef = useRef<HTMLInputElement>(null);
@@ -103,6 +116,26 @@ export default function DashboardClient({
   const removeFavorite = async (id: string) => {
     await supabase.from('user_favorites').delete().eq('id', id);
     setFavorites(prev => prev.filter(f => f.id !== id));
+  };
+
+  const saveProfile = async () => {
+    setSaving(true);
+    setSaveMsg('');
+    const { error } = await supabase
+      .from('users')
+      .update({ first_name: firstName, weekly_opted_in: weeklyOptIn, whatsapp_opted_out: waOptOut })
+      .eq('email', profile?.email ?? '');
+    setSaving(false);
+    setSaveMsg(error ? 'Failed to save.' : 'Saved.');
+    setTimeout(() => setSaveMsg(''), 3000);
+  };
+
+  const deleteAccount = async () => {
+    if (deleteInput !== 'DELETE') return;
+    setIsDeleting(true);
+    await fetch('/api/account/delete', { method: 'POST' });
+    await supabase.auth.signOut();
+    window.location.href = '/';
   };
 
   return (
@@ -157,6 +190,7 @@ export default function DashboardClient({
               { key: 'saved', label: 'Library' },
               { key: 'history', label: 'History' },
               { key: 'vault', label: `Vault${savedItems.length > 0 ? ` (${savedItems.length})` : ''}` },
+              { key: 'settings', label: 'Settings' },
             ] as const).map(section => (
               <button
                 key={section.key}
@@ -435,6 +469,139 @@ export default function DashboardClient({
                   )}
                 </>
               )}
+            </motion.div>
+          )}
+
+          {activeSection === 'settings' && (
+            <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-16 max-w-xl">
+
+              {/* Profile */}
+              <section>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Profile</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">Name</label>
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-white/30 transition-all"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={profile?.email ?? ''}
+                      disabled
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white/30 text-sm cursor-not-allowed"
+                    />
+                    <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Email changes require re-signup</p>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">WhatsApp Number</label>
+                    <input
+                      type="text"
+                      value={profile?.whatsapp_number ?? ''}
+                      disabled
+                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white/30 text-sm cursor-not-allowed"
+                    />
+                    <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
+                  </div>
+                </div>
+              </section>
+
+              {/* WhatsApp preferences */}
+              <section>
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">WhatsApp Preferences</h2>
+                <div className="space-y-3">
+                  {([
+                    { label: 'Weekly Intelligence Briefings', sub: 'Get one protocol delivered every Tuesday', value: weeklyOptIn, set: setWeeklyOptIn },
+                    { label: 'Pause All WhatsApp Messages', sub: 'Re-enable anytime by texting START', value: waOptOut, set: setWaOptOut },
+                  ] as const).map(item => (
+                    <div key={item.label} className="flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5">
+                      <div>
+                        <p className="text-sm font-bold text-white">{item.label}</p>
+                        <p className="text-[10px] text-white/30 mt-0.5 font-bold uppercase tracking-widest">{item.sub}</p>
+                      </div>
+                      <button
+                        onClick={() => item.set(!item.value)}
+                        className={`relative w-12 h-6 rounded-full transition-all duration-300 shrink-0 ${item.value ? 'bg-white' : 'bg-white/10'}`}
+                      >
+                        <span className={`absolute top-1 w-4 h-4 rounded-full bg-black transition-all duration-300 ${item.value ? 'left-7' : 'left-1'}`} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Save button */}
+              <button
+                onClick={saveProfile}
+                disabled={saving}
+                className="w-full py-4 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-40"
+              >
+                {saving ? 'Saving…' : saveMsg || 'Save Changes'}
+              </button>
+
+              {/* Member since */}
+              {profile?.created_at && (
+                <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
+                  Member since {new Date(profile.created_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+                </p>
+              )}
+
+              {/* Danger zone */}
+              <section className="border-t border-white/5 pt-16">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-red-500/60 mb-8">Danger Zone</h2>
+
+                {deletePhase === 'idle' && (
+                  <button
+                    onClick={() => setDeletePhase('confirm')}
+                    className="px-6 py-3 rounded-2xl border border-red-500/20 text-red-400 text-xs font-black uppercase tracking-widest hover:bg-red-500/10 transition-all"
+                  >
+                    Delete Account
+                  </button>
+                )}
+
+                {deletePhase === 'confirm' && (
+                  <div className="bg-red-500/5 border border-red-500/20 rounded-3xl p-8 space-y-6">
+                    <div>
+                      <p className="text-sm font-bold text-white mb-2">This is permanent.</p>
+                      <p className="text-xs text-white/40 leading-relaxed">
+                        Your account, saved protocols, assessment history, and all data will be deleted immediately. This cannot be undone.
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">Type DELETE to confirm</label>
+                      <input
+                        type="text"
+                        value={deleteInput}
+                        onChange={e => setDeleteInput(e.target.value)}
+                        placeholder="DELETE"
+                        className="w-full bg-white/5 border border-red-500/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-red-500/50 transition-all font-mono"
+                      />
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={deleteAccount}
+                        disabled={deleteInput !== 'DELETE' || isDeleting}
+                        className="flex-1 py-3 rounded-xl bg-red-500 text-white text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        {isDeleting ? 'Deleting…' : 'Delete My Account'}
+                      </button>
+                      <button
+                        onClick={() => { setDeletePhase('idle'); setDeleteInput(''); }}
+                        className="px-6 py-3 rounded-xl border border-white/10 text-white/40 text-xs font-black uppercase tracking-widest hover:border-white/30 hover:text-white transition-all"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </section>
+
             </motion.div>
           )}
 
