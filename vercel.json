@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/sync-notion",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
