@@ -21,9 +21,17 @@ export const viewport: Viewport = {
   userScalable: true, // Important for accessibility
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
+
 export const metadata: Metadata = {
   title: "SOR7ED | Practical Protocols for Neurodivergent Minds",
-  description: "Organize your life across 7 branches with practical protocols delivered via WhatsApp.",
+  description: "SOR7ED (pronounced 'sorted') — practical protocols for neurodivergent adults across 7 branches of life, delivered to your WhatsApp.",
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: '/' },
+  openGraph: {
+    siteName: 'SOR7ED',
+    locale: 'en_GB',
+  },
 };
 
 export function TextureOverlay() {
@@ -37,6 +45,21 @@ export function TextureOverlay() {
   );
 }
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SOR7ED',
+  alternateName: ['sorted', 'Sorted', 'sor7ed'],
+  description: 'Practical protocols for neurodivergent adults across 7 branches of life, delivered via WhatsApp.',
+  url: 'https://sor7ed.com',
+  logo: 'https://sor7ed.com/Images/Logo2026.png',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'hello@sor7ed.com',
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,6 +70,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white">
         <TextureOverlay />
         <SmartNav />
