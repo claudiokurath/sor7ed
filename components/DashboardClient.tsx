@@ -113,6 +113,7 @@ export default function DashboardClient({
 
   // Settings state
   const [firstName, setFirstName] = useState(profile?.first_name ?? '');
+  const [whatsappNumber, setWhatsappNumber] = useState(profile?.whatsapp_number ?? '');
   const [weeklyOptIn, setWeeklyOptIn] = useState(profile?.weekly_opted_in ?? false);
   const [waOptOut, setWaOptOut] = useState(profile?.whatsapp_opted_out ?? false);
   const [saving, setSaving] = useState(false);
@@ -158,9 +159,11 @@ export default function DashboardClient({
   const saveProfile = async () => {
     setSaving(true);
     setSaveMsg('');
+    const updates: Record<string, unknown> = { first_name: firstName, weekly_opted_in: weeklyOptIn, whatsapp_opted_out: waOptOut };
+    if (whatsappNumber && !profile?.whatsapp_number) updates.whatsapp_number = whatsappNumber;
     const { error } = await supabase
       .from('users')
-      .update({ first_name: firstName, weekly_opted_in: weeklyOptIn, whatsapp_opted_out: waOptOut })
+      .update(updates)
       .eq('email', profile?.email ?? '');
     setSaving(false);
     setSaveMsg(error ? 'Failed to save.' : 'Saved.');
@@ -283,6 +286,22 @@ export default function DashboardClient({
                   )}
                 </div>
               </div>
+
+              {/* WhatsApp missing nudge */}
+              {!profile?.whatsapp_number && (
+                <div className="flex items-center justify-between gap-4 bg-[#25D366]/5 border border-[#25D366]/20 rounded-2xl px-6 py-4">
+                  <div>
+                    <p className="text-sm font-black text-white mb-0.5">Add your WhatsApp number</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Required to receive protocols</p>
+                  </div>
+                  <button
+                    onClick={() => setActiveSection('settings')}
+                    className="shrink-0 px-5 py-2.5 rounded-full bg-[#25D366] text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                  >
+                    Add now →
+                  </button>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-12">
@@ -584,13 +603,28 @@ export default function DashboardClient({
                   </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/30 block mb-2">WhatsApp Number</label>
-                    <input
-                      type="text"
-                      value={profile?.whatsapp_number ?? ''}
-                      disabled
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white/30 text-sm cursor-not-allowed"
-                    />
-                    <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
+                    {profile?.whatsapp_number ? (
+                      <>
+                        <input
+                          type="text"
+                          value={profile.whatsapp_number}
+                          disabled
+                          className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white/30 text-sm cursor-not-allowed"
+                        />
+                        <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
+                      </>
+                    ) : (
+                      <>
+                        <input
+                          type="tel"
+                          value={whatsappNumber}
+                          onChange={e => setWhatsappNumber(e.target.value)}
+                          placeholder="+44 7700 900000"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:border-white/30 transition-all placeholder-white/20"
+                        />
+                        <p className="text-[9px] text-white/20 mt-2 font-bold uppercase tracking-widest">Include country code — required to receive protocols</p>
+                      </>
+                    )}
                   </div>
                 </div>
               </section>
