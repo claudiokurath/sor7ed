@@ -348,7 +348,7 @@ export async function POST(req: NextRequest) {
             // 1. Look up keyword in Supabase protocols table
             const { data: protocol } = await supabase
                 .from('protocols')
-                .select('title, slug, protocol, summary')
+                .select('title, slug, protocol, cover_image')
                 .ilike('keyword', keyword)
                 .eq('status', 'Published')
                 .single();
@@ -359,6 +359,10 @@ export async function POST(req: NextRequest) {
                 contentDelivered = true;
                 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
                 const articleUrl = `${siteUrl}/intelligence/${protocol.slug}`;
+                if (protocol.cover_image) {
+                    await sendWhatsAppImage(senderPhone, protocol.cover_image);
+                    await new Promise(r => setTimeout(r, 400));
+                }
                 const content =
                     `Hi ${user.first_name ?? 'there'} — here's your *${protocol.title}* protocol:\n\n` +
                     `${protocol.protocol}\n\n` +
@@ -798,6 +802,25 @@ async function markMessageRead(messageId: string) {
             message_id: messageId,
         }),
     });
+}
+
+async function sendWhatsAppImage(to: string, imageUrl: string, caption?: string) {
+    const url = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to,
+            type: "image",
+            image: { link: imageUrl, ...(caption ? { caption } : {}) },
+        }),
+    });
+    return await response.json();
 }
 
 async function sendWhatsAppDocument(to: string, pdfUrl: string, filename: string, caption: string) {
