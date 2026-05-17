@@ -40,8 +40,8 @@ export default async function ToolsPage() {
             High-value audits designed for neurodivergent minds. Complete the assessment to unlock your personalised protocol on WhatsApp.
           </p>
         </header>
-        <ToolList initialTools={tools || []} />
         <HowItWorks steps={HOW_IT_WORKS} />
+        <ToolList initialTools={tools || []} />
       </div>
     </div>
   );

@@ -38,8 +38,8 @@ export default async function IntelligencePage() {
             The context behind the protocol. These articles explain the <em>why</em> behind your friction — so you understand your brain, not just manage it.
           </p>
         </header>
-        <IntelligenceGrid posts={posts || []} />
         <HowItWorks steps={HOW_IT_WORKS} />
+        <IntelligenceGrid posts={posts || []} />
       </div>
     </div>
   );
