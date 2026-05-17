@@ -27,6 +27,12 @@ type ToolSummary = {
 
 type ActiveSection = 'overview' | 'saved' | 'history' | 'vault' | 'settings';
 
+type DashboardMeta = {
+  currentStreak: number;
+  weeklyActivity: number[]; // [0] = 6 days ago … [6] = today
+  totalAssessments: number;
+};
+
 type SavedItem = {
   id: string;
   url: string;
@@ -57,20 +63,45 @@ type AssessmentHistory = {
 
 const supabase = createClient();
 
+const SORTED_LEVELS = [
+  { name: 'UNSORTED',     min: 0,   max: 2  },
+  { name: 'INITIATING',   min: 3,   max: 9  },
+  { name: 'CALIBRATING',  min: 10,  max: 24 },
+  { name: 'SYNCHRONISED', min: 25,  max: 49 },
+  { name: 'SORTED',       min: 50,  max: 99 },
+  { name: 'SOR7ED',       min: 100, max: Infinity },
+];
+
+function getSortedLevel(total: number) {
+  const level = SORTED_LEVELS.findLast(l => total >= l.min) ?? SORTED_LEVELS[0];
+  const progress = level.max === Infinity ? 100 : Math.round(((total - level.min) / (level.max - level.min + 1)) * 100);
+  return { name: level.name, progress };
+}
+
 export default function DashboardClient({
   profile,
   initialFavorites,
   initialHistory,
   tools,
   initialSavedItems = [],
+  dashboardMeta = { currentStreak: 0, weeklyActivity: Array(7).fill(0), totalAssessments: 0 },
 }: {
   profile: Profile | null;
   initialFavorites: UserFavorite[];
   initialHistory: AssessmentHistory[];
   tools: ToolSummary[];
   initialSavedItems?: SavedItem[];
+  dashboardMeta?: DashboardMeta;
 }) {
   const searchParams = useSearchParams();
+  const [greeting, setGreeting] = useState('');
+  useEffect(() => {
+    const h = new Date().getHours();
+    setGreeting(h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
+  }, []);
+
+  const sortedLevel = getSortedLevel(dashboardMeta.totalAssessments + initialFavorites.length);
+
   const [favorites, setFavorites] = useState<UserFavorite[]>(initialFavorites);
   const [history] = useState<AssessmentHistory[]>(initialHistory);
   const [savedItems] = useState<SavedItem[]>(initialSavedItems);
@@ -158,15 +189,23 @@ export default function DashboardClient({
                 <span className="text-white/10">/</span>
                 <span className="text-white/40 text-[10px] tracking-[0.3em] uppercase font-bold">INTELLIGENCE PROFILE</span>
               </div>
+              {greeting && (
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 mb-3">
+                  {greeting}{profile?.first_name ? `, ${profile.first_name}` : ''}
+                </p>
+              )}
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4">
                 {profile?.first_name || 'Archive'}
               </h1>
-              <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/30">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/30">
                 <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
                   ID: {profile?.whatsapp_number || 'PENDING'}
                 </span>
                 <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/5 text-white/50">
                   STATUS: ACTIVE
+                </span>
+                <span className="bg-white/5 px-3 py-1.5 rounded-full border border-white/10 text-white/40">
+                  ◆ {sortedLevel.name}
                 </span>
               </div>
             </div>
@@ -290,18 +329,29 @@ export default function DashboardClient({
               <div className="space-y-12">
                 <section>
                   <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">System Stats</h2>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {[
                       { label: 'Saved Protocols', value: favorites.length },
                       { label: 'Assessments', value: history.length },
                       { label: 'Coverage', value: `${Math.round((branchCoverage.filter(b => b.isAssessed).length / 7) * 100)}%` },
                     ].map(stat => (
-                      <div key={stat.label} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-6 flex justify-between items-center">
+                      <div key={stat.label} className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-5 flex justify-between items-center">
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/30">{stat.label}</span>
                         <span className="text-xl font-black">{stat.value}</span>
                       </div>
                     ))}
+                    {dashboardMeta.currentStreak > 0 && (
+                      <div className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-5 flex justify-between items-center">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Day Streak</span>
+                        <span className="text-xl font-black">{dashboardMeta.currentStreak}🔥</span>
+                      </div>
+                    )}
                   </div>
+                </section>
+
+                <section>
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-6">This Week</h2>
+                  <WeeklyChart data={dashboardMeta.weeklyActivity} />
                 </section>
 
                 <section>
@@ -613,6 +663,30 @@ export default function DashboardClient({
         </AnimatePresence>
       </div>
     </main>
+  );
+}
+
+function WeeklyChart({ data }: { data: number[] }) {
+  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const max = Math.max(...data, 1);
+  return (
+    <div className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-5">
+      <div className="flex items-end justify-between gap-1.5 h-12 mb-3">
+        {data.map((val, i) => (
+          <div key={i} className="flex-1 flex flex-col justify-end">
+            <div
+              className="w-full rounded-sm bg-white/80 transition-all duration-500"
+              style={{ height: `${Math.max((val / max) * 100, val > 0 ? 15 : 4)}%`, opacity: val === 0 ? 0.08 : 1 }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-between">
+        {days.map((d, i) => (
+          <span key={i} className="flex-1 text-center text-[8px] font-black uppercase text-white/20">{d}</span>
+        ))}
+      </div>
+    </div>
   );
 }
 
