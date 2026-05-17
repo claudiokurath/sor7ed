@@ -207,10 +207,10 @@ export default function DashboardClient({
   ] as const;
 
   return (
-    <main className="min-h-screen bg-surface-bg text-text-primary font-sans">
+    <main className="min-h-screen bg-ps-black text-ps-white font-sans">
 
       {/* ── HEADER ── */}
-      <div className="relative border-b border-surface-border overflow-hidden bg-ps-amber-500" style={{ minHeight: 220 }}>
+      <div className="relative border-b border-ps-white/20 overflow-hidden bg-ps-yellow" style={{ minHeight: 220 }}>
         <Image
           src="/Images/chaos-strip.png"
           alt="The chaos before SOR7ED"
@@ -222,28 +222,28 @@ export default function DashboardClient({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <Link href="/" className="text-text-primary/40 text-[10px] tracking-[0.3em] uppercase font-black hover:text-text-primary transition-colors">
+                <Link href="/" className="text-ps-white/40 text-[10px] tracking-[0.3em] uppercase font-black hover:text-ps-white transition-colors">
                   SOR7ED
                 </Link>
-                <span className="text-text-primary/20">/</span>
-                <span className="text-text-primary/60 text-[10px] tracking-[0.3em] uppercase font-black">Intelligence Profile</span>
+                <span className="text-ps-white/20">/</span>
+                <span className="text-ps-white/60 text-[10px] tracking-[0.3em] uppercase font-black">Intelligence Profile</span>
               </div>
               {greeting && (
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-text-primary/50 mb-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-ps-white/50 mb-2">
                   {greeting}{profile?.first_name ? `, ${profile.first_name}` : ''}
                 </p>
               )}
-              <h1 className="font-anton text-5xl sm:text-6xl md:text-7xl uppercase tracking-wider text-text-primary leading-none mb-4">
+              <h1 className="font-anton text-5xl sm:text-6xl md:text-7xl uppercase tracking-wider text-ps-white leading-none mb-4">
                 {profile?.first_name || 'Archive'}
               </h1>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="bg-brand-amber text-surface-bg px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                <span className="bg-ps-yellow text-ps-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                   ID: {profile?.whatsapp_number || 'PENDING'}
                 </span>
-                <span className="bg-brand-amber text-surface-bg px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                <span className="bg-ps-yellow text-ps-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                   STATUS: ACTIVE
                 </span>
-                <span className="border-2 border-surface-border bg-surface-card text-text-primary px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                <span className="border-2 border-ps-white/20 bg-ps-black text-ps-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
                   ◆ {sortedLevel.name}
                 </span>
               </div>
@@ -252,14 +252,14 @@ export default function DashboardClient({
             <div className="flex items-center gap-2 shrink-0">
               <Link
                 href="/tools"
-                className="bg-brand-amber text-surface-bg border-2 border-surface-border px-5 py-3 text-xs font-black uppercase tracking-widest hover:bg-surface-card hover:text-text-primary transition-all"
+                className="bg-ps-yellow text-ps-black border-2 border-ps-white/20 px-5 py-3 text-xs font-black uppercase tracking-widest hover:bg-ps-black hover:text-ps-white transition-all"
               >
                 + Assessment
               </Link>
               <form action="/auth/signout" method="post">
-                <button type="submit" className="p-3 border-2 border-surface-border bg-surface-card hover:bg-brand-amber hover:text-surface-bg transition-all group">
+                <button type="submit" className="p-3 border-2 border-ps-white/20 bg-ps-black hover:bg-ps-yellow hover:text-ps-black transition-all group">
                   <span className="sr-only">Sign Out</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-text-primary group-hover:text-ps-white transition-colors">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-ps-white group-hover:text-ps-white transition-colors">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
                   </svg>
                 </button>
@@ -270,7 +270,7 @@ export default function DashboardClient({
       </div>
 
       {/* ── NAV TABS ── */}
-      <div className="bg-surface-card border-b border-surface-border">
+      <div className="bg-ps-black border-b border-ps-white/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16">
           <nav className="flex gap-0">
             {NAV_TABS.map(section => (
@@ -278,7 +278,7 @@ export default function DashboardClient({
                 key={section.key}
                 onClick={() => setActiveSection(section.key)}
                 className={`relative px-4 py-4 text-xs font-black uppercase tracking-[0.2em] transition-colors ${
-                  activeSection === section.key ? 'text-text-primary' : 'text-ps-gray-400 hover:text-ps-gray-700'
+                  activeSection === section.key ? 'text-ps-white' : 'text-ps-gray-400 hover:text-ps-gray-700'
                 }`}
               >
                 {section.label}
@@ -301,14 +301,14 @@ export default function DashboardClient({
 
               {/* WhatsApp nudge */}
               {!profile?.whatsapp_number && (
-                <div className="flex items-center justify-between gap-4 bg-surface-card border border-[#25D366]/40 px-6 py-4">
+                <div className="flex items-center justify-between gap-4 bg-ps-black border border-[#25D366]/40 px-6 py-4">
                   <div>
-                    <p className="text-sm font-black text-text-primary mb-0.5">Add your WhatsApp number</p>
+                    <p className="text-sm font-black text-ps-white mb-0.5">Add your WhatsApp number</p>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-ps-gray-500">Required to receive protocols</p>
                   </div>
                   <button
                     onClick={() => setActiveSection('settings')}
-                    className="shrink-0 px-5 py-2.5 bg-[#25D366] text-text-primary text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                    className="shrink-0 px-5 py-2.5 bg-[#25D366] text-ps-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
                   >
                     Add now →
                   </button>
@@ -330,8 +330,8 @@ export default function DashboardClient({
                           transition={{ delay: i * 0.04 }}
                           className={`aspect-square p-5 flex flex-col justify-between border-2 transition-all ${
                             branch.isAssessed
-                              ? 'bg-surface-card border-brand-amber'
-                              : 'bg-surface-bg border-surface-border opacity-40'
+                              ? 'bg-ps-black border-ps-yellow'
+                              : 'bg-ps-black border-ps-white/20 opacity-40'
                           }`}
                         >
                           <span className="text-xl">{branch.icon}</span>
@@ -346,7 +346,7 @@ export default function DashboardClient({
                         </motion.div>
                       ))}
                       <div className="aspect-square border-2 border-dashed border-ps-gray-300 flex items-center justify-center opacity-30">
-                        <span className="text-xl font-black text-text-primary">+</span>
+                        <span className="text-xl font-black text-ps-white">+</span>
                       </div>
                     </div>
                   </section>
@@ -355,7 +355,7 @@ export default function DashboardClient({
                   <section>
                     <div className="flex justify-between items-end mb-6">
                       <h2 className="text-label">Intelligence Feed</h2>
-                      <button onClick={() => setActiveSection('history')} className="text-[10px] font-bold text-ps-gray-500 hover:text-text-primary transition-colors uppercase tracking-widest">
+                      <button onClick={() => setActiveSection('history')} className="text-[10px] font-bold text-ps-gray-500 hover:text-ps-white transition-colors uppercase tracking-widest">
                         View All →
                       </button>
                     </div>
@@ -366,20 +366,20 @@ export default function DashboardClient({
                         </div>
                       ) : (
                         history.slice(0, 3).map(item => (
-                          <div key={item.id} className="bg-surface-card border border-surface-border hover:border-brand-amber p-5 flex items-center justify-between group transition-all">
+                          <div key={item.id} className="bg-ps-black border border-ps-white/20 hover:border-ps-yellow p-5 flex items-center justify-between group transition-all">
                             <div className="flex items-center gap-5">
                               <div className="w-10 h-10 border-2 border-ps-gray-200 flex items-center justify-center text-sm font-black"
                                 style={{ color: getBranchColor(favorites.find(f => f.item_slug === item.tool_slug)?.item_branch || '') }}>
                                 {item.score}
                               </div>
                               <div>
-                                <h3 className="font-black text-sm text-text-primary">{item.tool_name}</h3>
+                                <h3 className="font-black text-sm text-ps-white">{item.tool_name}</h3>
                                 <p className="text-ps-gray-500 text-[10px] font-bold uppercase tracking-widest mt-0.5">
                                   {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
                                 </p>
                               </div>
                             </div>
-                            <Link href={`/tools/${item.tool_slug}`} className="text-ps-gray-400 group-hover:text-text-primary transition-colors">
+                            <Link href={`/tools/${item.tool_slug}`} className="text-ps-gray-400 group-hover:text-ps-white transition-colors">
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                             </Link>
                           </div>
@@ -399,13 +399,13 @@ export default function DashboardClient({
                         { label: 'Assessments',     value: history.length },
                         { label: 'Coverage',        value: `${Math.round((branchCoverage.filter(b => b.isAssessed).length / 7) * 100)}%` },
                       ].map(stat => (
-                        <div key={stat.label} className="bg-surface-card border border-surface-border p-4 flex justify-between items-center">
+                        <div key={stat.label} className="bg-ps-black border border-ps-white/20 p-4 flex justify-between items-center">
                           <span className="text-[10px] font-black uppercase tracking-widest text-ps-gray-600">{stat.label}</span>
-                          <span className="text-xl font-black text-text-primary">{stat.value}</span>
+                          <span className="text-xl font-black text-ps-white">{stat.value}</span>
                         </div>
                       ))}
                       {dashboardMeta.currentStreak > 0 && (
-                        <div className="bg-ps-black border-2 border-surface-border p-4 flex justify-between items-center">
+                        <div className="bg-ps-black border-2 border-ps-white/20 p-4 flex justify-between items-center">
                           <span className="text-[10px] font-black uppercase tracking-widest text-ps-white/60">Day Streak</span>
                           <span className="text-xl font-black text-ps-white">{dashboardMeta.currentStreak} days</span>
                         </div>
@@ -420,7 +420,7 @@ export default function DashboardClient({
 
                   <section>
                     <h2 className="text-label mb-6">Active Keywords</h2>
-                    <div className="bg-surface-card border border-surface-border p-6">
+                    <div className="bg-ps-black border border-ps-white/20 p-6">
                       {favorites.length === 0 ? (
                         <p className="text-ps-gray-400 text-[10px] font-bold uppercase tracking-widest text-center py-4">No active keywords.</p>
                       ) : (
@@ -431,7 +431,7 @@ export default function DashboardClient({
                               <span className="text-[10px] text-ps-gray-500 font-bold uppercase tracking-tighter truncate max-w-[100px]">{item.item_name}</span>
                             </div>
                           ))}
-                          <button onClick={() => setActiveSection('saved')} className="w-full text-center py-3 text-[10px] font-black uppercase tracking-[0.2em] text-ps-gray-500 hover:text-text-primary transition-colors">
+                          <button onClick={() => setActiveSection('saved')} className="w-full text-center py-3 text-[10px] font-black uppercase tracking-[0.2em] text-ps-gray-500 hover:text-ps-white transition-colors">
                             View All →
                           </button>
                         </div>
@@ -448,14 +448,14 @@ export default function DashboardClient({
             <motion.div key="saved" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
               {favorites.length === 0 ? (
                 <div className="text-center py-24 border-2 border-dashed border-ps-gray-300">
-                  <h3 className="text-2xl font-black mb-4 text-text-primary">Library Empty</h3>
+                  <h3 className="text-2xl font-black mb-4 text-ps-white">Library Empty</h3>
                   <p className="text-ps-gray-600 mb-10 max-w-sm mx-auto text-sm leading-relaxed">Build your intelligence archive by saving tools and protocols.</p>
                   <Link href="/tools" className="btn-primary px-8 py-4 inline-flex">Initiate Discovery →</Link>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {favorites.map(item => (
-                    <div key={item.id} className="bg-surface-card border border-surface-border hover:border-brand-amber p-7 group transition-all">
+                    <div key={item.id} className="bg-ps-black border border-ps-white/20 hover:border-ps-yellow p-7 group transition-all">
                       <div className="flex justify-between items-start mb-6">
                         <KeywordToken keyword={item.item_keyword} color={item.item_color} size="medium" />
                         <button onClick={() => removeFavorite(item.id)} className="p-2 border-2 border-transparent hover:border-ps-danger hover:text-ps-danger text-ps-gray-400 transition-all">
@@ -464,11 +464,11 @@ export default function DashboardClient({
                           </svg>
                         </button>
                       </div>
-                      <h3 className="text-lg font-black mb-1 text-text-primary">{item.item_name}</h3>
+                      <h3 className="text-lg font-black mb-1 text-ps-white">{item.item_name}</h3>
                       <p className="text-ps-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6">{item.item_branch} · {item.item_type}</p>
                       <Link
                         href={item.item_type === 'tool' ? `/tools/${item.item_slug}` : `/intelligence/${item.item_slug}`}
-                        className="block w-full text-center py-3 border-2 border-surface-border text-text-primary text-[10px] font-black uppercase tracking-widest hover:bg-brand-amber hover:text-surface-bg transition-all"
+                        className="block w-full text-center py-3 border-2 border-ps-white/20 text-ps-white text-[10px] font-black uppercase tracking-widest hover:bg-ps-yellow hover:text-ps-black transition-all"
                       >
                         {item.item_type === 'tool' ? 'Retake Assessment' : 'Read Protocol'}
                       </Link>
@@ -493,14 +493,14 @@ export default function DashboardClient({
               ) : (
                 <div className="space-y-3">
                   {history.map(item => (
-                    <div key={item.id} className="bg-surface-card border border-surface-border hover:border-brand-amber p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-all">
+                    <div key={item.id} className="bg-ps-black border border-ps-white/20 hover:border-ps-yellow p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-all">
                       <div className="flex items-center gap-6">
                         <div className="text-center shrink-0">
-                          <p className="text-2xl font-black text-text-primary">{item.score}</p>
+                          <p className="text-2xl font-black text-ps-white">{item.score}</p>
                           <p className="text-[8px] font-bold text-ps-gray-500 uppercase tracking-widest">Score</p>
                         </div>
                         <div>
-                          <h3 className="text-base font-black text-text-primary">{item.tool_name}</h3>
+                          <h3 className="text-base font-black text-ps-white">{item.tool_name}</h3>
                           <p className="text-ps-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">
                             {new Date(item.completed_at).toLocaleDateString()} · {item.level?.toUpperCase() || 'CALIBRATED'}
                           </p>
@@ -526,7 +526,7 @@ export default function DashboardClient({
 
               {savedItems.length === 0 ? (
                 <div className="text-center py-24 border-2 border-dashed border-ps-gray-300">
-                  <h3 className="text-2xl font-black mb-4 text-text-primary">Vault Empty</h3>
+                  <h3 className="text-2xl font-black mb-4 text-ps-white">Vault Empty</h3>
                   <p className="text-ps-gray-600 mb-10 max-w-sm mx-auto text-sm leading-relaxed">
                     Click &ldquo;Save to WhatsApp&rdquo; on any article or tool — it lands here and in your chat.
                   </p>
@@ -544,10 +544,10 @@ export default function DashboardClient({
                       value={vaultSearch}
                       onChange={e => setVaultSearch(e.target.value)}
                       placeholder="Search saved items..."
-                      className="w-full bg-surface-elevated border border-surface-border focus:border-brand-amber pl-11 pr-4 py-3 text-sm text-text-primary placeholder-ps-gray-400 focus:outline-none transition-all"
+                      className="w-full bg-ps-black border border-ps-white/20 focus:border-ps-yellow pl-11 pr-4 py-3 text-sm text-ps-white placeholder-ps-gray-400 focus:outline-none transition-all"
                     />
                     {vaultSearch && (
-                      <button onClick={() => setVaultSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ps-gray-400 hover:text-text-primary transition-colors">✕</button>
+                      <button onClick={() => setVaultSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-ps-gray-400 hover:text-ps-white transition-colors">✕</button>
                     )}
                   </div>
 
@@ -558,8 +558,8 @@ export default function DashboardClient({
                         onClick={() => setVaultCategory(cat)}
                         className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest border-2 transition-all ${
                           vaultCategory === cat
-                            ? 'bg-brand-amber text-surface-bg border-surface-border'
-                            : 'bg-surface-card text-ps-gray-600 border-ps-gray-300 hover:border-surface-border hover:text-text-primary'
+                            ? 'bg-ps-yellow text-ps-black border-ps-white/20'
+                            : 'bg-ps-black text-ps-gray-600 border-ps-gray-300 hover:border-ps-white/20 hover:text-ps-white'
                         }`}
                       >
                         {cat}
@@ -570,7 +570,7 @@ export default function DashboardClient({
                   {filteredVault.length === 0 ? (
                     <div className="text-center py-16 border-2 border-dashed border-ps-gray-300">
                       <p className="text-ps-gray-400 text-xs font-bold uppercase tracking-widest mb-4">No matches</p>
-                      <button onClick={() => { setVaultSearch(''); setVaultCategory('All'); }} className="text-ps-gray-600 hover:text-text-primary text-xs font-bold uppercase tracking-widest transition-colors">
+                      <button onClick={() => { setVaultSearch(''); setVaultCategory('All'); }} className="text-ps-gray-600 hover:text-ps-white text-xs font-bold uppercase tracking-widest transition-colors">
                         Clear filters →
                       </button>
                     </div>
@@ -591,7 +591,7 @@ export default function DashboardClient({
             <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-14 max-w-xl">
 
               <section>
-                <h2 className="text-label border-b-4 border-surface-border pb-4 mb-8">Profile</h2>
+                <h2 className="text-label border-b-4 border-ps-white/20 pb-4 mb-8">Profile</h2>
                 <div className="space-y-5">
                   <div>
                     <label className="text-label block mb-2">Name</label>
@@ -599,7 +599,7 @@ export default function DashboardClient({
                       type="text"
                       value={firstName}
                       onChange={e => setFirstName(e.target.value)}
-                      className="w-full bg-surface-elevated border border-surface-border focus:border-brand-amber px-4 py-3 text-text-primary text-sm focus:outline-none transition-all"
+                      className="w-full bg-ps-black border border-ps-white/20 focus:border-ps-yellow px-4 py-3 text-ps-white text-sm focus:outline-none transition-all"
                       placeholder="Your name"
                     />
                   </div>
@@ -609,7 +609,7 @@ export default function DashboardClient({
                       type="email"
                       value={profile?.email ?? ''}
                       disabled
-                      className="w-full bg-surface-bg border border-surface-border px-4 py-3 text-ps-gray-500 text-sm cursor-not-allowed"
+                      className="w-full bg-ps-black border border-ps-white/20 px-4 py-3 text-ps-gray-500 text-sm cursor-not-allowed"
                     />
                     <p className="text-[9px] text-ps-gray-400 mt-2 font-bold uppercase tracking-widest">Email changes require re-signup</p>
                   </div>
@@ -621,24 +621,24 @@ export default function DashboardClient({
                           type="text"
                           value={profile.whatsapp_number}
                           disabled
-                          className="w-full bg-surface-bg border border-surface-border px-4 py-3 text-ps-gray-500 text-sm cursor-not-allowed"
+                          className="w-full bg-ps-black border border-ps-white/20 px-4 py-3 text-ps-gray-500 text-sm cursor-not-allowed"
                         />
                         <p className="text-[9px] text-ps-gray-400 mt-2 font-bold uppercase tracking-widest">Text STOP / START to manage via WhatsApp</p>
                       </>
                     ) : verifyCode && verifyWaNumber ? (
-                      <div className="border-2 border-[#25D366] bg-surface-card p-5 space-y-4">
+                      <div className="border-2 border-[#25D366] bg-ps-black p-5 space-y-4">
                         <div>
-                          <p className="text-sm font-black text-text-primary mb-1">Number saved — verify it now</p>
+                          <p className="text-sm font-black text-ps-white mb-1">Number saved — verify it now</p>
                           <p className="text-[10px] text-ps-gray-500 font-bold uppercase tracking-widest">Send the message below from your WhatsApp</p>
                         </div>
-                        <div className="bg-surface-bg border border-surface-border px-4 py-3 font-mono text-text-primary text-base tracking-widest">
+                        <div className="bg-ps-black border border-ps-white/20 px-4 py-3 font-mono text-ps-white text-base tracking-widest">
                           VERIFY {verifyCode}
                         </div>
                         <a
                           href={`https://wa.me/${verifyWaNumber}?text=VERIFY%20${verifyCode}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-text-primary text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-ps-white text-[11px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
                         >
                           Open WhatsApp to Verify →
                         </a>
@@ -650,7 +650,7 @@ export default function DashboardClient({
                           value={whatsappNumber}
                           onChange={e => setWhatsappNumber(e.target.value)}
                           placeholder="+44 7700 900000"
-                          className="w-full bg-surface-elevated border border-surface-border focus:border-brand-amber px-4 py-3 text-text-primary text-sm focus:outline-none transition-all placeholder-ps-gray-400"
+                          className="w-full bg-ps-black border border-ps-white/20 focus:border-ps-yellow px-4 py-3 text-ps-white text-sm focus:outline-none transition-all placeholder-ps-gray-400"
                         />
                         <p className="text-[9px] text-ps-gray-400 mt-2 font-bold uppercase tracking-widest">Include country code — required to receive protocols</p>
                       </>
@@ -660,22 +660,22 @@ export default function DashboardClient({
               </section>
 
               <section>
-                <h2 className="text-label border-b-4 border-surface-border pb-4 mb-8">WhatsApp Preferences</h2>
+                <h2 className="text-label border-b-4 border-ps-white/20 pb-4 mb-8">WhatsApp Preferences</h2>
                 <div className="space-y-2">
                   {([
                     { label: 'Weekly Intelligence Briefings', sub: 'Get one protocol delivered every Tuesday', value: weeklyOptIn, set: setWeeklyOptIn },
                     { label: 'Pause All WhatsApp Messages',   sub: 'Re-enable anytime by texting START',      value: waOptOut,    set: setWaOptOut },
                   ] as const).map(item => (
-                    <div key={item.label} className="flex items-center justify-between bg-surface-card border border-surface-border px-5 py-4">
+                    <div key={item.label} className="flex items-center justify-between bg-ps-black border border-ps-white/20 px-5 py-4">
                       <div>
-                        <p className="text-sm font-black text-text-primary">{item.label}</p>
+                        <p className="text-sm font-black text-ps-white">{item.label}</p>
                         <p className="text-[10px] text-ps-gray-500 mt-0.5 font-bold uppercase tracking-widest">{item.sub}</p>
                       </div>
                       <button
                         onClick={() => item.set(!item.value)}
-                        className={`relative w-11 h-6 border-2 border-surface-border transition-colors shrink-0 ${item.value ? 'bg-ps-black' : 'bg-surface-card'}`}
+                        className={`relative w-11 h-6 border-2 border-ps-white/20 transition-colors shrink-0 ${item.value ? 'bg-ps-black' : 'bg-ps-black'}`}
                       >
-                        <span className={`absolute top-0.5 w-4 h-4 bg-surface-card border border-surface-border transition-all ${item.value ? 'left-5' : 'left-0.5'}`} />
+                        <span className={`absolute top-0.5 w-4 h-4 bg-ps-black border border-ps-white/20 transition-all ${item.value ? 'left-5' : 'left-0.5'}`} />
                       </button>
                     </div>
                   ))}
@@ -711,7 +711,7 @@ export default function DashboardClient({
                 {deletePhase === 'confirm' && (
                   <div className="border-2 border-ps-danger p-6 space-y-5">
                     <div>
-                      <p className="text-sm font-black text-text-primary mb-2">This is permanent.</p>
+                      <p className="text-sm font-black text-ps-white mb-2">This is permanent.</p>
                       <p className="text-xs text-ps-gray-600 leading-relaxed">
                         Your account, saved protocols, assessment history, and all data will be deleted immediately. This cannot be undone.
                       </p>
@@ -723,7 +723,7 @@ export default function DashboardClient({
                         value={deleteInput}
                         onChange={e => setDeleteInput(e.target.value)}
                         placeholder="DELETE"
-                        className="w-full bg-surface-card border-2 border-ps-danger px-4 py-3 text-text-primary text-sm focus:outline-none font-mono"
+                        className="w-full bg-ps-black border-2 border-ps-danger px-4 py-3 text-ps-white text-sm focus:outline-none font-mono"
                       />
                     </div>
                     <div className="flex gap-3">
@@ -736,7 +736,7 @@ export default function DashboardClient({
                       </button>
                       <button
                         onClick={() => { setDeletePhase('idle'); setDeleteInput(''); }}
-                        className="px-5 py-3 border-2 border-ps-gray-300 text-ps-gray-600 text-xs font-black uppercase tracking-widest hover:border-surface-border hover:text-text-primary transition-all"
+                        className="px-5 py-3 border-2 border-ps-gray-300 text-ps-gray-600 text-xs font-black uppercase tracking-widest hover:border-ps-white/20 hover:text-ps-white transition-all"
                       >
                         Cancel
                       </button>
@@ -758,7 +758,7 @@ function WeeklyChart({ data }: { data: number[] }) {
   const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   const max = Math.max(...data, 1);
   return (
-    <div className="bg-surface-card border border-surface-border p-4">
+    <div className="bg-ps-black border border-ps-white/20 p-4">
       <div className="flex items-end justify-between gap-1.5 h-10 mb-2">
         {data.map((val, i) => (
           <div key={i} className="flex-1 flex flex-col justify-end">
@@ -814,7 +814,7 @@ function VaultCard({ item, index }: { item: SavedItem; index: number }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
-      className="bg-surface-card border border-surface-border hover:border-brand-amber p-5 flex flex-col gap-4 transition-all group"
+      className="bg-ps-black border border-ps-white/20 hover:border-ps-yellow p-5 flex flex-col gap-4 transition-all group"
     >
       <div className="flex items-center justify-between">
         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-ps-gray-500 border border-ps-gray-200 px-2 py-0.5">
@@ -824,7 +824,7 @@ function VaultCard({ item, index }: { item: SavedItem; index: number }) {
       </div>
 
       <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex-1">
-        <h3 className="font-black text-sm text-text-primary leading-snug line-clamp-2">{item.title}</h3>
+        <h3 className="font-black text-sm text-ps-white leading-snug line-clamp-2">{item.title}</h3>
         <p className="text-ps-gray-500 text-xs mt-1">{getDomain(item.url)}</p>
       </a>
 
@@ -833,7 +833,7 @@ function VaultCard({ item, index }: { item: SavedItem; index: number }) {
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 text-center py-2 border-2 border-ps-gray-200 text-ps-gray-600 hover:border-surface-border hover:text-text-primary text-[10px] font-black uppercase tracking-widest transition-all"
+          className="flex-1 text-center py-2 border-2 border-ps-gray-200 text-ps-gray-600 hover:border-ps-white/20 hover:text-ps-white text-[10px] font-black uppercase tracking-widest transition-all"
         >
           Open
         </a>
@@ -841,7 +841,7 @@ function VaultCard({ item, index }: { item: SavedItem; index: number }) {
           onClick={handleResend}
           disabled={resend !== 'idle'}
           className={`flex-1 text-center py-2 border-2 text-[10px] font-black uppercase tracking-widest transition-all disabled:cursor-not-allowed ${
-            resend === 'idle' ? 'border-ps-gray-200 text-ps-gray-600 hover:border-surface-border hover:text-text-primary' :
+            resend === 'idle' ? 'border-ps-gray-200 text-ps-gray-600 hover:border-ps-white/20 hover:text-ps-white' :
             resend === 'sending' ? 'border-ps-gray-200 text-ps-gray-400' :
             resend === 'done'    ? 'border-ps-success text-ps-success' :
             'border-ps-danger text-ps-danger'

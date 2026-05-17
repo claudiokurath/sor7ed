@@ -74,7 +74,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-full flex flex-col bg-surface-bg text-text-primary">
         <SmartNav />
         {/* pt-0 on mobile (no top nav), pt-16 on desktop (SmartNav height) */}
-        <main className="flex-1 pt-0 md:pt-16 pb-20 md:pb-0">{children}</main>
+        <main className="flex-1 pt-0 md:pt-14 pb-20 md:pb-0">{children}</main>
         <SiteFooter />
         <BottomNav />
       </body>

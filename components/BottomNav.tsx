@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Home, Compass, BookOpen, User } from 'lucide-react';
 
 const NAV = [
-  { href: '/',             label: 'HOME',   Icon: Home     },
-  { href: '/tools',        label: 'TOOLS',  Icon: Compass  },
-  { href: '/intelligence', label: 'INTEL',  Icon: BookOpen },
-  { href: '/dashboard',    label: 'ACCOUNT', Icon: User   },
+  { href: '/',             label: 'HOME',    Icon: Home     },
+  { href: '/tools',        label: 'TOOLS',   Icon: Compass  },
+  { href: '/intelligence', label: 'INTEL',   Icon: BookOpen },
+  { href: '/dashboard',    label: 'ACCOUNT', Icon: User     },
 ];
 
 export default function BottomNav() {
@@ -18,7 +18,7 @@ export default function BottomNav() {
   if (hidden) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-surface-glass backdrop-blur-xl border-t border-surface-border pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-ps-black border-t-2 border-ps-white pb-safe">
       <div className="flex items-center justify-around px-2 py-3">
         {NAV.map(({ href, label, Icon }) => {
           const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -26,14 +26,16 @@ export default function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl active:scale-95 transition-transform"
+              className="flex flex-col items-center gap-1 px-3 py-1 active:scale-95 transition-transform"
             >
-              <Icon
-                size={20}
-                strokeWidth={isActive ? 2.5 : 1.8}
-                className={isActive ? 'text-brand-amber' : 'text-text-muted'}
-              />
-              <span className={`text-[9px] font-bold uppercase tracking-wider ${isActive ? 'text-brand-amber' : 'text-text-muted'}`}>
+              <div className={`w-9 h-9 flex items-center justify-center transition-all duration-200 ${
+                isActive ? 'bg-ps-yellow text-ps-black' : 'bg-transparent text-ps-white'
+              }`}>
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+              </div>
+              <span className={`text-[9px] font-display uppercase tracking-widest leading-none ${
+                isActive ? 'text-ps-yellow' : 'text-ps-white/50'
+              }`}>
                 {label}
               </span>
             </Link>

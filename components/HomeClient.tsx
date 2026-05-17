@@ -7,19 +7,19 @@ import Image from 'next/image';
 import { branches } from '@/lib/constants';
 
 const taglines = [
-  { word: 'Overwhelmed',       color: '#6366F1' },
-  { word: 'Scattered',         color: '#A855F7' },
-  { word: 'Exhausted',         color: '#FB7185' },
-  { word: 'Wired differently', color: '#EBA904' },
+  'OVERWHELMED',
+  'SCATTERED',
+  'EXHAUSTED',
+  'WIRED DIFFERENTLY',
 ];
 
 const PROBLEMS = [
-  { text: 'Too much to do',    sub: 'overwhelmed, can\'t start',  keyword: 'overwhelmed',  color: '#6366F1' },
-  { text: 'Running on empty',  sub: 'exhausted, burnt out',       keyword: 'exhausted',    color: '#FB7185' },
-  { text: 'Money stress',      sub: 'bills, chaos, avoidance',    keyword: 'money stress', color: '#10B981' },
-  { text: 'Hard conversation', sub: 'argument, conflict',         keyword: 'argument',     color: '#F59E0B' },
-  { text: "Can't focus",       sub: 'stuck, procrastinating',     keyword: 'stuck',        color: '#06B6D4' },
-  { text: "Can't sleep",       sub: 'wired, anxious at night',    keyword: "can't sleep",  color: '#A855F7' },
+  { text: 'Too much to do',    sub: "overwhelmed, can't start",  keyword: 'overwhelmed',  },
+  { text: 'Running on empty',  sub: 'exhausted, burnt out',       keyword: 'exhausted',    },
+  { text: 'Money stress',      sub: 'bills, chaos, avoidance',    keyword: 'money stress', },
+  { text: 'Hard conversation', sub: 'argument, conflict',         keyword: 'argument',     },
+  { text: "Can't focus",       sub: 'stuck, procrastinating',     keyword: 'stuck',        },
+  { text: "Can't sleep",       sub: 'wired, anxious at night',    keyword: "can't sleep",  },
 ];
 
 const WA = 'https://wa.me/447591922247';
@@ -28,64 +28,49 @@ export default function HomeClient() {
   const [taglineIndex, setTaglineIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex(i => (i + 1) % taglines.length);
-    }, 2200);
+    const interval = setInterval(() => setTaglineIndex(i => (i + 1) % taglines.length), 2200);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="bg-surface-bg text-text-primary overflow-x-hidden">
+    <div className="bg-ps-black text-ps-white overflow-x-hidden">
 
       {/* HERO */}
-      <section className="relative min-h-[92dvh] flex flex-col justify-end px-5 sm:px-8 md:px-16 pb-12 pt-16 md:pt-20 overflow-hidden">
-
-        {/* Amber gradient blob */}
-        <div className="absolute top-0 right-0 w-[60vw] h-[60vw] max-w-xl max-h-xl rounded-full bg-brand-glow blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] max-w-sm max-h-sm rounded-full bg-[rgba(99,102,241,0.06)] blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-5xl">
-          <motion.p
-            className="text-label mb-5"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
+      <section className="relative min-h-[94dvh] flex flex-col justify-end px-5 sm:px-8 md:px-16 pb-14 pt-16 md:pt-20 border-b-2 border-ps-white">
+        <div className="max-w-5xl">
+          <motion.p className="label-yellow mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
             Diagnose here. Solutions on WhatsApp.
           </motion.p>
 
-          <motion.h1
-            className="font-display text-text-primary mb-2 leading-none"
+          <motion.p
+            className="font-display text-ps-white mb-2 leading-none"
             style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
           >
-            If you&apos;re feeling
-          </motion.h1>
+            IF YOU&apos;RE FEELING
+          </motion.p>
 
-          <div
-            className="mb-8 leading-none h-[1.1em] overflow-hidden"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)', fontFamily: 'var(--font-display)' }}
-          >
+          <div className="h-[1.05em] overflow-hidden mb-10" style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}>
             <AnimatePresence mode="wait">
-              <motion.span
+              <motion.p
                 key={taglineIndex}
-                initial={{ y: 60, opacity: 0 }}
+                className="font-display text-ps-yellow leading-none"
+                initial={{ y: 64, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -60, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                style={{ color: taglines[taglineIndex].color, display: 'block', textTransform: 'uppercase' }}
+                exit={{ y: -64, opacity: 0 }}
+                transition={{ duration: 0.28 }}
               >
-                {taglines[taglineIndex].word}
-              </motion.span>
+                {taglines[taglineIndex]}
+              </motion.p>
             </AnimatePresence>
           </div>
 
           <motion.p
-            className="text-text-secondary text-base sm:text-lg max-w-xl leading-relaxed mb-10"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="text-ps-white/60 text-base sm:text-lg max-w-xl leading-relaxed mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.2 }}
           >
             Practical tools for when everything feels like too much. Diagnose your friction, get a personalised protocol — straight to WhatsApp.
@@ -93,54 +78,48 @@ export default function HomeClient() {
 
           <motion.div
             className="flex flex-col sm:flex-row gap-3"
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.35 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
           >
-            <Link href="/tools" className="btn-primary px-8 py-4 text-sm rounded-xl">
+            <Link href="/tools" className="btn-yellow px-8 py-4">
               Take an Assessment
             </Link>
-            <a href="#what-now" className="btn-secondary px-8 py-4 text-sm rounded-xl">
+            <a href="#what-now" className="btn-outline px-8 py-4">
               What&apos;s going on?
             </a>
           </motion.div>
 
-          {/* QR / WhatsApp */}
+          {/* QR */}
           <motion.div
             className="flex items-center gap-4 mt-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.55 }}
+            transition={{ delay: 0.5 }}
           >
             <a
               href={WA}
               target="_blank"
               rel="noopener noreferrer"
-              className="block shrink-0 border border-surface-border rounded-xl overflow-hidden hover:border-brand-amber transition-colors"
+              className="block shrink-0 border-2 border-ps-white hover:border-ps-yellow hover:shadow-hard-yellow transition-all"
             >
-              <Image
-                src="/Images/QR.png"
-                alt="Scan to open SOR7ED on WhatsApp"
-                width={60}
-                height={60}
-                className="block"
-              />
+              <Image src="/Images/QR.png" alt="Scan to open SOR7ED on WhatsApp" width={60} height={60} className="block" />
             </a>
             <div>
-              <p className="text-text-primary text-xs font-black uppercase tracking-widest">Scan to chat on WhatsApp</p>
-              <p className="text-text-muted text-xs mt-0.5">No app download. Just scan and go.</p>
+              <p className="text-ps-white text-xs font-display uppercase tracking-widest">Scan to chat on WhatsApp</p>
+              <p className="text-ps-white/40 text-xs mt-0.5">No app download. Just scan and go.</p>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* WHAT'S GOING ON */}
-      <section id="what-now" className="px-5 sm:px-8 md:px-16 py-16 border-t border-surface-border">
-        <motion.p className="text-label mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+      <section id="what-now" className="px-5 sm:px-8 md:px-16 py-16 border-b-2 border-ps-white">
+        <motion.p className="label-yellow mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           Text what&apos;s wrong
         </motion.p>
         <motion.h2
-          className="heading-section text-text-primary mb-3"
+          className="display-lg text-ps-white mb-3"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -148,11 +127,10 @@ export default function HomeClient() {
           What&apos;s going on?
         </motion.h2>
         <motion.p
-          className="text-text-muted text-sm max-w-md leading-relaxed mb-8"
+          className="text-ps-white/50 text-sm max-w-md leading-relaxed mb-8"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
         >
           Tap what fits. We&apos;ll send the right tool to your WhatsApp — no app, no login.
         </motion.p>
@@ -164,24 +142,20 @@ export default function HomeClient() {
               href={`${WA}?text=${encodeURIComponent(p.keyword)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-start gap-1.5 p-4 bg-surface-card border border-surface-border rounded-xl transition-all duration-200 cursor-pointer"
+              className="card-interactive flex flex-col gap-1.5 p-4 cursor-pointer"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.04 }}
-              whileHover={{
-                boxShadow: `0 0 20px ${p.color}30`,
-                borderColor: `${p.color}60`,
-              }}
+              transition={{ delay: i * 0.05 }}
             >
-              <p className="text-text-primary text-sm font-bold leading-tight">{p.text}</p>
-              <p className="text-text-muted text-xs">{p.sub}</p>
+              <p className="text-ps-white text-sm font-bold leading-tight">{p.text}</p>
+              <p className="text-ps-white/40 text-xs">{p.sub}</p>
             </motion.a>
           ))}
         </div>
 
         <motion.p
-          className="mt-5 text-text-muted text-xs"
+          className="mt-5 text-ps-white/40 text-xs"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -192,27 +166,26 @@ export default function HomeClient() {
       </section>
 
       {/* 7 BRANCHES */}
-      <section className="py-16 border-t border-surface-border">
+      <section className="py-16 border-b-2 border-ps-white">
         <div className="px-5 sm:px-8 md:px-16 mb-6">
-          <motion.p className="text-label mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <motion.p className="label-yellow mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             7 Branches of Life
           </motion.p>
           <motion.h2
-            className="heading-section text-text-primary mb-3"
+            className="display-lg text-ps-white"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            Every part of your life,<br />simplified.
+            Every part of your life, simplified.
           </motion.h2>
         </div>
 
-        {/* Horizontal scroll on mobile, grid on desktop */}
         <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pl-5 sm:pl-8 md:pl-16 pr-4 pb-4 md:grid md:grid-cols-4 md:overflow-visible md:pr-16">
           {branches.map((branch, i) => (
             <motion.div
               key={branch.slug}
-              className="snap-start shrink-0 w-[72vw] sm:w-[280px] md:w-auto md:shrink"
+              className="snap-start shrink-0 w-[72vw] sm:w-[260px] md:w-auto md:shrink"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -220,19 +193,14 @@ export default function HomeClient() {
             >
               <Link
                 href={`/${branch.slug}`}
-                className="group flex flex-col justify-between h-[160px] p-5 bg-surface-card border border-surface-border rounded-2xl transition-all duration-300 hover:border-brand-amber block"
-                style={{ ['--hover-color' as string]: branch.color }}
+                className="card-interactive flex flex-col justify-between h-[150px] p-5 block"
               >
-                <div className="text-xs font-black uppercase tracking-[0.15em] text-text-muted">
-                  {branch.num}
-                </div>
+                <div className="label text-ps-white/30">{branch.num}</div>
                 <div>
-                  <h3 className="text-sm font-black mb-1 tracking-tight text-text-primary group-hover:text-brand-amber transition-colors">
+                  <h3 className="text-ps-white text-sm font-display uppercase tracking-wide mb-1 group-hover:text-ps-yellow transition-colors">
                     {branch.name}
                   </h3>
-                  <p className="text-text-muted text-xs leading-relaxed line-clamp-2">
-                    {branch.description}
-                  </p>
+                  <p className="text-ps-white/40 text-xs leading-relaxed line-clamp-2">{branch.description}</p>
                 </div>
               </Link>
             </motion.div>
@@ -241,40 +209,29 @@ export default function HomeClient() {
       </section>
 
       {/* MISSION */}
-      <section className="px-5 sm:px-8 md:px-16 py-20 border-t border-surface-border bg-surface-card">
+      <section className="px-5 sm:px-8 md:px-16 py-20">
         <div className="max-w-4xl">
-          <motion.p
-            className="text-label mb-6"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
+          <motion.p className="label-yellow mb-6" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             Our Mission
           </motion.p>
           <motion.h2
-            className="heading-display text-text-primary mb-8"
-            initial={{ opacity: 0, y: 24 }}
+            className="display-xl text-ps-white mb-8"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            The world wasn&apos;t built for your brain. We build systems that are.
+            The world wasn&apos;t built for your brain.<br />We build systems that are.
           </motion.h2>
           <motion.p
-            className="text-text-secondary text-base max-w-2xl leading-relaxed mb-10"
+            className="text-ps-white/60 text-base max-w-2xl leading-relaxed mb-10"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
           >
             Built using neuro-inclusive principles — designed for ADHD brains, used by anyone who needs life to be simpler. SOR7ED diagnoses your blocks on the web and delivers the right protocol to your phone.
           </motion.p>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-          >
-            <Link href="/signup" className="btn-primary px-8 py-4 text-sm rounded-xl">
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+            <Link href="/signup" className="btn-yellow px-8 py-4">
               Create your free account →
             </Link>
           </motion.div>
