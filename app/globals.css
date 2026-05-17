@@ -23,9 +23,9 @@
   --color-ps-warning:     #D97706;
 
   /* Brutalist shadows */
-  --shadow-brutal:        4px 4px 0px 0px #0A0A0A;
-  --shadow-brutal-hover:  6px 6px 0px 0px #EBA904;
-  --shadow-brutal-lg:     8px 8px 0px 0px #0A0A0A;
+  --shadow-brutal:        3px 3px 0px 0px #0A0A0A;
+  --shadow-brutal-hover:  5px 5px 0px 0px #EBA904;
+  --shadow-brutal-lg:     6px 6px 0px 0px #0A0A0A;
 
   /* Fonts — CSS vars injected by next/font */
   --font-sans:  var(--font-inter-var), system-ui, sans-serif;
@@ -40,6 +40,7 @@
 
 @layer base {
   html {
+    font-size: 80%;
     background-color: #F7F7F7;
     color: #0A0A0A;
     -webkit-font-smoothing: antialiased;
@@ -87,7 +88,7 @@
   }
   .card-brutal-hover:hover {
     box-shadow: var(--shadow-brutal-hover);
-    transform: translate(-2px, -2px);
+    transform: translate(-1.5px, -1.5px);
   }
 
   /* Primary button — black, hovers to amber */
@@ -134,14 +135,14 @@
   /* Typography */
   .heading-display {
     font-family: var(--font-anton), system-ui, sans-serif;
-    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-size: clamp(2.5rem, 4.8vw, 5rem);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     line-height: 1;
   }
   .heading-section {
     font-family: var(--font-anton), system-ui, sans-serif;
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
     text-transform: uppercase;
     letter-spacing: 0.03em;
     line-height: 1.05;

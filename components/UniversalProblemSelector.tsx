@@ -56,7 +56,7 @@ export default function UniversalProblemSelector() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.05 }}
             style={{ ['--c' as string]: p.color }}
-            whileHover={{ boxShadow: `4px 4px 0px 0px ${p.color}`, transform: 'translate(-2px,-2px)' }}
+            whileHover={{ boxShadow: `3px 3px 0px 0px ${p.color}`, transform: 'translate(-1.5px,-1.5px)' }}
           >
             <div>
               <p className="text-ps-black text-sm font-black leading-tight">{p.text}</p>

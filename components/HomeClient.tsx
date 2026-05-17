@@ -42,7 +42,7 @@ export default function HomeClient() {
 
           <motion.h1
             className="heading-display text-ps-black mb-2"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
+            style={{ fontSize: 'clamp(3rem, 6.4vw, 7rem)' }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -52,7 +52,7 @@ export default function HomeClient() {
 
           <div
             className="mb-8 leading-none h-[1.1em] overflow-hidden"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)', fontFamily: 'var(--font-anton)', textTransform: 'uppercase' }}
+            style={{ fontSize: 'clamp(3rem, 6.4vw, 7rem)', fontFamily: 'var(--font-anton)', textTransform: 'uppercase' }}
           >
             <AnimatePresence mode="wait">
               <motion.span
