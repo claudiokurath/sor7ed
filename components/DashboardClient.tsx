@@ -3,6 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { branches } from '@/lib/constants';
@@ -257,7 +258,33 @@ export default function DashboardClient({
         <AnimatePresence mode="wait">
 
           {activeSection === 'overview' && (
-            <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-12">
+
+              {/* Chaos banner */}
+              <div className="relative rounded-3xl overflow-hidden h-36 sm:h-44">
+                <Image
+                  src="/Images/chaos-strip.jpg"
+                  alt="The chaos before SOR7ED"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+                <div className="absolute inset-0 flex items-center justify-between px-8">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/30 mb-2">YOUR MISSION</p>
+                    <p className="text-lg sm:text-xl font-black text-white leading-tight">Turn the chaos<br className="sm:hidden" /> into clarity.</p>
+                  </div>
+                  {dashboardMeta.currentStreak > 0 && (
+                    <div className="text-right shrink-0">
+                      <p className="text-3xl font-black text-white">{dashboardMeta.currentStreak}🔥</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mt-1">day streak</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2 space-y-12">
                 <section>
                   <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-8">Branch Coverage</h2>
@@ -375,6 +402,7 @@ export default function DashboardClient({
                   </div>
                 </section>
               </div>
+              </div>{/* end grid */}
             </motion.div>
           )}
 

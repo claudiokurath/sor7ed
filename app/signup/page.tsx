@@ -2,6 +2,7 @@
 
 import { useState, Suspense, useActionState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { handleSignupOrLogin, type ActionState } from '../actions/auth';
@@ -135,7 +136,9 @@ function SignupForm() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-6 py-20">
+    <main className="min-h-screen bg-[#0a0a0a] text-white flex">
+      {/* Form panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-20">
       <div className="max-w-md w-full">
 
         <Link href="/" className="text-white/30 text-sm hover:text-white transition-colors block mb-12">
@@ -275,15 +278,34 @@ function SignupForm() {
         </form>
 
         <div className="mt-8 pt-8 border-t border-white/10 text-center">
-            <button 
+            <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-white/40 hover:text-white text-sm transition-colors"
             >
-                {isLogin 
-                    ? "Don't have an account? Sign up here" 
+                {isLogin
+                    ? "Don't have an account? Sign up here"
                     : "Already have an account? Sign in here"
                 }
             </button>
+        </div>
+      </div>
+      </div>{/* end form panel */}
+
+      {/* Image panel — desktop only */}
+      <div className="hidden lg:block lg:w-[45%] xl:w-1/2 relative bg-[#EBA904]">
+        <Image
+          src="/Images/chaos-portrait.jpg"
+          alt="Life before SOR7ED — chaotic desk"
+          fill
+          className="object-cover object-bottom"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/5" />
+        <div className="absolute top-12 left-10 right-10">
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-black/40 mb-3">Sound familiar?</p>
+          <h2 className="text-2xl font-black text-black leading-snug">
+            This is what your brain feels like before SOR7ED.
+          </h2>
         </div>
       </div>
     </main>
