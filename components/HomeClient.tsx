@@ -7,10 +7,10 @@ import Image from 'next/image';
 import { branches } from '@/lib/constants';
 
 const taglines = [
-  'OVERWHELMED',
-  'SCATTERED',
-  'EXHAUSTED',
-  'WIRED DIFFERENTLY',
+  { text: 'overwhelmed',       color: 'text-ps-yellow' },
+  { text: 'scattered',         color: 'text-ps-white'  },
+  { text: 'exhausted',         color: 'text-ps-yellow' },
+  { text: 'wired differently', color: 'text-ps-white'  },
 ];
 
 const PROBLEMS = [
@@ -33,7 +33,7 @@ export default function HomeClient() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.style.scrollSnapType = 'y proximity';
+    document.documentElement.style.scrollSnapType = 'y mandatory';
     return () => { document.documentElement.style.scrollSnapType = ''; };
   }, []);
 
@@ -41,7 +41,7 @@ export default function HomeClient() {
     <div className="bg-ps-black text-ps-white overflow-x-hidden">
 
       {/* HERO */}
-      <section className="relative min-h-[94dvh] flex flex-col justify-end px-5 sm:px-8 md:px-16 pb-14 pt-16 md:pt-20 border-b-2 border-ps-white [scroll-snap-align:start]">
+      <section className="relative h-[100dvh] flex flex-col justify-end px-5 sm:px-8 md:px-16 pb-10 pt-16 md:pt-14 border-b-2 border-ps-white [scroll-snap-align:start] overflow-hidden">
         <div className="max-w-5xl">
           <motion.p className="label-yellow mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
             Diagnose here. Solutions on WhatsApp.
@@ -57,17 +57,17 @@ export default function HomeClient() {
             IF YOU&apos;RE FEELING
           </motion.p>
 
-          <div className="h-[1.05em] overflow-hidden mb-10" style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}>
+          <div className="h-[1.2em] overflow-hidden mb-8" style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}>
             <AnimatePresence mode="wait">
               <motion.p
                 key={taglineIndex}
-                className="font-display uppercase text-ps-yellow leading-none"
+                className={`font-display leading-none ${taglines[taglineIndex].color}`}
                 initial={{ y: 64, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -64, opacity: 0 }}
                 transition={{ duration: 0.28 }}
               >
-                {taglines[taglineIndex]}
+                {taglines[taglineIndex].text}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -119,7 +119,7 @@ export default function HomeClient() {
       </section>
 
       {/* WHAT'S GOING ON */}
-      <section id="what-now" className="px-5 sm:px-8 md:px-16 py-16 border-b-2 border-ps-white [scroll-snap-align:start]">
+      <section id="what-now" className="h-[100dvh] overflow-hidden flex flex-col justify-center px-5 sm:px-8 md:px-16 py-10 border-b-2 border-ps-white [scroll-snap-align:start]">
         <motion.p className="label-yellow mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           Text what&apos;s wrong
         </motion.p>
@@ -171,7 +171,7 @@ export default function HomeClient() {
       </section>
 
       {/* 7 BRANCHES */}
-      <section className="py-16 border-b-2 border-ps-white [scroll-snap-align:start]">
+      <section className="h-[100dvh] overflow-hidden flex flex-col justify-center py-10 border-b-2 border-ps-white [scroll-snap-align:start]">
         <div className="px-5 sm:px-8 md:px-16 mb-6">
           <motion.p className="label-yellow mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             7 Branches of Life
@@ -214,7 +214,7 @@ export default function HomeClient() {
       </section>
 
       {/* MISSION */}
-      <section className="px-5 sm:px-8 md:px-16 py-20 [scroll-snap-align:start]">
+      <section className="h-[100dvh] overflow-hidden flex flex-col justify-center px-5 sm:px-8 md:px-16 py-10 [scroll-snap-align:start]">
         <div className="max-w-4xl">
           <motion.p className="label-yellow mb-6" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             Our Mission
