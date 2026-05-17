@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { branches } from '@/lib/constants';
 import UniversalProblemSelector from './UniversalProblemSelector';
 
@@ -104,6 +105,33 @@ export default function HomeClient() {
             >
               Explore the 7 Branches
             </a>
+          </motion.div>
+
+          {/* QR / WhatsApp direct */}
+          <motion.div
+            className="flex items-center gap-5 mt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1 }}
+          >
+            <a
+              href="https://wa.me/447591922247"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block shrink-0 rounded-xl overflow-hidden border border-white/10 hover:border-white/30 transition-all hover:scale-105"
+            >
+              <Image
+                src="/Images/QR.png"
+                alt="Scan to open SOR7ED on WhatsApp"
+                width={72}
+                height={72}
+                className="block"
+              />
+            </a>
+            <div>
+              <p className="text-white/60 text-sm font-medium leading-tight">Scan to chat on WhatsApp</p>
+              <p className="text-white/20 text-xs mt-0.5">No app download. Just scan and go.</p>
+            </div>
           </motion.div>
         </div>
       </section>
