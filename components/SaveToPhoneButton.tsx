@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 interface Props {
     title: string;
     summary?: string;
+    keyword?: string;
     pageUrl?: string;
     size?: "sm" | "md" | "lg";
     label?: string;
@@ -15,6 +16,7 @@ interface Props {
 export default function SaveToPhoneButton({
     title,
     summary,
+    keyword,
     pageUrl,
     size = "md",
     label = "GET IT SOR7ED",
@@ -53,11 +55,15 @@ export default function SaveToPhoneButton({
 
     const iconSize = size === "sm" ? 11 : size === "lg" ? 15 : 13;
 
-    // Non-auth: render as a plain <a> link — always works, no popup blocking
+    // Non-auth: open WhatsApp pre-filled with the keyword (bot recognises it and delivers the protocol)
+    const waHref = keyword
+        ? `https://wa.me/447591922247?text=${encodeURIComponent(keyword)}`
+        : `https://wa.me/447591922247?text=${encodeURIComponent(getMessage())}`;
+
     if (!isAuth) {
         return (
             <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(getMessage())}`}
+                href={waHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
@@ -92,11 +98,11 @@ export default function SaveToPhoneButton({
                 setTimeout(() => setStatus("idle"), 3500);
             } else {
                 // Redirect the pre-opened window to WhatsApp
-                if (win) win.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(getMessage())}`;
+                if (win) win.location.href = waHref;
                 setStatus("idle");
             }
         } catch {
-            if (win) win.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(getMessage())}`;
+            if (win) win.location.href = waHref;
             setStatus("idle");
         }
     };

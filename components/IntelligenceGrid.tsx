@@ -74,6 +74,7 @@ function HeroCard({ post }: { post: Post }) {
           </Link>
           <SaveToPhoneButton
             title={post.title}
+            keyword={post.keyword}
             summary={preview || undefined}
             pageUrl={`/intelligence/${post.slug}`}
             size="sm"
@@ -132,6 +133,7 @@ function ArticleCard({ post, isLast }: { post: Post; isLast: boolean }) {
         </Link>
         <SaveToPhoneButton
           title={post.title}
+          keyword={post.keyword}
           summary={preview || undefined}
           pageUrl={`/intelligence/${post.slug}`}
           size="sm"

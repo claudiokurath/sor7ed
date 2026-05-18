@@ -14,6 +14,7 @@ type FeaturedArticle = {
   excerpt: string;
   cover_image: string;
   read_time: string;
+  keyword: string;
 };
 
 const PROBLEMS = [
@@ -165,6 +166,7 @@ export default function HomeClient({ featuredArticles = [] }: { featuredArticles
                       </Link>
                       <SaveToPhoneButton
                         title={hero.title}
+                        keyword={hero.keyword}
                         summary={hero.summary || hero.excerpt || undefined}
                         pageUrl={`/intelligence/${hero.slug}`}
                         size="sm"
@@ -208,6 +210,7 @@ export default function HomeClient({ featuredArticles = [] }: { featuredArticles
                         </Link>
                         <SaveToPhoneButton
                           title={article.title}
+                          keyword={article.keyword}
                           summary={article.summary || article.excerpt || undefined}
                           pageUrl={`/intelligence/${article.slug}`}
                           size="sm"

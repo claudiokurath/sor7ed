@@ -72,6 +72,7 @@ function HeroToolCard({ tool }: { tool: Tool }) {
           </Link>
           <SaveToPhoneButton
             title={tool.name}
+            keyword={tool.keyword}
             summary={preview || undefined}
             pageUrl={`/tools/${tool.slug}`}
             size="sm"
@@ -124,6 +125,7 @@ function ToolCard({ tool }: { tool: Tool }) {
         </Link>
         <SaveToPhoneButton
           title={tool.name}
+          keyword={tool.keyword}
           summary={preview || undefined}
           pageUrl={`/tools/${tool.slug}`}
           size="sm"

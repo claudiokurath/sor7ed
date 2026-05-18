@@ -36,14 +36,14 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
   const [{ data: articles }, { data: tools }] = await Promise.all([
     supabase
       .from("protocols")
-      .select("slug, title, excerpt, summary, cover_image, read_time")
+      .select("slug, title, excerpt, summary, cover_image, read_time, keyword")
       .eq("branch", branchInfo!.name)
       .eq("status", "Published")
       .order("created_at", { ascending: false })
       .limit(12),
     supabase
       .from("tools")
-      .select("slug, name, tldr, short_description, cover_image, color")
+      .select("slug, name, tldr, short_description, cover_image, color, keyword")
       .eq("branch", branchInfo!.name)
       .neq("status", "Draft")
       .order("created_at", { ascending: false })
@@ -139,6 +139,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                       </Link>
                       <SaveToPhoneButton
                         title={tool.name}
+                        keyword={tool.keyword}
                         summary={preview || undefined}
                         pageUrl={`/tools/${tool.slug}`}
                         size="sm"
@@ -203,6 +204,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                       </Link>
                       <SaveToPhoneButton
                         title={article.title}
+                        keyword={article.keyword}
                         summary={preview || undefined}
                         pageUrl={`/intelligence/${article.slug}`}
                         size="sm"
