@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
     const pageUrl = `${siteUrl}/intelligence/${resolvedParams.slug}`;
     const description = article.problem || article.description || `Field Intelligence briefing on ${article.title}.`;
-    const image = article.cover_image || `${siteUrl}/og-default.jpg`;
+    const image = article.cover_image || `${siteUrl}/Images/og-explore.png`;
 
     return {
         title: `${article.title} | SOR7ED`,

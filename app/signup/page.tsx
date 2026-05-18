@@ -2,7 +2,6 @@
 
 import { useState, Suspense, useActionState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { handleSignupOrLogin, type ActionState } from '../actions/auth';
@@ -214,15 +213,6 @@ function SignupForm() {
         </div>
       </div>
 
-      {/* Image panel */}
-      <div className="hidden lg:block lg:w-[45%] xl:w-1/2 relative bg-ps-yellow">
-        <Image src="/Images/chaos-portrait.png" alt="Life before SOR7ED" fill className="object-cover object-bottom" priority />
-        <div className="absolute inset-0 bg-ps-black/20" />
-        <div className="absolute top-12 left-10 right-10">
-          <p className="label mb-3">Sound familiar?</p>
-          <h2 className="display-lg text-ps-black leading-snug">This is what your brain feels like before SOR7ED.</h2>
-        </div>
-      </div>
     </main>
   );
 }

@@ -58,45 +58,74 @@ function notionFile(p: NotionProp | undefined): { url: string; isHosted: boolean
   return null;
 }
 
-// ---- Cover image: download from Notion → upload to Supabase Storage ----
+const SUPABASE_URL_PREFIX = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/`
+  : '';
 
-async function persistCoverImage(slug: string, notionUrl: string): Promise<string> {
+function isAlreadyPersisted(url: string): boolean {
+  return SUPABASE_URL_PREFIX.length > 0 && url.startsWith(SUPABASE_URL_PREFIX);
+}
+
+// Download from Notion → upload to Supabase Storage → return permanent public URL
+// Runs ONE AT A TIME to avoid hammering S3 or Supabase rate limits.
+async function persistCoverImage(slug: string, notionUrl: string, force = false): Promise<string> {
   const supabase = getSupabase();
-  const storagePath = `${STORAGE_PREFIX}/${slug}.jpg`;
 
+  // Skip if already a permanent Supabase URL (unless force)
+  if (!force && isAlreadyPersisted(notionUrl)) return notionUrl;
+
+  // Check if already stored under any extension
   const { data: existing } = await supabase.storage
     .from(STORAGE_BUCKET)
-    .list(STORAGE_PREFIX, { search: `${slug}.jpg` });
+    .list(STORAGE_PREFIX, { search: slug });
 
-  if (existing && existing.length > 0) {
-    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
-    return data.publicUrl;
+  if (!force && existing && existing.length > 0) {
+    const match = existing.find(f => f.name.startsWith(slug + '.'));
+    if (match) {
+      const { data } = supabase.storage
+        .from(STORAGE_BUCKET)
+        .getPublicUrl(`${STORAGE_PREFIX}/${match.name}`);
+      return data.publicUrl;
+    }
   }
 
-  const imgRes = await fetch(notionUrl);
-  if (!imgRes.ok) return notionUrl;
-
-  const contentType = imgRes.headers.get('content-type') ?? 'image/jpeg';
-  const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
-  const path = `${STORAGE_PREFIX}/${slug}.${ext}`;
-  const buffer = await imgRes.arrayBuffer();
-
-  const { error } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .upload(path, buffer, { contentType, upsert: true });
-
-  if (error) {
-    console.error(`[sync-notion] Storage upload failed for ${slug}:`, error.message);
+  // Download the image
+  let imgRes: Response;
+  try {
+    imgRes = await fetch(notionUrl, {
+      headers: { 'User-Agent': 'SOR7ED-Sync/1.0' },
+    });
+  } catch (err) {
+    console.error(`[persist-cover] fetch failed for ${slug}:`, err);
     return notionUrl;
   }
 
-  const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+  if (!imgRes.ok) {
+    console.error(`[persist-cover] fetch ${imgRes.status} for ${slug}: ${notionUrl.slice(0, 80)}`);
+    return notionUrl;
+  }
+
+  const contentType = imgRes.headers.get('content-type') ?? 'image/jpeg';
+  const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+  const storagePath = `${STORAGE_PREFIX}/${slug}.${ext}`;
+
+  const buffer = await imgRes.arrayBuffer();
+
+  const { error: uploadError } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(storagePath, buffer, { contentType, upsert: true });
+
+  if (uploadError) {
+    console.error(`[persist-cover] upload failed for ${slug}:`, uploadError.message);
+    return notionUrl;
+  }
+
+  const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
+  console.log(`[persist-cover] ✓ ${slug} → ${data.publicUrl}`);
   return data.publicUrl;
 }
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
-
-// ---- Query Notion with filter, handling pagination ----
 
 async function queryNotion(databaseId: string, filter: Record<string, unknown>): Promise<NotionPage[]> {
   const pages: NotionPage[] = [];
@@ -128,31 +157,29 @@ async function queryNotion(databaseId: string, filter: Record<string, unknown>):
 
 // ---- Sync protocols (articles) ----
 
-async function syncProtocols() {
+async function syncProtocols(force = false) {
   const pages = await queryNotion(PROTOCOLS_DB_ID, {
     property: 'Status',
     status: { equals: 'Published' },
   });
 
-  const rows = await Promise.all(
-    pages
-      .map(page => {
-        const p = page.properties as Record<string, NotionProp>;
-        return { p, slug: text(p['Slug']) };
-      })
-      .filter(({ slug }) => slug.length > 0)
-      .map(async ({ p }) => {
-        const slug = text(p['Slug']);
-        const file = notionFile(p['Cover Image 1']) ?? notionFile(p['Cover Image']);
+  const supabase = getSupabase();
 
-        let cover_image = '';
-        if (file) {
-          cover_image = file.isHosted
-            ? await persistCoverImage(slug, file.url)
-            : file.url;
-        }
+  // Build rows with raw Notion URLs first — don't block on image downloads
+  const rawRows = pages
+    .map(page => {
+      const p = page.properties as Record<string, NotionProp>;
+      const slug = text(p['Slug']);
+      if (!slug) return null;
 
-        return {
+      const file = notionFile(p['Cover Image 1']) ?? notionFile(p['Cover Image']);
+      const notionImageUrl = file?.url ?? '';
+
+      return {
+        slug,
+        notionImageUrl,
+        isHosted: file?.isHosted ?? false,
+        row: {
           title:            text(p['Title']),
           slug,
           branch:           select(p['Branch']),
@@ -163,94 +190,133 @@ async function syncProtocols() {
           cta:              text(p['CTA']),
           protocol:         text(p['Protocol']),
           keyword:          text(p['WhatsApp Trigger']),
-          cover_image,
+          cover_image:      notionImageUrl,
           read_time:        text(p['Read Time']),
           meta_description: text(p['Meta Description']),
           seo_title:        text(p['SEO Title']),
           featured:         checkbox(p['Featured']),
-        };
-      })
-  );
+        },
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
 
-  if (rows.length === 0) return { synced: 0, deleted: 0 };
+  if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
 
-  const supabase = getSupabase();
-
+  // Upsert text data immediately
   const { error: upsertError } = await supabase
     .from('protocols')
-    .upsert(rows, { onConflict: 'slug' });
+    .upsert(rawRows.map(r => r.row), { onConflict: 'slug' });
 
   if (upsertError) throw new Error(`Protocols upsert failed: ${upsertError.message}`);
 
-  // Delete any protocols no longer published in Notion
-  const publishedSlugs = rows.map(r => r.slug);
+  // Persist cover images SEQUENTIALLY to avoid rate limits
+  let images = 0;
+  for (const { slug, notionImageUrl, isHosted } of rawRows) {
+    if (!notionImageUrl) continue;
+
+    const persistedUrl = isHosted
+      ? await persistCoverImage(slug, notionImageUrl, force)
+      : notionImageUrl;
+
+    if (persistedUrl !== notionImageUrl) {
+      await supabase.from('protocols').update({ cover_image: persistedUrl }).eq('slug', slug);
+      images++;
+    }
+  }
+
+  // Delete protocols no longer published in Notion
+  const publishedSlugs = rawRows.map(r => r.slug);
   const { count: deleted } = await supabase
     .from('protocols')
     .delete({ count: 'exact' })
     .not('slug', 'in', `(${publishedSlugs.join(',')})`);
 
-  return { synced: rows.length, deleted: deleted ?? 0 };
+  return { synced: rawRows.length, deleted: deleted ?? 0, images };
 }
 
 // ---- Sync tools ----
 
-async function syncTools() {
-  if (!TOOLS_DB_ID) return { synced: 0, deleted: 0 };
+async function syncTools(force = false) {
+  if (!TOOLS_DB_ID) return { synced: 0, deleted: 0, images: 0 };
 
   const pages = await queryNotion(TOOLS_DB_ID, {
     property: 'Status',
     status: { does_not_equal: 'Draft' },
   });
 
-  type ToolRow = {
-    name: string; slug: string; branch: string; keyword: string;
-    tldr: string; description: string; short_description: string;
-    featured: boolean; color: string; meta_description: string;
-    cover_image: string; status: string;
+  const supabase = getSupabase();
+
+  type ToolRaw = {
+    slug: string;
+    notionImageUrl: string;
+    isHosted: boolean;
+    row: {
+      name: string; slug: string; branch: string; keyword: string;
+      tldr: string; description: string; short_description: string;
+      featured: boolean; color: string; meta_description: string;
+      cover_image: string; status: string;
+    };
   };
 
-  const rows: ToolRow[] = pages.flatMap(page => {
+  const rawRows: ToolRaw[] = pages.flatMap(page => {
     const p = page.properties as Record<string, NotionProp>;
     const slug = text(p['Slug']);
     if (!slug) return [];
 
     const file = notionFile(p['Cover Image']) ?? notionFile(p['Cover Image 1']);
-    const cover_image = file?.url ?? '';
+    const notionImageUrl = file?.url ?? '';
 
     return [{
-      name:              text(p['Name']),
       slug,
-      branch:            select(p['Branch']),
-      keyword:           text(p['WhatsApp Trigger']),
-      tldr:              text(p['TL;DR']),
-      description:       text(p['Blog Post']),
-      short_description: text(p['Short Description']),
-      featured:          checkbox(p['Featured']),
-      color:             text(p['Color']) || '#ffffff',
-      meta_description:  text(p['Meta Description']),
-      cover_image,
-      status:            status(p['Status']) || 'Live',
+      notionImageUrl,
+      isHosted: file?.isHosted ?? false,
+      row: {
+        name:              text(p['Name']),
+        slug,
+        branch:            select(p['Branch']),
+        keyword:           text(p['WhatsApp Trigger']),
+        tldr:              text(p['TL;DR']),
+        description:       text(p['Blog Post']),
+        short_description: text(p['Short Description']),
+        featured:          checkbox(p['Featured']),
+        color:             text(p['Color']) || '#ffffff',
+        meta_description:  text(p['Meta Description']),
+        cover_image:       notionImageUrl,
+        status:            status(p['Status']) || 'Live',
+      },
     }];
   });
 
-  if (rows.length === 0) return { synced: 0, deleted: 0 };
-
-  const supabase = getSupabase();
+  if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
 
   const { error: upsertError } = await supabase
     .from('tools')
-    .upsert(rows, { onConflict: 'slug' });
+    .upsert(rawRows.map(r => r.row), { onConflict: 'slug' });
 
   if (upsertError) throw new Error(`Tools upsert failed: ${upsertError.message}`);
 
-  // Delete any tools no longer in the synced set
-  const syncedSlugs = rows.map(r => r.slug);
+  // Persist cover images SEQUENTIALLY
+  let images = 0;
+  for (const { slug, notionImageUrl, isHosted } of rawRows) {
+    if (!notionImageUrl) continue;
+
+    const persistedUrl = isHosted
+      ? await persistCoverImage(slug, notionImageUrl, force)
+      : notionImageUrl;
+
+    if (persistedUrl !== notionImageUrl) {
+      await supabase.from('tools').update({ cover_image: persistedUrl }).eq('slug', slug);
+      images++;
+    }
+  }
+
+  const syncedSlugs = rawRows.map(r => r.slug);
   const { count: deleted } = await supabase
     .from('tools')
     .delete({ count: 'exact' })
     .not('slug', 'in', `(${syncedSlugs.join(',')})`);
 
-  return { synced: rows.length, deleted: deleted ?? 0 };
+  return { synced: rawRows.length, deleted: deleted ?? 0, images };
 }
 
 // ---- Handler ----
@@ -260,11 +326,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  try {
-    const [protocols, tools] = await Promise.all([syncProtocols(), syncTools()]);
+  const force = req.nextUrl.searchParams.get('force') === 'true';
 
-    console.log(`[sync-notion] protocols: +${protocols.synced} synced, -${protocols.deleted} deleted`);
-    console.log(`[sync-notion] tools: +${tools.synced} synced, -${tools.deleted} deleted`);
+  try {
+    const [protocols, tools] = await Promise.all([
+      syncProtocols(force),
+      syncTools(force),
+    ]);
+
+    console.log(`[sync-notion] protocols: ${protocols.synced} synced, ${protocols.deleted} deleted, ${protocols.images} images persisted`);
+    console.log(`[sync-notion] tools: ${tools.synced} synced, ${tools.deleted} deleted, ${tools.images} images persisted`);
 
     return NextResponse.json({ protocols, tools });
   } catch (err) {

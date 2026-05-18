@@ -3,7 +3,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import { branches } from '@/lib/constants';
@@ -211,13 +210,6 @@ export default function DashboardClient({
 
       {/* ── HEADER ── */}
       <div className="relative border-b border-ps-white/20 overflow-hidden bg-ps-yellow" style={{ minHeight: 220 }}>
-        <Image
-          src="/Images/chaos-strip.png"
-          alt="The chaos before SOR7ED"
-          fill
-          className="object-cover object-center opacity-40"
-          priority
-        />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-12 md:px-16 py-10 sm:py-14">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>

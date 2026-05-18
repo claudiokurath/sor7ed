@@ -272,11 +272,57 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     </motion.div>
                 )}
 
-                {article.problem?.split('\n\n').map((paragraph: string, index: number) => (
-                    <div key={index}>
-                        <p className="max-w-none mb-6">{paragraph}</p>
-                    </div>
-                )) || <p>{article.description}</p>}
+                {(article.problem || article.description)
+                    ?.split(/\n{2,}/)
+                    .map((block: string, index: number) => {
+                        const trimmed = block.trim();
+                        if (!trimmed) return null;
+
+                        // Numbered list item: "1. text" or "1) text"
+                        if (/^\d+[\.\)]\s/.test(trimmed)) {
+                            const items = trimmed.split(/\n/).filter(Boolean);
+                            return (
+                                <ol key={index} className="list-decimal list-outside pl-6 space-y-2 mb-2">
+                                    {items.map((item, j) => (
+                                        <li key={j} className="text-white/70 text-base leading-relaxed">
+                                            {item.replace(/^\d+[\.\)]\s+/, "")}
+                                        </li>
+                                    ))}
+                                </ol>
+                            );
+                        }
+
+                        // Bullet list item: "- text" or "• text"
+                        if (/^[-•]\s/.test(trimmed)) {
+                            const items = trimmed.split(/\n/).filter(Boolean);
+                            return (
+                                <ul key={index} className="list-disc list-outside pl-6 space-y-2 mb-2">
+                                    {items.map((item, j) => (
+                                        <li key={j} className="text-white/70 text-base leading-relaxed">
+                                            {item.replace(/^[-•]\s+/, "")}
+                                        </li>
+                                    ))}
+                                </ul>
+                            );
+                        }
+
+                        // Heading: short line in ALL CAPS or ends with ":"
+                        if (trimmed.length < 80 && (trimmed === trimmed.toUpperCase() || trimmed.endsWith(":"))) {
+                            return (
+                                <h2 key={index} className="font-display uppercase text-white text-lg tracking-wide mt-10 mb-2">
+                                    {trimmed.replace(/:$/, "")}
+                                </h2>
+                            );
+                        }
+
+                        // Normal paragraph
+                        return (
+                            <p key={index} className="text-white/70 text-base leading-relaxed">
+                                {trimmed}
+                            </p>
+                        );
+                    })
+                }
             </div>
 
             {/* Separate Dynamic CTA Section */}
