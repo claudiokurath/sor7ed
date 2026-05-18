@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import FilterPill from "@/components/ui/FilterPill";
+import SaveToPhoneButton from "@/components/SaveToPhoneButton";
 
 type Tool = {
   id: string;
@@ -44,8 +45,15 @@ function CarouselCard({ tool }: { tool: Tool }) {
       <div className="p-4 border-t-2 border-black">
         <span className="label-yellow mb-2 block">{tool.branch}</span>
         <h3 className="font-display uppercase text-sm text-black leading-tight line-clamp-2">{tool.name}</h3>
-        <div className="mt-3 flex items-center gap-1 text-[10px] font-display uppercase tracking-widest text-black/50 group-hover:text-black transition-colors">
-          Start →
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <span className="text-[10px] font-display uppercase tracking-widest text-black/50 group-hover:text-black transition-colors">Start →</span>
+          <SaveToPhoneButton
+            title={tool.name}
+            summary={tool.short_description || tool.tldr || undefined}
+            pageUrl={`/tools/${tool.slug}`}
+            size="sm"
+            label="Save"
+          />
         </div>
       </div>
     </Link>
@@ -74,8 +82,15 @@ function MosaicCard({ tool, tall }: { tool: Tool; tall?: boolean }) {
         <span className="label-yellow mb-2 block">{tool.branch}</span>
         <h3 className="font-display uppercase text-xs text-black leading-tight mb-2">{tool.name}</h3>
         <p className="text-black/45 text-xs leading-relaxed line-clamp-2">{tool.short_description || tool.tldr}</p>
-        <div className="mt-3 flex items-center gap-1 text-[10px] font-display uppercase tracking-widest text-black/40 group-hover:text-black transition-colors">
-          Start →
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <span className="text-[10px] font-display uppercase tracking-widest text-black/40 group-hover:text-black transition-colors">Start →</span>
+          <SaveToPhoneButton
+            title={tool.name}
+            summary={tool.short_description || tool.tldr || undefined}
+            pageUrl={`/tools/${tool.slug}`}
+            size="sm"
+            label="Save"
+          />
         </div>
       </div>
     </Link>

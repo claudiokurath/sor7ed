@@ -26,7 +26,8 @@ export default function SaveToPhoneButton({
         e.stopPropagation();
         if (status === "loading") return;
 
-        const url = pageUrl ?? window.location.href;
+        const raw = pageUrl ?? window.location.href;
+        const url = raw.startsWith('/') ? window.location.origin + raw : raw;
         setStatus("loading");
 
         try {
