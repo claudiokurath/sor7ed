@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
                     recipient_type: "individual",
                     to,
                     type: "text",
-                    text: { body: `*Your Protocol*\n\n${protocol.trim()}`, preview_url: false },
+                    text: { body: `*${title}*\n\n${protocol.trim()}`, preview_url: false },
                 }),
             });
         }
