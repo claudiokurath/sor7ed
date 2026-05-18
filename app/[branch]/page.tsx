@@ -2,345 +2,257 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { branches } from "@/lib/constants";
+import SaveToPhoneButton from "@/components/SaveToPhoneButton";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ branch: string }> }): Promise<Metadata> {
-    const resolvedParams = await params;
-    const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
-    if (!branchInfo) return { title: 'Branch Not Found' };
+  const resolvedParams = await params;
+  const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
+  if (!branchInfo) return { title: "Branch Not Found" };
 
-    const supabase = await createClient();
-    const { data: dbBranch } = await supabase
-        .from('branches')
-        .select('cover_image')
-        .eq('slug', resolvedParams.branch)
-        .single();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sor7ed.com";
+  const description = `${branchInfo.description} — protocols delivered to your WhatsApp.`;
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
-    const image = dbBranch?.cover_image;
-    const description = `${branchInfo.description} — protocols delivered to your WhatsApp.`;
-
-    return {
-        title: `${branchInfo.name} | SOR7ED`,
-        description,
-        openGraph: {
-            title: `${branchInfo.icon} ${branchInfo.name} | SOR7ED`,
-            description,
-            url: `${siteUrl}/${resolvedParams.branch}`,
-            siteName: 'SOR7ED',
-            ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: branchInfo.name }] } : {}),
-            type: 'website',
-        },
-    };
+  return {
+    title: `${branchInfo.name} | SOR7ED`,
+    description,
+    openGraph: {
+      title: `${branchInfo.name} | SOR7ED`,
+      description,
+      url: `${siteUrl}/${resolvedParams.branch}`,
+      siteName: "SOR7ED",
+      type: "website",
+    },
+  };
 }
 
 export default async function BranchPage({ params }: { params: Promise<{ branch: string }> }) {
-    const resolvedParams = await params;
-    const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
-    if (!branchInfo) notFound();
+  const resolvedParams = await params;
+  const branchInfo = branches.find(b => b.slug === resolvedParams.branch);
+  if (!branchInfo) notFound();
 
-    const supabase = await createClient();
+  const supabase = await createClient();
 
-    const [{ data: articles }, { data: tools }] = await Promise.all([
-        supabase
-            .from('protocols')
-            .select('slug, title, excerpt, summary, cover_image, read_time')
-            .eq('branch', branchInfo!.name)
-            .eq('status', 'Published')
-            .order('created_at', { ascending: false })
-            .limit(12),
-        supabase
-            .from('tools')
-            .select('slug, name, tldr, cover_image, color')
-            .eq('branch', branchInfo!.name)
-            .neq('status', 'Draft')
-            .order('created_at', { ascending: false })
-            .limit(12),
-    ]);
+  const [{ data: articles }, { data: tools }] = await Promise.all([
+    supabase
+      .from("protocols")
+      .select("slug, title, excerpt, summary, cover_image, read_time")
+      .eq("branch", branchInfo!.name)
+      .eq("status", "Published")
+      .order("created_at", { ascending: false })
+      .limit(12),
+    supabase
+      .from("tools")
+      .select("slug, name, tldr, short_description, cover_image, color")
+      .eq("branch", branchInfo!.name)
+      .neq("status", "Draft")
+      .order("created_at", { ascending: false })
+      .limit(12),
+  ]);
 
-    const color = branchInfo!.color;
-    const hasContent = (articles?.length || 0) + (tools?.length || 0) > 0;
+  const hasContent = (articles?.length || 0) + (tools?.length || 0) > 0;
 
-    return (
-        <div className="min-h-screen bg-[#080808] text-white">
-            {/* Top Navigation Bar */}
-            <header className="border-b border-white/5 px-6 py-4">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <Link
-                        href="/explore"
-                        className="text-xs uppercase tracking-widest text-white/40 hover:text-white transition-colors font-semibold"
-                    >
-                        ← All Branches
-                    </Link>
-                    <span className="text-xs uppercase tracking-widest text-white/20 font-bold">
-                        SOR7ED
-                    </span>
-                    <div className="text-xs uppercase tracking-widest text-white/40 font-semibold">
-                        {(articles?.length || 0) + (tools?.length || 0)} Items
-                    </div>
-                </div>
-            </header>
+  return (
+    <div className="min-h-screen bg-white">
 
-            <div className="flex flex-col lg:flex-row">
-                {/* Sticky Sidebar */}
-                <aside className="lg:w-80 lg:sticky lg:top-0 lg:h-screen border-b lg:border-b-0 lg:border-r border-white/5 relative overflow-hidden">
-                    {/* Background Gradient */}
-                    <div
-                        className="absolute inset-0 opacity-20 blur-3xl"
-                        style={{ background: `radial-gradient(circle at 20% 30%, ${color}, transparent 70%)` }}
-                    />
-                    
-                    <div className="relative z-10 h-full flex flex-col justify-between p-8 lg:p-12">
-                        {/* Branch Identity */}
-                        <div>
-                            <div className="mb-8">
-                                <div
-                                    className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6 shadow-2xl"
-                                    style={{ 
-                                        backgroundColor: `${color}15`, 
-                                        border: `2px solid ${color}30`,
-                                        boxShadow: `0 20px 60px ${color}20`
-                                    }}
-                                >
-                                    {branchInfo!.icon}
-                                </div>
-                                
-                                <h1 className="text-4xl lg:text-5xl font-black tracking-tight leading-none mb-4">
-                                    {branchInfo!.name}
-                                </h1>
-                                
-                                <p className="text-white/50 text-lg leading-relaxed">
-                                    {branchInfo!.description}
-                                </p>
-                            </div>
+      {/* Header — black */}
+      <section className="bg-black border-b-2 border-black">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pt-20 md:pt-28 pb-10">
+          <Link
+            href="/explore"
+            className="text-white/30 hover:text-ps-yellow text-[10px] font-display uppercase tracking-widest transition-colors block mb-8"
+          >
+            ← All branches
+          </Link>
 
-                            {/* Stats */}
-                            <div className="space-y-4 mb-8">
-                                <div className="flex items-center justify-between py-2 border-b border-white/5">
-                                    <span className="text-sm font-medium text-white/60">Protocols</span>
-                                    <span className="text-2xl font-black tabular-nums" style={{ color }}>
-                                        {(articles?.length || 0).toString().padStart(2, '0')}
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between py-2">
-                                    <span className="text-sm font-medium text-white/60">Tools</span>
-                                    <span className="text-2xl font-black tabular-nums" style={{ color }}>
-                                        {(tools?.length || 0).toString().padStart(2, '0')}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Always-Visible CTA */}
-                        <div className="border-t border-white/10 pt-8">
-                            <p className="text-xs uppercase tracking-widest text-white/40 font-bold mb-4">
-                                Get Protocols
-                            </p>
-                            <Link
-                                href="/signup"
-                                className="flex items-center justify-between w-full text-black font-black text-base px-6 py-4 rounded-2xl hover:opacity-90 transition-all hover:scale-[1.02] active:scale-95 shadow-xl"
-                                style={{ backgroundColor: color }}
-                            >
-                                <span>Join WhatsApp</span>
-                                <span>→</span>
-                            </Link>
-                            <p className="text-xs text-white/30 mt-3 leading-relaxed">
-                                Get new protocols delivered directly to your WhatsApp as they're published.
-                            </p>
-                        </div>
-                    </div>
-                </aside>
-
-                {/* Main Content */}
-                <main className="flex-1 lg:max-w-none">
-                    {/* Tools Section */}
-                    {tools && tools.length > 0 && (
-                        <section className="p-8 lg:p-16 border-b border-white/5">
-                            {/* Section Header */}
-                            <div className="flex items-center gap-4 mb-12">
-                                <div
-                                    className="w-1 h-8 rounded-full"
-                                    style={{ backgroundColor: color }}
-                                />
-                                <div>
-                                    <h2 className="text-xs uppercase tracking-[0.3em] font-black text-white/60 mb-1">
-                                        Interactive Tools
-                                    </h2>
-                                    <p className="text-sm text-white/30">
-                                        Assessments and calculators for immediate use
-                                    </p>
-                                </div>
-                                <div className="flex-1 h-px bg-white/5" />
-                            </div>
-
-                            {/* Tools List */}
-                            <div className="space-y-6">
-                                {tools.map((tool, index) => (
-                                    <Link
-                                        key={tool.slug}
-                                        href={`/tools/${tool.slug}`}
-                                        className="group flex flex-col sm:flex-row gap-6 p-6 rounded-3xl border border-white/5 hover:border-white/15 hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-1"
-                                    >
-                                        {/* Thumbnail */}
-                                        <div className="w-full sm:w-56 h-32 shrink-0 rounded-2xl overflow-hidden bg-[#0f0f0f] relative">
-                                            {/* Index Number */}
-                                            <span
-                                                className="absolute top-3 right-3 text-xs font-black tabular-nums z-10 opacity-40"
-                                                style={{ color }}
-                                            >
-                                                {(index + 1).toString().padStart(2, '0')}
-                                            </span>
-                                            
-                                            {tool.cover_image ? (
-                                                <img
-                                                    src={tool.cover_image}
-                                                    alt={tool.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                                />
-                                            ) : (
-                                                <div 
-                                                    className="w-full h-full flex items-center justify-center"
-                                                    style={{ background: `linear-gradient(135deg, ${tool.color || color}20, transparent)` }}
-                                                >
-                                                    <span className="text-4xl opacity-20">{branchInfo!.icon}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="flex-1 flex flex-col justify-center">
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <span
-                                                    className="w-2 h-2 rounded-full"
-                                                    style={{ backgroundColor: tool.color || color }}
-                                                />
-                                                <span className="text-xs uppercase tracking-widest font-bold text-white/40">
-                                                    Tool
-                                                </span>
-                                            </div>
-                                            
-                                            <h3 className="text-xl font-bold mb-2 group-hover:opacity-80 transition-opacity">
-                                                {tool.name}
-                                            </h3>
-                                            
-                                            <p className="text-white/40 text-sm leading-relaxed line-clamp-2">
-                                                {tool.tldr}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* Articles Section */}
-                    {articles && articles.length > 0 && (
-                        <section className="p-8 lg:p-16 border-b border-white/5">
-                            {/* Section Header */}
-                            <div className="flex items-center gap-4 mb-12">
-                                <div
-                                    className="w-1 h-8 rounded-full"
-                                    style={{ backgroundColor: color }}
-                                />
-                                <div>
-                                    <h2 className="text-xs uppercase tracking-[0.3em] font-black text-white/60 mb-1">
-                                        Intelligence Protocols
-                                    </h2>
-                                    <p className="text-sm text-white/30">
-                                        Structured briefings and step-by-step guides
-                                    </p>
-                                </div>
-                                <div className="flex-1 h-px bg-white/5" />
-                            </div>
-
-                            {/* Articles List */}
-                            <div className="space-y-6">
-                                {articles.map((article, index) => (
-                                    <Link
-                                        key={article.slug}
-                                        href={`/intelligence/${article.slug}`}
-                                        className="group flex flex-col sm:flex-row gap-6 p-6 rounded-3xl border border-white/5 hover:border-white/15 hover:bg-white/[0.02] transition-all duration-300 hover:-translate-y-1"
-                                    >
-                                        {/* Thumbnail */}
-                                        <div className="w-full sm:w-56 h-32 shrink-0 rounded-2xl overflow-hidden bg-[#0f0f0f] relative">
-                                            {/* Index Number */}
-                                            <span
-                                                className="absolute top-3 right-3 text-xs font-black tabular-nums z-10 opacity-40"
-                                                style={{ color }}
-                                            >
-                                                {(index + 1).toString().padStart(2, '0')}
-                                            </span>
-                                            
-                                            {article.cover_image ? (
-                                                <img
-                                                    src={article.cover_image}
-                                                    alt={article.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                                />
-                                            ) : (
-                                                <div 
-                                                    className="w-full h-full flex items-center justify-center"
-                                                    style={{ background: `linear-gradient(135deg, ${color}20, transparent)` }}
-                                                >
-                                                    <span className="text-4xl opacity-20">{branchInfo!.icon}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="flex-1 flex flex-col justify-center">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="w-2 h-2 rounded-full bg-white/30" />
-                                                    <span className="text-xs uppercase tracking-widest font-bold text-white/40">
-                                                        Protocol
-                                                    </span>
-                                                </div>
-                                                {article.read_time && (
-                                                    <span className="text-xs text-white/30 font-medium">
-                                                        {article.read_time}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            
-                                            <h3 className="text-xl font-bold mb-2 group-hover:opacity-80 transition-opacity">
-                                                {article.title}
-                                            </h3>
-                                            
-                                            <p className="text-white/40 text-sm leading-relaxed line-clamp-2">
-                                                {article.excerpt || article.summary}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* Empty State */}
-                    {!hasContent && (
-                        <section className="p-8 lg:p-16 flex flex-col items-center justify-center text-center min-h-[60vh]">
-                            <div
-                                className="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl mb-8 opacity-20"
-                                style={{ backgroundColor: `${color}10` }}
-                            >
-                                {branchInfo!.icon}
-                            </div>
-                            <h3 className="text-2xl font-bold text-white/60 mb-4">
-                                Intelligence Incoming
-                            </h3>
-                            <p className="text-white/30 max-w-md leading-relaxed mb-8">
-                                Protocols and tools for this branch are currently being developed. 
-                                Join the waitlist to get early access.
-                            </p>
-                            <div
-                                className="w-20 h-px mb-8"
-                                style={{ backgroundColor: `${color}40` }}
-                            />
-                        </section>
-                    )}
-                </main>
+          <div className="flex items-start gap-4 mb-4">
+            <span className="text-4xl">{branchInfo!.icon}</span>
+            <div>
+              <p className="label mb-2" style={{ color: branchInfo!.color }}>{branchInfo!.num}</p>
+              <h1
+                className="font-display uppercase text-white leading-none"
+                style={{ fontSize: "clamp(2.5rem, 8vw, 6rem)", letterSpacing: "-0.01em" }}
+              >
+                {branchInfo!.name.toUpperCase()}
+              </h1>
             </div>
+          </div>
+
+          <p className="text-white/50 text-base max-w-lg leading-relaxed mt-4">
+            {branchInfo!.description}
+          </p>
+
+          {/* Stats */}
+          <div className="flex gap-6 mt-8">
+            <div>
+              <span className="font-display text-3xl text-white">{articles?.length || 0}</span>
+              <span className="text-white/30 text-[10px] font-display uppercase tracking-widest ml-2">Articles</span>
+            </div>
+            <div className="w-px bg-white/10" />
+            <div>
+              <span className="font-display text-3xl text-white">{tools?.length || 0}</span>
+              <span className="text-white/30 text-[10px] font-display uppercase tracking-widest ml-2">Tools</span>
+            </div>
+          </div>
         </div>
-    );
+      </section>
+
+      {/* Tools — yellow */}
+      {tools && tools.length > 0 && (
+        <section className="bg-ps-yellow border-b-2 border-black">
+          <div className="max-w-6xl mx-auto">
+            <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-black/15 flex items-center justify-between">
+              <p className="label">Assessments</p>
+              <Link href="/tools" className="label hover:text-black transition-colors">All tools →</Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {tools.map((tool, i) => {
+                const preview = tool.short_description || tool.tldr;
+                const isLast = i === tools.length - 1;
+                return (
+                  <div
+                    key={tool.slug}
+                    className={`flex flex-col border-black/15
+                      ${i % 3 !== 2 ? "lg:border-r" : ""}
+                      ${i % 2 !== 1 ? "sm:border-r sm:lg:border-r-0" : ""}
+                      ${!isLast ? "border-b" : ""}
+                    `}
+                  >
+                    {/* Cover image */}
+                    {tool.cover_image && (
+                      <div className="h-40 overflow-hidden border-b border-black/15">
+                        <img src={tool.cover_image} alt={tool.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+
+                    <div className="flex flex-col flex-1 p-5">
+                      <h3 className="font-display uppercase text-base text-black leading-tight mb-2">{tool.name}</h3>
+                      <p className="text-black/50 text-sm leading-relaxed flex-1 line-clamp-3">{preview}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-black/15 px-5 py-3">
+                      <Link
+                        href={`/tools/${tool.slug}`}
+                        className="text-[10px] font-display uppercase tracking-widest text-black hover:text-ps-yellow hover:bg-black px-2 py-1 -ml-2 transition-colors"
+                      >
+                        Start assessment →
+                      </Link>
+                      <SaveToPhoneButton
+                        title={tool.name}
+                        summary={preview || undefined}
+                        pageUrl={`/tools/${tool.slug}`}
+                        size="sm"
+                        label="Save"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Articles — white */}
+      {articles && articles.length > 0 && (
+        <section className="bg-white border-b-2 border-black">
+          <div className="max-w-6xl mx-auto">
+            <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-black/10 flex items-center justify-between">
+              <p className="label">Field Reads</p>
+              <Link href="/intelligence" className="label hover:text-black transition-colors">All articles →</Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {articles.map((article, i) => {
+                const preview = article.summary || article.excerpt;
+                const isLast = i === articles.length - 1;
+                return (
+                  <div
+                    key={article.slug}
+                    className={`flex flex-col border-black/10
+                      ${i % 3 !== 2 ? "lg:border-r" : ""}
+                      ${i % 2 !== 1 ? "sm:border-r sm:lg:border-r-0" : ""}
+                      ${!isLast ? "border-b" : ""}
+                    `}
+                  >
+                    {/* Cover image */}
+                    {article.cover_image && (
+                      <div className="h-40 overflow-hidden border-b border-black/10">
+                        <img src={article.cover_image} alt={article.title} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+
+                    <div className="flex flex-col flex-1 p-5">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="label-yellow">{branchInfo!.name}</span>
+                        {article.read_time && (
+                          <span className="text-black/35 text-[9px] font-display uppercase tracking-wider">
+                            {article.read_time} min read
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-display uppercase text-base text-black leading-tight mb-2">{article.title}</h3>
+                      <p className="text-black/50 text-sm leading-relaxed flex-1 line-clamp-3">{preview}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-black/10 px-5 py-3">
+                      <Link
+                        href={`/intelligence/${article.slug}`}
+                        className="text-[10px] font-display uppercase tracking-widest text-black hover:text-ps-yellow hover:bg-black px-2 py-1 -ml-2 transition-colors"
+                      >
+                        Read article →
+                      </Link>
+                      <SaveToPhoneButton
+                        title={article.title}
+                        summary={preview || undefined}
+                        pageUrl={`/intelligence/${article.slug}`}
+                        size="sm"
+                        label="Save"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Empty state */}
+      {!hasContent && (
+        <section className="bg-white border-b-2 border-black">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-24 text-center">
+            <span className="text-6xl block mb-6">{branchInfo!.icon}</span>
+            <h2 className="font-display uppercase text-2xl text-black mb-3">Coming Soon</h2>
+            <p className="text-black/40 text-sm max-w-sm mx-auto leading-relaxed">
+              Protocols for this branch are in development. Sign up to get notified when they drop.
+            </p>
+            <Link href="/signup" className="btn-yellow mt-8 inline-flex">
+              Get notified →
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* CTA — black */}
+      <section className="bg-black">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-14 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h2
+              className="font-display uppercase text-white leading-none mb-2"
+              style={{ fontSize: "clamp(1.8rem, 5vw, 3.5rem)", letterSpacing: "-0.02em" }}
+            >
+              Get it sorted.
+            </h2>
+            <p className="text-white/30 text-xs font-display uppercase tracking-[0.2em]">
+              Free · WhatsApp · No app needed
+            </p>
+          </div>
+          <Link href="/signup" className="btn-yellow shrink-0">
+            Join free →
+          </Link>
+        </div>
+      </section>
+
+    </div>
+  );
 }
