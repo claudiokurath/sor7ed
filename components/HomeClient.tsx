@@ -23,60 +23,39 @@ export default function HomeClient() {
       <section className="bg-white px-5 sm:px-8 md:px-12 pt-20 md:pt-24 pb-0 border-b-2 border-black">
         <div className="max-w-6xl mx-auto">
 
-          <div className="mb-8">
+          <div className="text-center mb-8">
             <motion.h1
-              className="font-display uppercase leading-none text-black"
-              style={{ fontSize: 'clamp(4rem, 14vw, 11rem)', letterSpacing: '-0.01em' }}
+              className="font-display uppercase leading-none"
+              style={{ fontSize: 'clamp(3.5rem, 12vw, 10rem)', letterSpacing: '-0.02em' }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              SORT
+              <span style={{ color: '#000' }}>SORT </span>
+              <span style={{ WebkitTextStroke: '3px #000000', color: 'transparent' }}>WHAT&apos;S</span>
             </motion.h1>
             <motion.h1
               className="font-display uppercase leading-none"
-              style={{
-                fontSize: 'clamp(4rem, 14vw, 11rem)',
-                letterSpacing: '-0.01em',
-                WebkitTextStroke: '3px #000000',
-                color: 'transparent',
-              }}
+              style={{ fontSize: 'clamp(3.5rem, 12vw, 10rem)', letterSpacing: '-0.02em' }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.06 }}
+              transition={{ duration: 0.5, delay: 0.08 }}
             >
-              WHAT&apos;S
-            </motion.h1>
-            <motion.h1
-              className="font-display uppercase leading-none"
-              style={{ fontSize: 'clamp(4rem, 14vw, 11rem)', letterSpacing: '-0.01em', color: '#FFD107' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.12 }}
-            >
-              STOPPING
-            </motion.h1>
-            <motion.h1
-              className="font-display uppercase leading-none text-black"
-              style={{ fontSize: 'clamp(4rem, 14vw, 11rem)', letterSpacing: '-0.01em' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.18 }}
-            >
-              YOU.
+              <span style={{ color: '#FFD107' }}>STOPPING </span>
+              <span style={{ color: '#000' }}>YOU.</span>
             </motion.h1>
           </div>
 
           <motion.div
-            className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-10"
+            className="flex flex-col items-center gap-4 pb-12 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.35 }}
+            transition={{ delay: 0.3 }}
           >
-            <p className="text-black/60 text-base max-w-sm leading-relaxed">
+            <p className="text-black/60 text-base max-w-md leading-relaxed">
               Answer 4 questions. Get a personalised protocol on WhatsApp. No app, no login — under 2 minutes.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
               <Link href="/tools" className="btn-yellow">
                 Take an assessment →
               </Link>
