@@ -359,13 +359,12 @@ export async function POST(req: NextRequest) {
             let contentDelivered = false;
             let contentId = keyword;
 
-            if (protocol?.protocol) {
+            if (protocol) {
                 contentDelivered = true;
                 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
                 const articleUrl = `${siteUrl}/intelligence/${protocol.slug}`;
                 const content =
-                    `Hi ${user.first_name ?? 'there'} — here's your *${protocol.title}* protocol:\n\n` +
-                    `${protocol.protocol}\n\n` +
+                    `Hi ${user.first_name ?? 'there'} — your *${protocol.title}* protocol is ready:\n\n` +
                     `${articleUrl}`;
                 await sendWhatsAppMessage(senderPhone, content, true);
             } else {

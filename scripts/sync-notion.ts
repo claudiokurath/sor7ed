@@ -29,7 +29,9 @@ const getCover = (page: NotionPage): string => {
 const getText = (prop: unknown): string => {
   if (typeof prop !== 'object' || prop === null) return '';
   const p = prop as { rich_text?: Array<{ plain_text: string }>; title?: Array<{ plain_text: string }> };
-  return p.rich_text?.[0]?.plain_text || p.title?.[0]?.plain_text || '';
+  if (p.rich_text) return p.rich_text.map(t => t.plain_text).join('');
+  if (p.title) return p.title.map(t => t.plain_text).join('');
+  return '';
 };
 
 const getSelect = (prop: unknown): string => {
