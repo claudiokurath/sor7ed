@@ -30,21 +30,22 @@ export default async function IntelligencePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <section className="border-b-2 border-black">
+      {/* Header — black */}
+      <section className="bg-black border-b-2 border-black">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pt-20 md:pt-28 pb-10">
           <p className="label-yellow mb-4">Field Reads</p>
-          <h1 className="font-display uppercase text-black leading-none mb-4" style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', letterSpacing: '-0.01em' }}>ARTICLES</h1>
-          <p className="text-black/50 text-base max-w-lg leading-relaxed">
+          <h1 className="font-display uppercase text-white leading-none mb-4" style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', letterSpacing: '-0.01em' }}>ARTICLES</h1>
+          <p className="text-white/50 text-base max-w-lg leading-relaxed">
             The context behind the protocol. These articles explain the <em>why</em> behind your friction — so you understand your brain, not just manage it.
           </p>
         </div>
       </section>
 
-      <HowItWorks steps={HOW_IT_WORKS} />
+      {/* How it works — yellow */}
+      <HowItWorks steps={HOW_IT_WORKS} variant="yellow" />
 
-      {/* Articles list */}
-      <section className="border-b-2 border-black">
+      {/* Articles list — white */}
+      <section className="bg-white border-b-2 border-black">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-10 pb-24">
           <IntelligenceGrid posts={posts || []} />
         </div>
