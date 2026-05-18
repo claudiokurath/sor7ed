@@ -18,10 +18,7 @@ export default function SmartNav() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setSearchOpen(true); }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -29,9 +26,7 @@ export default function SmartNav() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -43,7 +38,7 @@ export default function SmartNav() {
       setUser(data.user);
       if (data.user) fetchProfile(data.user.id);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
       else setProfile(null);
@@ -67,97 +62,72 @@ export default function SmartNav() {
 
   return (
     <>
-      {/* Desktop only */}
-      <nav className="hidden md:flex fixed top-0 inset-x-0 z-50 bg-ps-black border-b-2 border-ps-white">
+      <nav className="hidden md:flex fixed top-0 inset-x-0 z-50 bg-ps-black border-b border-ps-white/10">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between w-full">
 
           <Link href="/" className="font-display text-lg tracking-widest text-ps-white uppercase leading-none">
             SOR<span className="text-ps-yellow">7</span>ED
           </Link>
 
-          <div className="flex items-center gap-6 text-[11px] font-display uppercase tracking-widest text-ps-white/60">
+          <div className="flex items-center gap-8 text-[11px] font-display uppercase tracking-widest text-ps-white/50">
             <Link href="/tools" className="hover:text-ps-white transition-colors">Tools</Link>
-            <Link href="/intelligence" className="hover:text-ps-white transition-colors">Articles</Link>
-          </div>
-
-          <div className="flex items-center gap-2">
+            <Link href="/intelligence" className="hover:text-ps-white transition-colors">Reads</Link>
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 border-2 border-ps-white/40 bg-transparent px-3 py-1.5 text-ps-white/60 hover:border-ps-white hover:text-ps-white transition-all"
-              aria-label="Search (⌘K)"
+              className="hover:text-ps-white transition-colors flex items-center gap-1.5"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
               </svg>
-              <span className="text-[10px] font-display uppercase tracking-widest">Search</span>
-              <kbd className="text-[10px] text-ps-white/40 font-mono">⌘K</kbd>
+              Search
             </button>
+          </div>
 
+          <div className="flex items-center gap-4">
             {user ? (
-              <div ref={dropdownRef} className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => setDropdownOpen(v => !v)}
-                  className="flex items-center gap-2 border-2 border-ps-white px-3 py-1.5 hover:border-ps-yellow hover:shadow-hard-yellow transition-all"
+                  onClick={() => setDropdownOpen(p => !p)}
+                  className="w-8 h-8 bg-ps-yellow text-ps-black text-xs font-black flex items-center justify-center hover:bg-ps-white transition-colors"
                 >
-                  <span className="w-5 h-5 bg-ps-yellow text-ps-black text-[10px] font-black flex items-center justify-center shrink-0">
-                    {initial}
-                  </span>
-                  <span className="text-[10px] font-display uppercase tracking-widest text-ps-white hidden sm:block max-w-[80px] truncate">
-                    {profile?.first_name ?? 'Account'}
-                  </span>
-                  <svg className={`w-3 h-3 text-ps-white/60 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  {initial}
                 </button>
-
                 <AnimatePresence>
                   {dropdownOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: -4 }}
+                      initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      transition={{ duration: 0.1 }}
-                      className="absolute right-0 mt-1 w-48 bg-ps-black border-2 border-ps-white shadow-hard-white overflow-hidden"
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.12 }}
+                      className="absolute right-0 mt-2 w-44 bg-ps-black border border-ps-white/15 overflow-hidden"
                     >
-                      <div className="px-4 py-3 border-b-2 border-ps-white/20">
-                        <p className="text-[10px] font-display text-ps-white truncate uppercase tracking-widest">{profile?.first_name ?? 'Account'}</p>
-                        <p className="text-[10px] text-ps-white/40 truncate mt-0.5">{user.email}</p>
-                      </div>
-                      {[
-                        { label: 'Dashboard', href: '/dashboard' },
-                        { label: 'Settings',  href: '/dashboard?tab=settings' },
-                      ].map(item => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center px-4 py-2.5 text-[10px] font-display uppercase tracking-widest text-ps-white/60 hover:bg-ps-yellow hover:text-ps-black transition-all"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                      <div className="border-t-2 border-ps-white/20">
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2.5 text-[10px] font-display uppercase tracking-widest text-ps-danger hover:bg-ps-danger hover:text-ps-white transition-all"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
+                      <Link href="/dashboard" className="flex items-center px-4 py-3 text-xs font-display uppercase tracking-widest text-ps-white/60 hover:text-ps-yellow hover:bg-ps-white/5 transition-colors">
+                        Dashboard
+                      </Link>
+                      <button onClick={handleSignOut} className="w-full text-left px-4 py-3 text-xs font-display uppercase tracking-widest text-ps-white/60 hover:text-ps-yellow hover:bg-ps-white/5 transition-colors">
+                        Sign out
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             ) : (
-              <Link href="/signup" className="btn-yellow text-[10px] px-5 py-2">
-                Sign Up
-              </Link>
+              <>
+                <Link href="/signup?mode=login" className="text-[11px] font-display uppercase tracking-widest text-ps-white/50 hover:text-ps-white transition-colors">
+                  Sign in
+                </Link>
+                <Link href="/tools" className="btn-yellow text-[10px] px-5 py-2.5">
+                  Start free
+                </Link>
+              </>
             )}
           </div>
         </div>
       </nav>
 
-      <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      <AnimatePresence>
+        {searchOpen && <GlobalSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />}
+      </AnimatePresence>
     </>
   );
 }
