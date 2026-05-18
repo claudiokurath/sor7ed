@@ -50,6 +50,8 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
   const firstName = formData.get('firstName') as string
   const whatsapp = formData.get('whatsapp') as string
   const isLogin = formData.get('isLogin') === 'true'
+  const rawNext = (formData.get('next') as string) || '/dashboard'
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
   let pendingWaVerifyCode: string | undefined
 
   if (!email) {
@@ -103,7 +105,7 @@ export async function handleSignupOrLogin(prevState: ActionState, formData: Form
     const { error: authError } = await supabase.auth.signInWithOtp({
       email: cleanEmail,
       options: {
-        emailRedirectTo: `${baseUrl}/auth/callback`,
+        emailRedirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     })
 

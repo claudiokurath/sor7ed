@@ -1,6 +1,6 @@
 // app/tools/[slug]/page.tsx
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import ToolAssessmentClient from "@/components/ToolAssessmentClient";
 import { Metadata } from "next";
@@ -88,6 +88,12 @@ export default async function ToolPage({
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
   const supabase = await createClient();
+
+  // Auth gate — members only
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    redirect(`/signup?mode=login&next=/tools/${resolvedParams.slug}`);
+  }
 
   const { data: tool, error } = await supabase
     .from('tools')
