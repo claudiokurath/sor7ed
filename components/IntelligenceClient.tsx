@@ -10,6 +10,7 @@ import { siteConfig } from '@/lib/constants';
 
 import ArticleCover from './ArticleCover';
 import AudioBriefing from './AudioBriefing';
+import SaveToPhoneButton from './SaveToPhoneButton';
 
 type Article = {
   slug: string;
@@ -298,37 +299,17 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     )}
                 </div>
 
-                <div className="flex flex-col items-center gap-8 relative z-10">
-                    {/* Visual Keyword Token */}
-                    <div className="bg-black/80 border border-white/10 rounded-2xl sm:rounded-3xl px-6 sm:px-12 py-5 sm:py-8 inline-block shadow-2xl mb-4 w-full sm:w-auto">
-                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] mb-3 sm:mb-4">WHATSAPP TRIGGER</p>
-                        <p className="text-3xl sm:text-5xl md:text-6xl font-black tracking-[0.15em] sm:tracking-[0.2em] text-white">
-                            {article.keyword}
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-lg">
-                        <Link
-                            href={`https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(article.keyword)}`}
-                            target="_blank"
-                            className="flex-[2] bg-white text-black font-black px-6 sm:px-10 py-5 sm:py-6 rounded-full hover:scale-105 transition-all text-base sm:text-xl uppercase tracking-[0.15em] sm:tracking-[0.2em] flex items-center justify-center"
-                        >
-                            {article.keyword}
-                        </Link>
-                        <button
-                            onClick={toggleSave}
-                            className={`flex-1 flex items-center justify-center gap-3 px-8 py-6 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all ${
-                                isSaved
-                                    ? 'bg-white/10 border-white/20 text-white'
-                                    : 'bg-transparent border-white/10 text-white/30 hover:border-white/30 hover:text-white'
-                            }`}
-                        >
-                            {isSaved ? 'SAVED' : 'SAVE'}
-                        </button>
-                    </div>
-                    
-                    <p className="text-white/10 text-[10px] font-bold tracking-widest uppercase">
-                        Requires free SOR7ED account
+                <div className="flex flex-col items-center gap-6 relative z-10">
+                    <SaveToPhoneButton
+                        title={article.title}
+                        coverImageUrl={article.cover_image || undefined}
+                        protocol={article.protocol || undefined}
+                        size="lg"
+                        label="GET IT SOR7ED"
+                        className="w-full max-w-sm"
+                    />
+                    <p className="text-white/20 text-[10px] font-bold tracking-[0.2em] uppercase">
+                        Rich link + protocol sent to your WhatsApp
                     </p>
                 </div>
             </motion.div>

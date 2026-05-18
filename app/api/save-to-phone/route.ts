@@ -31,10 +31,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Verify your WhatsApp number first." }, { status: 403 });
         }
 
-        const { title, pageUrl, coverImageUrl } = await req.json() as {
+        const { title, pageUrl, coverImageUrl, protocol } = await req.json() as {
             title: string;
             pageUrl: string;
             coverImageUrl?: string;
+            protocol?: string;
         };
 
         if (!title || !pageUrl) {
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Send the page link — URL first so WhatsApp generates rich preview
-        const body = `${pageUrl}\n\n📌 *${title}*\n\nSaved to your thread, ${profile.first_name ?? "there"}. Open it any time.`;
+        const linkBody = `${pageUrl}\n\n📌 *${title}*\n\nSaved to your thread, ${profile.first_name ?? "there"}.`;
         const textRes = await fetch(apiUrl, {
             method: "POST",
             headers,
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
                 recipient_type: "individual",
                 to,
                 type: "text",
-                text: { body, preview_url: true },
+                text: { body: linkBody, preview_url: true },
             }),
         });
 
@@ -82,6 +83,22 @@ export async function POST(req: NextRequest) {
             const err = await textRes.json();
             console.error("Meta API error:", err);
             return NextResponse.json({ error: "Failed to send to WhatsApp." }, { status: 502 });
+        }
+
+        // Send protocol text as a follow-up message if provided
+        if (protocol?.trim()) {
+            await new Promise(r => setTimeout(r, 400));
+            await fetch(apiUrl, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    messaging_product: "whatsapp",
+                    recipient_type: "individual",
+                    to,
+                    type: "text",
+                    text: { body: `*Your Protocol*\n\n${protocol.trim()}`, preview_url: false },
+                }),
+            });
         }
 
         return NextResponse.json({ success: true });

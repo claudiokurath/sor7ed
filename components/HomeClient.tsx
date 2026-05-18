@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { branches } from '@/lib/constants';
 
 const PROBLEMS = [
-  { text: 'Too much to do',    sub: 'Overwhelm',  keyword: 'overwhelmed'  },
-  { text: 'Running on empty',  sub: 'Burnout',    keyword: 'exhausted'    },
-  { text: 'Money stress',      sub: 'Finance',    keyword: 'money stress' },
-  { text: "Can't focus",       sub: 'Attention',  keyword: 'stuck'        },
-  { text: "Can't sleep",       sub: 'Rest',       keyword: "can't sleep"  },
-  { text: 'Hard conversation', sub: 'Conflict',   keyword: 'argument'     },
+  { text: 'Too much to do',    sub: 'Overwhelm',  href: '/plan-ahead'   },
+  { text: 'Running on empty',  sub: 'Burnout',    href: '/feel-good'    },
+  { text: 'Money stress',      sub: 'Finance',    href: '/spend-smart'  },
+  { text: "Can't focus",       sub: 'Attention',  href: '/level-up'     },
+  { text: "Can't sleep",       sub: 'Rest',       href: '/feel-good'    },
+  { text: 'Hard conversation', sub: 'Conflict',   href: '/be-connected' },
 ];
 
 const WA = 'https://wa.me/447591922247';
@@ -56,31 +56,34 @@ export default function HomeClient() {
         {/* Problem tiles — fill remaining height */}
         <div className="flex-1 grid grid-cols-2 border-t-2 border-white/10">
           {PROBLEMS.map((p, i) => (
-            <motion.a
+            <motion.div
               key={p.text}
-              href={`${WA}?text=${encodeURIComponent(p.keyword)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group flex flex-col justify-between p-5 md:p-8 hover:bg-ps-yellow active:bg-ps-yellow transition-colors
-                ${i % 2 === 0 ? 'border-r-2 border-white/10' : ''}
-                ${i < 4 ? 'border-b-2 border-white/10' : ''}
-              `}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.15 + i * 0.06 }}
+              className={`
+                ${i % 2 === 0 ? 'border-r-2 border-white/10' : ''}
+                ${i < 4 ? 'border-b-2 border-white/10' : ''}
+              `}
             >
-              <div>
-                <p className="text-white/25 group-hover:text-black/40 text-[9px] font-display uppercase tracking-[0.2em] mb-2 transition-colors">
-                  {p.sub}
-                </p>
-                <span className="font-display uppercase text-white group-hover:text-black leading-tight transition-colors"
-                  style={{ fontSize: 'clamp(1rem, 3.5vw, 1.5rem)' }}
-                >
-                  {p.text}
-                </span>
-              </div>
-              <span className="text-white/20 group-hover:text-black transition-colors self-end text-xl">→</span>
-            </motion.a>
+              <Link
+                href={p.href}
+                className="group flex flex-col justify-between p-5 md:p-8 h-full hover:bg-ps-yellow active:bg-ps-yellow transition-colors"
+              >
+                <div>
+                  <p className="text-white/25 group-hover:text-black/40 text-[9px] font-display uppercase tracking-[0.2em] mb-2 transition-colors">
+                    {p.sub}
+                  </p>
+                  <span
+                    className="font-display uppercase text-white group-hover:text-black leading-tight transition-colors"
+                    style={{ fontSize: 'clamp(1rem, 3.5vw, 1.5rem)' }}
+                  >
+                    {p.text}
+                  </span>
+                </div>
+                <span className="text-white/20 group-hover:text-black transition-colors self-end text-xl">→</span>
+              </Link>
+            </motion.div>
           ))}
         </div>
 
