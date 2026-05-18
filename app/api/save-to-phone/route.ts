@@ -31,11 +31,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Verify your WhatsApp number first." }, { status: 403 });
         }
 
-        const { title, pageUrl, coverImageUrl, protocol } = await req.json() as {
+        const { title, pageUrl, coverImageUrl } = await req.json() as {
             title: string;
             pageUrl: string;
             coverImageUrl?: string;
-            protocol?: string;
         };
 
         if (!title || !pageUrl) {
@@ -85,21 +84,6 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Failed to send to WhatsApp." }, { status: 502 });
         }
 
-        // Send protocol text as a follow-up message if provided
-        if (protocol?.trim()) {
-            await new Promise(r => setTimeout(r, 400));
-            await fetch(apiUrl, {
-                method: "POST",
-                headers,
-                body: JSON.stringify({
-                    messaging_product: "whatsapp",
-                    recipient_type: "individual",
-                    to,
-                    type: "text",
-                    text: { body: `*${title}*\n\n${protocol.trim()}`, preview_url: false },
-                }),
-            });
-        }
 
         return NextResponse.json({ success: true });
     } catch (err) {
