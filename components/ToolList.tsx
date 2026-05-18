@@ -26,7 +26,7 @@ function HeroToolCard({ tool }: { tool: Tool }) {
     <div className="border-b-2 border-black grid grid-cols-1 lg:grid-cols-2 bg-white">
       {/* Image */}
       {tool.cover_image ? (
-        <div className="h-64 lg:h-auto overflow-hidden border-b-2 lg:border-b-0 lg:border-r-2 border-black">
+        <div className="h-64 lg:h-auto img-zoom border-b-2 lg:border-b-0 lg:border-r-2 border-black">
           <img
             src={tool.cover_image}
             alt={tool.name}
@@ -90,7 +90,7 @@ function ToolCard({ tool }: { tool: Tool }) {
     <div className="border-2 border-black flex flex-col bg-white">
       {/* Cover image */}
       {tool.cover_image ? (
-        <div className="h-44 overflow-hidden border-b-2 border-black">
+        <div className="h-44 img-zoom border-b-2 border-black">
           <img
             src={tool.cover_image}
             alt={tool.name}

@@ -28,7 +28,7 @@ function HeroCard({ post }: { post: Post }) {
     <div className="border-b-2 border-black grid grid-cols-1 lg:grid-cols-2 bg-white">
       {/* Image */}
       {post.cover_image ? (
-        <div className="h-64 lg:h-auto overflow-hidden border-b-2 lg:border-b-0 lg:border-r-2 border-black">
+        <div className="h-64 lg:h-auto img-zoom border-b-2 lg:border-b-0 lg:border-r-2 border-black">
           <img
             src={post.cover_image}
             alt={post.title}
@@ -92,7 +92,7 @@ function ArticleCard({ post, isLast }: { post: Post; isLast: boolean }) {
     <div className={`border-2 border-black flex flex-col bg-white ${!isLast ? "" : ""}`}>
       {/* Cover image */}
       {post.cover_image && (
-        <div className="h-44 overflow-hidden border-b-2 border-black">
+        <div className="h-44 img-zoom border-b-2 border-black">
           <img
             src={post.cover_image}
             alt={post.title}

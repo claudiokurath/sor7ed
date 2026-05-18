@@ -128,7 +128,7 @@ export default function HomeClient({ featuredArticles = [] }: { featuredArticles
               {hero && (
                 <div className="lg:col-span-2 border-b-2 lg:border-b-0 lg:border-r-2 border-black flex flex-col">
                   {hero.cover_image ? (
-                    <div className="h-56 sm:h-72 lg:h-80 overflow-hidden border-b-2 border-black">
+                    <div className="h-56 sm:h-72 lg:h-80 img-zoom border-b-2 border-black">
                       <img
                         src={hero.cover_image}
                         alt={hero.title}
@@ -183,7 +183,7 @@ export default function HomeClient({ featuredArticles = [] }: { featuredArticles
                     className={`flex flex-col flex-1 ${i === 0 ? "border-b-2 border-black" : ""}`}
                   >
                     {article.cover_image && (
-                      <div className="h-36 overflow-hidden border-b-2 border-black">
+                      <div className="h-36 img-zoom border-b-2 border-black">
                         <img
                           src={article.cover_image}
                           alt={article.title}
