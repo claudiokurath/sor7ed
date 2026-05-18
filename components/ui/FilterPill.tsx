@@ -17,14 +17,14 @@ export default function FilterPill({ label, isActive, onClick, count }: FilterPi
         text-[10px] font-display uppercase tracking-[0.15em]
         border-2 transition-all duration-150 active:scale-95
         ${isActive
-          ? 'bg-ps-yellow text-ps-black border-ps-yellow shadow-hard-white'
-          : 'bg-ps-black text-ps-white border-ps-white hover:border-ps-yellow hover:text-ps-yellow'
+          ? 'bg-black text-white border-black'
+          : 'bg-white text-black border-black hover:bg-ps-yellow'
         }
       `}
     >
       {label}
       {count !== undefined && (
-        <span className={`text-[9px] font-display px-1 ${isActive ? 'text-ps-black/60' : 'text-ps-white/40'}`}>
+        <span className={`text-[9px] font-display px-1 ${isActive ? 'text-white/60' : 'text-black/40'}`}>
           {count}
         </span>
       )}

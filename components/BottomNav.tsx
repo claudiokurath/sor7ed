@@ -17,7 +17,7 @@ export default function BottomNav() {
   if (hidden) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-ps-black border-t border-ps-white/10 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t-2 border-black pb-safe">
       <div className="flex items-center justify-around px-2 py-2.5">
         {NAV.map(({ href, label, Icon }) => {
           const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -30,9 +30,9 @@ export default function BottomNav() {
               <Icon
                 size={20}
                 strokeWidth={isActive ? 2.5 : 1.8}
-                className={isActive ? 'text-ps-yellow' : 'text-ps-white/30'}
+                className={isActive ? 'text-black' : 'text-black/25'}
               />
-              <span className={`text-[9px] font-display uppercase tracking-widest leading-none ${isActive ? 'text-ps-yellow' : 'text-ps-white/30'}`}>
+              <span className={`text-[9px] font-display uppercase tracking-widest leading-none ${isActive ? 'text-black font-black' : 'text-black/25'}`}>
                 {label}
               </span>
             </Link>
