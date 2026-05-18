@@ -31,10 +31,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Verify your WhatsApp number first." }, { status: 403 });
         }
 
-        const { title, pageUrl, coverImageUrl } = await req.json() as {
+        const { title, summary, pageUrl } = await req.json() as {
             title: string;
+            summary?: string;
             pageUrl: string;
-            coverImageUrl?: string;
         };
 
         if (!title || !pageUrl) {
@@ -48,24 +48,8 @@ export async function POST(req: NextRequest) {
             "Content-Type": "application/json",
         };
 
-        // Send cover image first if available
-        if (coverImageUrl) {
-            await fetch(apiUrl, {
-                method: "POST",
-                headers,
-                body: JSON.stringify({
-                    messaging_product: "whatsapp",
-                    recipient_type: "individual",
-                    to,
-                    type: "image",
-                    image: { link: coverImageUrl, caption: title },
-                }),
-            });
-            await new Promise(r => setTimeout(r, 400));
-        }
-
-        // Send the page link — URL first so WhatsApp generates rich preview
-        const linkBody = `${pageUrl}\n\n📌 *${title}*\n\nSaved to your thread, ${profile.first_name ?? "there"}.`;
+        // One message: title + summary + URL — WhatsApp renders URL as rich link card
+        const body = `*${title}*${summary ? `\n\n${summary}` : ''}\n\n${pageUrl}`;
         const textRes = await fetch(apiUrl, {
             method: "POST",
             headers,
@@ -74,7 +58,7 @@ export async function POST(req: NextRequest) {
                 recipient_type: "individual",
                 to,
                 type: "text",
-                text: { body: linkBody, preview_url: true },
+                text: { body, preview_url: true },
             }),
         });
 

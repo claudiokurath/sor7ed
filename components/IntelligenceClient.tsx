@@ -21,6 +21,7 @@ type Article = {
   cover_image: string;
   problem: string;
   description: string;
+  summary: string;
   tldr: string;
   protocol: string;
   cta: string;
@@ -302,8 +303,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 <div className="flex flex-col items-center gap-6 relative z-10">
                     <SaveToPhoneButton
                         title={article.title}
-                        coverImageUrl={article.cover_image || undefined}
-                        protocol={article.protocol || undefined}
+                        summary={article.summary || article.tldr || undefined}
                         size="lg"
                         label="GET IT SOR7ED"
                         className="w-full max-w-sm"

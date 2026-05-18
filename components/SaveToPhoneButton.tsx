@@ -4,9 +4,8 @@ import { useState } from "react";
 
 interface Props {
     title: string;
+    summary?: string;
     pageUrl?: string;
-    coverImageUrl?: string;
-    protocol?: string;
     size?: "sm" | "md" | "lg";
     label?: string;
     className?: string;
@@ -14,9 +13,8 @@ interface Props {
 
 export default function SaveToPhoneButton({
     title,
+    summary,
     pageUrl,
-    coverImageUrl,
-    protocol,
     size = "md",
     label = "GET IT SOR7ED",
     className = "",
@@ -35,7 +33,7 @@ export default function SaveToPhoneButton({
             const res = await fetch("/api/save-to-phone", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title, pageUrl: url, coverImageUrl, protocol }),
+                body: JSON.stringify({ title, summary, pageUrl: url }),
             });
 
             if (res.ok) {

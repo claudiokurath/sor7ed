@@ -597,7 +597,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
                 {user && (
                   <SaveToPhoneButton
                     title={tool.name}
-                    coverImageUrl={tool.cover_image || undefined}
+                    summary={tool.tldr || undefined}
                     size="md"
                   />
                 )}
