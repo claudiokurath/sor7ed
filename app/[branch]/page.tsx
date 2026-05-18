@@ -158,7 +158,7 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
         <section className="bg-white border-b-2 border-black">
           <div className="max-w-6xl mx-auto">
             <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-black/10 flex items-center justify-between">
-              <p className="label">Field Reads</p>
+              <p className="label">Articles</p>
               <Link href="/intelligence" className="label hover:text-black transition-colors">All articles →</Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

@@ -7,7 +7,7 @@ import { Home, Compass, BookOpen, User } from 'lucide-react';
 const NAV = [
   { href: '/',             label: 'Home',   Icon: Home     },
   { href: '/tools',        label: 'Tools',  Icon: Compass  },
-  { href: '/intelligence', label: 'Reads',  Icon: BookOpen },
+  { href: '/intelligence', label: 'Articles',  Icon: BookOpen },
   { href: '/dashboard',    label: 'Account',Icon: User     },
 ];
 

@@ -117,7 +117,7 @@ export default function HomeClient({ featuredArticles = [] }: { featuredArticles
 
             {/* Section header */}
             <div className="px-5 sm:px-8 md:px-12 py-4 border-b-2 border-black flex items-center justify-between">
-              <p className="label">From the Field</p>
+              <p className="label">Articles</p>
               <Link href="/intelligence" className="label hover:text-black transition-colors">All articles →</Link>
             </div>
 

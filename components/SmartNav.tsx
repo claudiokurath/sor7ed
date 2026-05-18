@@ -71,7 +71,7 @@ export default function SmartNav() {
 
           <div className="flex items-center gap-8 text-[11px] font-display uppercase tracking-widest text-black/50">
             <Link href="/tools" className="hover:text-black transition-colors">Tools</Link>
-            <Link href="/intelligence" className="hover:text-black transition-colors">Reads</Link>
+            <Link href="/intelligence" className="hover:text-black transition-colors">Articles</Link>
             <button
               onClick={() => setSearchOpen(true)}
               className="hover:text-black transition-colors flex items-center gap-1.5"

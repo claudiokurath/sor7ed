@@ -33,7 +33,7 @@ export default async function IntelligencePage() {
       {/* Header — black */}
       <section className="bg-black border-b-2 border-black">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pt-20 md:pt-28 pb-10">
-          <p className="label-yellow mb-4">Field Reads</p>
+          <p className="label-yellow mb-4">Articles</p>
           <h1 className="font-display uppercase text-white leading-none mb-4" style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', letterSpacing: '-0.01em' }}>ARTICLES</h1>
           <p className="text-white/50 text-base max-w-lg leading-relaxed">
             The context behind the protocol. These articles explain the <em>why</em> behind your friction — so you understand your brain, not just manage it.
