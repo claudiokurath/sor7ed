@@ -19,51 +19,136 @@ export default function HomeClient() {
   return (
     <div className="text-black">
 
-      {/* ── HERO — white ────────────────────────────── */}
-      <section className="bg-white px-5 sm:px-8 md:px-12 pt-20 md:pt-24 pb-0 border-b-2 border-black">
-        <div className="max-w-6xl mx-auto">
+      {/* ── HERO — split left/right ──────────────────── */}
+      <section className="bg-white border-b-2 border-black" style={{ minHeight: '100dvh' }}>
+        <div className="flex h-full" style={{ minHeight: '100dvh' }}>
 
-          <div className="text-center mb-8">
-            <motion.h1
-              className="font-display uppercase leading-none"
-              style={{ fontSize: 'clamp(3.5rem, 12vw, 10rem)', letterSpacing: '-0.02em' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span style={{ color: '#000' }}>SORT </span>
-              <span style={{ WebkitTextStroke: '3px #000000', color: 'transparent' }}>WHAT&apos;S</span>
-            </motion.h1>
-            <motion.h1
-              className="font-display uppercase leading-none"
-              style={{ fontSize: 'clamp(3.5rem, 12vw, 10rem)', letterSpacing: '-0.02em' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.08 }}
-            >
-              <span style={{ color: '#FFD107' }}>STOPPING </span>
-              <span style={{ color: '#000' }}>YOU.</span>
-            </motion.h1>
+          {/* Left panel — black, desktop only */}
+          <div className="hidden md:flex w-64 lg:w-72 bg-black border-r-2 border-black flex-col items-center justify-between py-10 shrink-0 relative overflow-hidden" style={{ paddingTop: '5rem' }}>
+            {/* Ghost 7 watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden>
+              <span
+                className="font-display leading-none"
+                style={{
+                  fontSize: '22rem',
+                  WebkitTextStroke: '2px rgba(255,209,7,0.15)',
+                  color: 'transparent',
+                  userSelect: 'none',
+                }}
+              >
+                7
+              </span>
+            </div>
+
+            {/* Wordmark top */}
+            <div className="relative z-10 self-start px-8">
+              <span className="font-display text-lg tracking-widest text-white uppercase">
+                SOR<span className="text-ps-yellow">7</span>ED
+              </span>
+            </div>
+
+            {/* Vertical label centre */}
+            <div className="relative z-10 flex-1 flex items-center justify-center">
+              <p
+                className="font-display uppercase text-white/20 text-[10px] tracking-[0.4em]"
+                style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+              >
+                Human Performance System
+              </p>
+            </div>
+
+            {/* Bottom — year + scroll hint */}
+            <div className="relative z-10 self-start px-8 flex flex-col gap-4">
+              <span className="label" style={{ color: '#444' }}>Est. 2026</span>
+              <span className="text-white/20 text-xs font-display uppercase tracking-widest">↓ scroll</span>
+            </div>
           </div>
 
-          <motion.div
-            className="flex flex-col items-center gap-4 pb-12 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="text-black/60 text-base max-w-md leading-relaxed">
-              Answer 4 questions. Get a personalised protocol on WhatsApp. No app, no login — under 2 minutes.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3 mt-2">
-              <Link href="/tools" className="btn-yellow">
-                Take an assessment →
-              </Link>
-              <a href={WA} target="_blank" rel="noopener noreferrer" className="btn-outline">
-                Text on WhatsApp
-              </a>
+          {/* Right panel — white, full content */}
+          <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 md:px-14 pt-24 md:pt-0 pb-10">
+
+            {/* Tag */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-8"
+            >
+              <span className="label-yellow">Human Performance System</span>
+            </motion.div>
+
+            {/* 2-line headline */}
+            <div className="mb-10">
+              <motion.h1
+                className="font-display uppercase leading-none"
+                style={{ fontSize: 'clamp(3rem, 9vw, 8rem)', letterSpacing: '-0.02em' }}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.05 }}
+              >
+                <span style={{ color: '#000' }}>SORT </span>
+                <span style={{ WebkitTextStroke: '3px #000', color: 'transparent' }}>WHAT&apos;S</span>
+              </motion.h1>
+              <motion.h1
+                className="font-display uppercase leading-none"
+                style={{ fontSize: 'clamp(3rem, 9vw, 8rem)', letterSpacing: '-0.02em' }}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.12 }}
+              >
+                <span style={{ color: '#FFD107' }}>STOPPING </span>
+                <span style={{ color: '#000' }}>YOU.</span>
+              </motion.h1>
             </div>
-          </motion.div>
+
+            {/* Divider */}
+            <motion.div
+              className="w-12 h-0.5 bg-black mb-8"
+              initial={{ scaleX: 0, originX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            />
+
+            {/* Description + CTA */}
+            <motion.div
+              className="flex flex-col sm:flex-row sm:items-end justify-between gap-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <p className="text-black/55 text-base max-w-xs leading-relaxed">
+                Answer 4 questions. Get a personalised protocol on WhatsApp. No app, no login — under 2 minutes.
+              </p>
+              <div className="flex flex-wrap gap-3 shrink-0">
+                <Link href="/tools" className="btn-yellow">
+                  Take an assessment →
+                </Link>
+                <a href={WA} target="_blank" rel="noopener noreferrer" className="btn-outline">
+                  WhatsApp
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Stat row */}
+            <motion.div
+              className="mt-12 pt-8 border-t-2 border-black/10 grid grid-cols-3 gap-6 max-w-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.55 }}
+            >
+              {[
+                { num: '7', label: 'Life areas' },
+                { num: '4', label: 'Questions' },
+                { num: '<2', label: 'Minutes' },
+              ].map(s => (
+                <div key={s.label}>
+                  <div className="font-display text-3xl text-black leading-none mb-0.5">{s.num}</div>
+                  <div className="label">{s.label}</div>
+                </div>
+              ))}
+            </motion.div>
+
+          </div>
         </div>
       </section>
 
@@ -71,7 +156,7 @@ export default function HomeClient() {
       <section className="bg-black border-b-2 border-black">
         <div className="max-w-6xl mx-auto">
           <div className="px-5 sm:px-8 md:px-12 py-4 border-b border-white/10">
-            <p className="label" style={{ color: '#888' }}>What&apos;s happening right now? Tap to send on WhatsApp.</p>
+            <p className="label" style={{ color: '#555' }}>What&apos;s happening right now? Tap to send on WhatsApp.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {PROBLEMS.map((p, i) => (
@@ -155,7 +240,13 @@ export default function HomeClient() {
           </h2>
           <div className="flex flex-wrap gap-3 shrink-0">
             <Link href="/tools" className="btn-yellow">Start free →</Link>
-            <a href={WA} target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ color: 'white', borderColor: 'white' }}>
+            <a
+              href={WA}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline"
+              style={{ color: 'white', borderColor: 'white' }}
+            >
               Text on WhatsApp
             </a>
           </div>
