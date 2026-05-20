@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import type { SaveCard } from '@/types/whatsapp';
 import { cache } from 'react';
+import { resolveOgImageUrl } from '@/lib/og-image';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
@@ -15,27 +16,6 @@ function extractSlugFromUrl(url: string): string | null {
     console.warn(`[SaveCard] Invalid URL: ${url}`);
     return null;
   }
-}
-
-function resolveOgImageUrl(ogImageUrl: string, siteUrl: string): string {
-  if (!ogImageUrl) return `${siteUrl}/og-default.png`;
-
-  if (ogImageUrl.startsWith('http') && 
-      !ogImageUrl.includes('/storage/v1/object/public/notion-files/')) {
-    return ogImageUrl;
-  }
-
-  if (ogImageUrl.includes('/storage/v1/object/public/notion-files/')) {
-    return ogImageUrl
-      .replace(
-        '/storage/v1/object/public/notion-files/',
-        '/storage/v1/render/image/public/notion-files/'
-      )
-      + '?width=1200&height=630&resize=cover&quality=80&format=jpeg';
-  }
-
-  const cleanPath = ogImageUrl.startsWith('/') ? ogImageUrl : `/${ogImageUrl}`;
-  return `${siteUrl}${cleanPath}`;
 }
 
 // Cached to prevent duplicate queries between generateMetadata and page component
