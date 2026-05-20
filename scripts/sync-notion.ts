@@ -248,11 +248,11 @@ async function syncProtocols(pages: NotionPage[]): Promise<string[]> {
     if (localCover) {
       cover_image = localCover;
     } else {
-      // 2. Fall back to downloading Notion cover
+      // 2. Use the raw URL directly from Notion — no download/re-upload
       const rawCover = getCover(page) || getFiles(props['Cover Image']) || getFiles(props['Cover Image 1']) || getUrl(props['Cover Image']) || getUrl(props['Cover Image 1']) || getText(props['Cover Image URL']);
       if (rawCover) {
-        console.log(`[Sync] Uploading cover image for protocol: ${slug}...`);
-        cover_image = await uploadCoverImageToSupabase(rawCover, 'protocols', slug);
+        cover_image = rawCover;
+        console.log(`[Sync] Using cover URL for protocol: ${slug}`);
       }
     }
 
@@ -307,11 +307,11 @@ async function syncTools(pages: NotionPage[]): Promise<string[]> {
     if (localCover) {
       cover_image = localCover;
     } else {
-      // 2. Fall back to downloading Notion cover
+      // 2. Use the raw URL directly from Notion — no download/re-upload
       const rawCover = getCover(page) || getFiles(props['Cover Image']) || getUrl(props['Cover Image']) || getText(props['Cover Image URL']);
       if (rawCover) {
-        console.log(`[Sync] Uploading cover image for tool: ${slug}...`);
-        cover_image = await uploadCoverImageToSupabase(rawCover, 'tools', slug);
+        cover_image = rawCover;
+        console.log(`[Sync] Using cover URL for tool: ${slug}`);
       }
     }
 
@@ -361,11 +361,11 @@ async function syncBranches(pages: NotionPage[]): Promise<string[]> {
     if (localCover) {
       cover_image = localCover;
     } else {
-      // 2. Fall back to downloading Notion cover
+      // 2. Use the raw URL directly from Notion — no download/re-upload
       const rawCover = getCover(page) || getUrl(props['Cover Image']);
       if (rawCover && slug) {
-        console.log(`[Sync] Uploading cover image for branch: ${slug}...`);
-        cover_image = await uploadCoverImageToSupabase(rawCover, 'branches', slug);
+        cover_image = rawCover;
+        console.log(`[Sync] Using cover URL for branch: ${slug}`);
       }
     }
 
