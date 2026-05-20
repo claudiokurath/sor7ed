@@ -95,7 +95,7 @@ export async function handleSave(
 
   return {
     to: userWaId,
-    text: `SAVED ✓ ${title}\n\nOpen: ${cardUrl}`,
+    text: `${title}\n${cardUrl}`,
     url: cardUrl,
     preview_url: true,
   };

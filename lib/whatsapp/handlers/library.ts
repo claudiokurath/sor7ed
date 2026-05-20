@@ -14,14 +14,19 @@ export async function handleLibrary(userWaId: string): Promise<WaResponse> {
   if (!items || items.length === 0) {
     return {
       to: userWaId,
-      text: 'Your library is empty. Save items using the SAVE command.',
+      text: "No saved items\nVisit sor7ed.com/tools",
+      preview_url: false,
     };
   }
 
-  const text = items.map((i, idx) => `${idx + 1}. ${i.title}\n${i.target_url}`).join('\n\n');
+  // List format: each item is title + link
+  const itemsList = items
+    .map(item => `${item.title}\n${item.target_url}`)
+    .join('\n\n');
 
   return {
     to: userWaId,
-    text: `Your Saved Library (Recent 10):\n\n${text}`,
+    text: itemsList,
+    preview_url: false, // Don't preview in lists
   };
 }

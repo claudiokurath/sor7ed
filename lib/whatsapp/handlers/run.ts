@@ -27,7 +27,7 @@ export async function handleRun(
 
   return {
     to: userWaId,
-    text: `RUN ✓ ${toolName} (${runsUsed}/${runsLimit} free runs used)\n\n${toolUrl}`,
+    text: `${toolName}\n${toolUrl}`,
     url: toolUrl,
     preview_url: true,
   };

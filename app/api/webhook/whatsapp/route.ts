@@ -3,6 +3,7 @@ import { parseCommand } from '@/lib/whatsapp/parser';
 import { handleRun } from '@/lib/whatsapp/handlers/run';
 import { handleSave } from '@/lib/whatsapp/handlers/save';
 import { handleLibrary } from '@/lib/whatsapp/handlers/library';
+import { handleArticle } from '@/lib/whatsapp/handlers/article';
 import type { WaMessage, WaResponse } from '@/types/whatsapp';
 
 // Webhook verification for Meta
@@ -51,6 +52,10 @@ export async function POST(req: NextRequest) {
         responses = [await handleRun(incoming.from, command.arg)];
         break;
       
+      case 'ARTICLE':
+        responses = await handleArticle(incoming.from, command.arg);
+        break;
+      
       case 'LIBRARY':
         responses = [await handleLibrary(incoming.from)];
         break;
@@ -59,14 +64,14 @@ export async function POST(req: NextRequest) {
       case 'MENU':
         responses = [{
           to: incoming.from,
-          text: 'SOR7ED Commands:\n\nSAVE <tool> — Save a tool\nRUN <tool> — Run a tool\nLIBRARY — Your saved items\n\nVisit sor7ed.com for all tools.',
+          text: "SAVE <tool> — save tool\nRUN <tool> — run tool\nLIBRARY — your items\n\nsor7ed.com/tools",
         }];
         break;
       
       default:
         responses = [{
           to: incoming.from,
-          text: `Sorry, I didn't understand "${incoming.text}".\n\nTry: RUN <tool> or HELP.`,
+          text: "Unknown command\nTry: SAVE <tool> or visit sor7ed.com/tools",
         }];
     }
 
