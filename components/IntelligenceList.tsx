@@ -25,57 +25,74 @@ export default function IntelligenceList({ initialPosts }: { initialPosts: Post[
 
     return (
         <div className="space-y-8">
-            {/* Search Bar */}
+            {/* Search Bar - Brutalist Design */}
             <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-white/50 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-ps-yellow transition-colors">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 </div>
                 <input 
                     type="text" 
-                    placeholder="Search by title, branch, or keyword..." 
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                    placeholder="SEARCH BY TITLE, BRANCH, OR KEYWORD..." 
+                    className="input pl-12 uppercase"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
                 {search && (
                     <button 
                         onClick={() => setSearch("")}
-                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/20 hover:text-white transition-colors"
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-white/30 hover:text-white transition-colors"
                     >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
                 )}
             </div>
 
-            <div className="space-y-4">
+            {/* List - Brutalist Grid/Stack */}
+            <div className="space-y-6">
                 {filteredPosts.map((post) => (
                     <Link
                         key={post.slug}
                         href={`/intelligence/${post.slug}`}
-                        className="block border border-white/10 rounded-2xl p-6 hover:bg-white/5 transition-all duration-300 group"
+                        className="card-interactive p-6 block group"
                     >
-                        <div className="flex justify-between items-start mb-3">
-                            <span className="text-xs bg-white/10 px-3 py-1 rounded-full text-white/70">
-                                {post.branch}
-                            </span>
-                            <div className="bg-black/50 border border-white/20 rounded-xl px-4 py-3 font-mono">
-                                <span className="text-xs text-white/40 uppercase tracking-widest">Text this →</span>
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+                            <div className="flex flex-wrap gap-2">
+                                <span className="label-yellow">
+                                    {post.branch}
+                                </span>
+                                <span className="label">
+                                    ID: {post.id.slice(0, 8)}
+                                </span>
+                            </div>
+                            
+                            {/* Keyword Stamp */}
+                            <div className="bg-black border-2 border-white px-4 py-2 font-mono shadow-hard-white group-hover:shadow-hard-yellow group-hover:border-ps-yellow transition-all">
+                                <span className="label text-white/40 block mb-1">WHATSAPP KEYWORD</span>
                                 <div className="flex items-center gap-2">
                                     <span className="text-lg">⚡</span>
-                                    <span className="font-bold tracking-widest uppercase">{post.keyword}</span>
+                                    <span className="font-bold tracking-widest uppercase text-white group-hover:text-ps-yellow">{post.keyword}</span>
                                 </div>
                             </div>
                         </div>
-                        <h2 className="text-xl font-bold mb-2 group-hover:text-white/80 transition-colors">
+                        
+                        <h2 className="display-sm mb-3 text-white group-hover:text-ps-yellow transition-colors">
                             {post.title}
                         </h2>
-                        <p className="text-white/50 text-sm leading-relaxed">{post.tldr || post.excerpt || post.description}</p>
+                        
+                        <p className="text-white/70 text-sm leading-relaxed max-w-2xl">
+                            {post.tldr || post.excerpt || post.description}
+                        </p>
+                        
+                        <div className="mt-4 flex items-center text-xs font-bold text-ps-yellow group-hover:text-white transition-colors">
+                            <span>ACCESS FULL BRIEFING</span>
+                            <svg className="ml-2 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </div>
                     </Link>
                 ))}
                 
                 {filteredPosts.length === 0 && (
-                    <div className="text-center py-20 border border-dashed border-white/10 rounded-3xl">
-                        <p className="text-white/30 italic">No protocols match your search.</p>
+                    <div className="text-center py-20 border-2 border-dashed border-white/20">
+                        <p className="text-white/30 font-mono uppercase">No protocols match your query.</p>
                     </div>
                 )}
             </div>

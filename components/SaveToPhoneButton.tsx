@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { GetSor7edButton } from "./buttons/GetSor7edButton";
 
-interface Props {
+interface SaveToPhoneButtonProps {
     title: string;
     summary?: string;
     keyword?: string;
@@ -11,6 +12,7 @@ interface Props {
     size?: "sm" | "md" | "lg";
     label?: string;
     className?: string;
+    mode?: "public" | "dashboard";
 }
 
 export default function SaveToPhoneButton({
@@ -21,11 +23,14 @@ export default function SaveToPhoneButton({
     size = "md",
     label = "GET IT SOR7ED",
     className = "",
-}: Props) {
+    mode = "public",
+}: SaveToPhoneButtonProps) {
     const [isAuth, setIsAuth] = useState(false);
     const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        setIsMounted(true);
         createClient().auth.getUser().then(({ data }) => setIsAuth(!!data.user));
     }, []);
 
@@ -34,56 +39,42 @@ export default function SaveToPhoneButton({
         return raw.startsWith("/") ? window.location.origin + raw : raw;
     };
 
-    const getMessage = () => {
-        const url = getUrl();
-        return `*${title}*${summary ? `\n\n${summary}` : ""}\n\n${url}`;
+    // Construct the wa.me command string based on pageUrl context
+    const getCommand = () => {
+        if (keyword) return keyword;
+        
+        const urlStr = getUrl();
+        if (urlStr.includes('/tools/')) {
+            const slug = urlStr.split('/').pop();
+            return `RUN ${slug}`;
+        }
+        if (urlStr.includes('/intelligence/')) {
+            const slug = urlStr.split('/').pop();
+            return `ARTICLE ${slug}`;
+        }
+        return `SAVE ${urlStr}`;
     };
 
-    const sizeClasses = {
-        sm: "px-3 py-2 text-[9px] gap-1.5",
-        md: "px-5 py-3 text-[10px] gap-2",
-        lg: "px-7 py-4 text-xs gap-2.5",
-    };
+    if (!isMounted) return null;
 
-    const baseClass = `inline-flex items-center justify-center font-display uppercase tracking-[0.15em] border-2 transition-all duration-100 active:scale-[0.97] shrink-0 ${sizeClasses[size]} ${className}`;
-
-    const WAIcon = ({ s }: { s: number }) => (
-        <svg width={s} height={s} viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-    );
-
-    const iconSize = size === "sm" ? 11 : size === "lg" ? 15 : 13;
-
-    // Non-auth: open WhatsApp pre-filled with the keyword (bot recognises it and delivers the protocol)
-    const waHref = keyword
-        ? `https://wa.me/447591922247?text=${encodeURIComponent(keyword)}`
-        : `https://wa.me/447591922247?text=${encodeURIComponent(getMessage())}`;
-
-    if (!isAuth) {
+    if (!isAuth || mode === "public") {
         return (
-            <a
-                href={waHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className={`${baseClass} bg-ps-yellow text-black border-black hover:bg-black hover:text-ps-yellow`}
-            >
-                <WAIcon s={iconSize} />
-                {label}
-            </a>
+            <GetSor7edButton 
+                command={getCommand()} 
+                label={label} 
+                size={size} 
+                variant="outline"
+                className={className}
+            />
         );
     }
 
-    // Auth: call API, open WA as fallback with synchronous pre-open trick
-    const handleSave = async (e: React.MouseEvent) => {
+    // Dashboard mode for authenticated users (saves to backend silently)
+    const handleSaveToVault = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (status === "loading") return;
         setStatus("loading");
-
-        // Pre-open window synchronously (browser allows this — it's in the click handler)
-        const win = window.open("", "_blank");
 
         try {
             const res = await fetch("/api/save-to-phone", {
@@ -93,22 +84,26 @@ export default function SaveToPhoneButton({
             });
 
             if (res.ok) {
-                win?.close();
                 setStatus("success");
                 setTimeout(() => setStatus("idle"), 3500);
             } else {
-                // Redirect the pre-opened window to WhatsApp
-                if (win) win.location.href = waHref;
-                setStatus("idle");
+                setStatus("error");
+                setTimeout(() => setStatus("idle"), 3500);
             }
         } catch {
-            if (win) win.location.href = waHref;
-            setStatus("idle");
+            setStatus("error");
+            setTimeout(() => setStatus("idle"), 3500);
         }
     };
 
+    const sizeClasses = {
+        sm: "px-3 py-2 text-[9px] gap-1.5",
+        md: "px-5 py-3 text-[10px] gap-2",
+        lg: "px-7 py-4 text-xs gap-2.5",
+    };
+
     const stateStyles = {
-        idle:    "bg-ps-yellow text-black border-black hover:bg-black hover:text-ps-yellow cursor-pointer",
+        idle:    "btn-outline cursor-pointer",
         loading: "bg-black/10 text-black/30 border-black/20 cursor-wait",
         success: "bg-black text-ps-yellow border-black",
         error:   "bg-white text-black border-black",
@@ -116,15 +111,11 @@ export default function SaveToPhoneButton({
 
     return (
         <button
-            onClick={handleSave}
+            onClick={handleSaveToVault}
             disabled={status === "loading"}
-            className={`${baseClass} ${stateStyles[status]}`}
+            className={`inline-flex items-center justify-center font-sans font-bold uppercase tracking-[0.1em] rounded-full transition-all duration-100 shrink-0 ${sizeClasses[size]} ${stateStyles[status]} ${className}`}
         >
-            {status === "success"
-                ? <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                : <WAIcon s={iconSize} />
-            }
-            {status === "idle" ? label : status === "loading" ? "Saving…" : status === "success" ? "Saved ✓" : label}
+            {status === "idle" ? label : status === "loading" ? "Saving…" : status === "success" ? "Saved ✓" : "Error"}
         </button>
     );
 }

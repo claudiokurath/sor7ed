@@ -4,7 +4,7 @@ export const branches = [
     color: "#3B82F6", 
     name: "Keep Going", 
     slug: "keep-going", 
-    icon: "🚀",
+    icon: "",
     description: "Career momentum, learning, skill-building, progress" 
   },
   { 
@@ -12,7 +12,7 @@ export const branches = [
     color: "#A855F7", 
     name: "Feel Good", 
     slug: "feel-good", 
-    icon: "🧠",
+    icon: "",
     description: "Health, nervous system, energy, meds, food, sleep, sensory" 
   },
   { 
@@ -20,7 +20,7 @@ export const branches = [
     color: "#10B981", 
     name: "Spend Smart", 
     slug: "spend-smart", 
-    icon: "💰",
+    icon: "",
     description: "Money admin, bills, budgeting, impulse spending" 
   },
   { 
@@ -28,7 +28,7 @@ export const branches = [
     color: "#F59E0B", 
     name: "Be Connected", 
     slug: "be-connected", 
-    icon: "🤝",
+    icon: "",
     description: "Relationships, communication, boundaries, social scripts" 
   },
   { 
@@ -36,7 +36,7 @@ export const branches = [
     color: "#06B6D4", 
     name: "Plan Ahead", 
     slug: "plan-ahead", 
-    icon: "📅",
+    icon: "",
     description: "Planning, executive function, and the systems that support it" 
   },
   { 
@@ -44,7 +44,7 @@ export const branches = [
     color: "#FB7185", 
     name: "Be Yourself", 
     slug: "be-yourself", 
-    icon: "🌈",
+    icon: "",
     description: "Unmasking, identity, shame, self-concept, emotional regulation" 
   },
   { 
@@ -52,7 +52,7 @@ export const branches = [
     color: "#6366F1", 
     name: "Level Up", 
     slug: "level-up", 
-    icon: "⚡",
+    icon: "",
     description: "Digital systems, automation, apps, setups" 
   },
 ];

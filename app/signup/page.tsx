@@ -70,7 +70,7 @@ function SignupForm() {
 
           <div className="space-y-3">
             <div className="card-dark flex items-start gap-4 p-5">
-              <div className="w-8 h-8 border-2 border-ps-white flex items-center justify-center shrink-0 text-ps-white text-sm font-display">1</div>
+              <div className="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center shrink-0 text-ps-white text-sm font-display">1</div>
               <div className="flex-1">
                 <p className="font-display text-ps-white text-xs uppercase tracking-widest mb-1">Confirm your email</p>
                 <p className="text-ps-white/50 text-xs leading-relaxed">
@@ -82,7 +82,7 @@ function SignupForm() {
 
             {waVerifyUrl && waVerifyCode ? (
               <div className="card-dark border-ps-yellow shadow-hard-yellow flex items-start gap-4 p-5">
-                <div className="w-8 h-8 bg-ps-yellow flex items-center justify-center shrink-0 text-ps-black text-sm font-display">2</div>
+                <div className="w-8 h-8 bg-ps-yellow rounded-full flex items-center justify-center shrink-0 text-ps-black text-sm font-display">2</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-display text-ps-white text-xs uppercase tracking-widest mb-1">Verify your WhatsApp</p>
                   <p className="text-ps-white/50 text-xs leading-relaxed mb-4">Opens WhatsApp with your code pre-filled. Just hit send.</p>
@@ -94,7 +94,7 @@ function SignupForm() {
               </div>
             ) : (
               <div className="card-dark flex items-start gap-4 p-5 opacity-50">
-                <div className="w-8 h-8 border-2 border-ps-white/40 flex items-center justify-center shrink-0 text-ps-white/40 text-sm font-display">2</div>
+                <div className="w-8 h-8 border border-white/20 rounded-full flex items-center justify-center shrink-0 text-ps-white/40 text-sm font-display">2</div>
                 <div>
                   <p className="font-display text-ps-white text-xs uppercase tracking-widest mb-1">Verify your WhatsApp</p>
                   <p className="text-ps-white/50 text-xs">Check your email first, then follow the WhatsApp step.</p>
@@ -174,8 +174,8 @@ function SignupForm() {
                 <label className="label mb-2 block">WhatsApp Number</label>
                 <div className="flex gap-2">
                   <div className="relative">
-                    <select value={countryCode} onChange={e => setCountryCode(e.target.value)} className="appearance-none bg-ps-black text-ps-white border-2 border-ps-white pl-3 pr-7 py-3 focus:outline-none focus:border-ps-yellow transition-colors cursor-pointer text-sm" style={{ minWidth: '90px' }}>
-                      {countryCodes.map((c, i) => <option key={i} value={c.code} className="bg-ps-black">{c.flag} {c.code}</option>)}
+                    <select value={countryCode} onChange={e => setCountryCode(e.target.value)} className="appearance-none bg-ps-black text-ps-white border border-white/20 rounded-xl pl-3 pr-7 py-3 focus:outline-none focus:border-ps-yellow transition-colors cursor-pointer text-sm" style={{ minWidth: '90px' }}>
+                      {countryCodes.map((c, i) => <option key={i} value={c.code} className="bg-ps-black">{c.code}</option>)}
                     </select>
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-ps-white/50 text-xs">▾</div>
                   </div>
@@ -187,7 +187,7 @@ function SignupForm() {
 
             <AnimatePresence>
               {status === 'error' && (
-                <motion.div className="border-2 border-ps-danger p-4" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <motion.div className="border border-ps-danger/50 rounded-xl bg-ps-danger/10 p-4" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                   <p className="text-ps-danger text-sm font-bold">{errorMessage}</p>
                 </motion.div>
               )}

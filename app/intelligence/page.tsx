@@ -1,55 +1,110 @@
 import { createClient } from "@/lib/supabase/server";
-import IntelligenceGrid from "@/components/IntelligenceGrid";
-import HowItWorks from "@/components/HowItWorks";
+import { ArticleCard } from "@/components/cards/ArticleCard";
+import type { Metadata } from "next";
 
-const HOW_IT_WORKS = [
-  {
-    num: '01',
-    title: 'Read the article',
-    description: 'Understand the why behind your friction — what\'s actually happening in your brain, not just what it feels like.',
-  },
-  {
-    num: '02',
-    title: 'Take the assessment',
-    description: 'Use the linked tool to identify your specific pattern and get a clear diagnosis.',
-  },
-  {
-    num: '03',
-    title: 'Get your protocol on WhatsApp',
-    description: 'Receive the right steps for your exact situation, straight to your phone. No app. No login.',
-  },
-];
+export const metadata: Metadata = {
+  title: "Articles — SOR7ED",
+  description: "Honest, ND-first writing. No fluff. Always a next step.",
+};
 
 export default async function IntelligencePage() {
   const supabase = await createClient();
-  const { data: posts } = await supabase
-    .from('protocols')
-    .select('*')
-    .eq('status', 'Published')
-    .order('created_at', { ascending: false });
+
+  const { data: posts, error } = await supabase
+    .from("protocols")
+    .select("slug, title, branch, summary, cover_image, read_time, keyword, created_at")
+    .eq("status", "Published")
+    .order("created_at", { ascending: false });
+
+  if (error) console.error("[IntelligencePage]", error.message);
+
+  const articles = posts ?? [];
+  const featured = articles[0];
+  const secondary = articles.slice(1, 3);
+  const rest = articles.slice(3);
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header — black */}
-      <section className="bg-black border-b-2 border-black">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pt-20 md:pt-28 pb-10">
-          <p className="label-yellow mb-4">Articles</p>
-          <h1 className="font-display uppercase text-white leading-none mb-4" style={{ fontSize: 'clamp(3rem, 10vw, 7rem)', letterSpacing: '-0.01em' }}>ARTICLES</h1>
-          <p className="text-white/50 text-base max-w-lg leading-relaxed">
-            The context behind the protocol. These articles explain the <em>why</em> behind your friction — so you understand your brain, not just manage it.
-          </p>
+    <div className="pt-16">
+      {/* Page Header */}
+      <div className="border-b border-border-subtle">
+        <div className="page-container py-12 md:py-16">
+          <div className="max-w-2xl">
+            <p className="t-label text-accent mb-4">Articles</p>
+            <h1 className="t-display mb-5 text-balance">
+              The content your brain has been waiting for
+            </h1>
+            <p className="t-body text-pretty max-w-lg">
+              Honest, ND-first writing. Every post ends with a WhatsApp keyword
+              — text it and get a practical tool.
+            </p>
+          </div>
         </div>
-      </section>
+      </div>
 
-      {/* How it works — yellow */}
-      <HowItWorks steps={HOW_IT_WORKS} variant="yellow" />
+      {/* Editorial Layout */}
+      {articles.length > 0 && (
+        <div className="page-container section-sm">
+          {/* Featured + Secondary */}
+          {featured && (
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12 pb-12 border-b border-border-subtle">
+              <div className="lg:col-span-3">
+                <ArticleCard {...featured} excerpt={featured.summary} variant="featured" />
+              </div>
+              <div className="lg:col-span-2 flex flex-col justify-between gap-6">
+                {secondary.map(article => (
+                  <ArticleCard
+                    key={article.slug}
+                    {...article}
+                    excerpt={article.summary}
+                    variant="featured"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Articles list — white */}
-      <section className="bg-white border-b-2 border-black">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-10 pb-24">
-          <IntelligenceGrid posts={posts || []} />
+          {/* Remaining Articles */}
+          {rest.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {/* Latest - Compact List */}
+              <div className="lg:col-span-1">
+                <p className="t-label mb-6">Latest</p>
+                <div>
+                  {rest.slice(0, 6).map(article => (
+                    <ArticleCard
+                      key={article.slug}
+                      {...article}
+                      excerpt={article.summary}
+                      variant="compact"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* All Articles - Card Grid */}
+              <div className="lg:col-span-2">
+                <p className="t-label mb-6">All articles</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {rest.slice(6).map(article => (
+                    <ArticleCard
+                      key={article.slug}
+                      {...article}
+                      excerpt={article.summary}
+                      variant="default"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </section>
+      )}
+
+      {articles.length === 0 && (
+        <div className="page-container section text-center">
+          <p className="t-body">No articles published yet.</p>
+        </div>
+      )}
     </div>
   );
 }
