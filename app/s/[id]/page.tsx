@@ -74,11 +74,11 @@ const getSaveCardWithMetadata = cache(async (id: string) => {
     } else if (item.category === 'Article') {
       const { data: article } = await supabase
         .from('protocols')
-        .select('summary, cover_image')
+        .select('summary, cover_image, meta_description')
         .eq('slug', slug)
         .single();
       if (article) {
-        description = article.summary || description;
+        description = article.meta_description || article.summary || description;
         ogImageUrl = article.cover_image || ogImageUrl;
       }
     }

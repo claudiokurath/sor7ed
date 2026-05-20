@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     
     const { data: article } = await supabase
         .from('protocols')
-        .select('title, problem, excerpt, description, branch, cover_image')
+        .select('title, problem, excerpt, description, branch, cover_image, meta_description')
         .eq('slug', resolvedParams.slug)
         .eq('status', 'Published')
         .single();
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
     const pageUrl = `${siteUrl}/intelligence/${resolvedParams.slug}`;
-    const description = article.problem || article.description || `Field Intelligence briefing on ${article.title}.`;
+    const description = article.meta_description || article.problem || article.description || `Field Intelligence briefing on ${article.title}.`;
     const image = article.cover_image || `${siteUrl}/Images/og-explore.png`;
 
     return {
