@@ -23,49 +23,46 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   return (
     <>
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-white/90 backdrop-blur-md border-b border-black/5 shadow-sm"
+            ? "bg-[#080f11]/95 backdrop-blur-md border-b border-white/8"
             : "bg-transparent"
         }`}
       >
         <div className="page-container">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-14 border-b border-white/8">
             {/* Wordmark */}
-            <Link href="/" className="flex items-center gap-0.5 group">
-              <span className="font-display text-lg font-medium tracking-tight text-ink">
+            <Link href="/" className="flex items-center group">
+              <span className="font-display text-base font-black tracking-widest text-[#f0ede8] uppercase">
                 SOR
               </span>
               <span
-                className="font-display text-lg font-medium tracking-tight text-accent transition-all duration-300 group-hover:scale-110"
-                style={{ filter: "drop-shadow(0 0 8px rgba(234, 179, 8, 0.3))" }}
+                className="font-display text-base font-black tracking-widest text-accent transition-all duration-300 group-hover:opacity-70"
               >
                 7
               </span>
-              <span className="font-display text-lg font-medium tracking-tight text-ink">
+              <span className="font-display text-base font-black tracking-widest text-[#f0ede8] uppercase">
                 ED
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-0 divide-x divide-white/8">
               {NAV_LINKS.map(link => {
                 const active = pathname.startsWith(link.href);
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`t-label px-3 py-2 rounded-lg transition-all duration-200 ${
+                    className={`t-label px-5 py-5 transition-all duration-150 ${
                       active
-                        ? "text-ink bg-surface-raised"
-                        : "text-ink-tertiary hover:text-ink hover:bg-surface-subtle"
+                        ? "text-accent"
+                        : "text-[rgba(240,237,232,0.38)] hover:text-[#f0ede8]"
                     }`}
                   >
                     {link.label}
@@ -75,10 +72,10 @@ export default function Navbar() {
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-0 divide-x divide-white/8">
               <Link
                 href="/dashboard"
-                className="hidden sm:inline-flex t-small text-ink-secondary hover:text-ink transition-colors"
+                className="hidden sm:inline-flex t-label px-5 py-5 text-[rgba(240,237,232,0.38)] hover:text-[#f0ede8] transition-colors"
               >
                 Dashboard
               </Link>
@@ -86,35 +83,22 @@ export default function Navbar() {
                 href="https://wa.me/447591922247?text=HI"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-accent btn-sm"
+                className="t-label px-5 py-5 text-accent hover:bg-accent hover:text-[#080f11] transition-all duration-150 flex items-center gap-2"
               >
-                <span className="text-sm" aria-hidden="true">💬</span>
-                Get Started
+                Get Started ↗
               </a>
 
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-subtle transition-colors"
+                className="md:hidden px-4 py-5 text-[rgba(240,237,232,0.38)] hover:text-[#f0ede8] transition-colors"
                 aria-label="Toggle menu"
                 aria-expanded={menuOpen}
               >
-                <div className="flex flex-col gap-1 w-4">
-                  <span
-                    className={`block h-0.5 bg-ink transition-all duration-300 ${
-                      menuOpen ? "rotate-45 translate-y-1.5" : ""
-                    }`}
-                  />
-                  <span
-                    className={`block h-0.5 bg-ink transition-all duration-300 ${
-                      menuOpen ? "opacity-0 scale-x-0" : ""
-                    }`}
-                  />
-                  <span
-                    className={`block h-0.5 bg-ink transition-all duration-300 ${
-                      menuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                    }`}
-                  />
+                <div className="flex flex-col gap-[5px] w-4">
+                  <span className={`block h-px bg-current transition-all duration-200 ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
+                  <span className={`block h-px bg-current transition-all duration-200 ${menuOpen ? "opacity-0" : ""}`} />
+                  <span className={`block h-px bg-current transition-all duration-200 ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
                 </div>
               </button>
             </div>
@@ -126,33 +110,33 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
+            initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-16 z-40 bg-white/95 backdrop-blur-md border-b border-black/5 shadow-lg md:hidden"
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-x-0 top-14 z-40 bg-[#080f11] border-b border-white/8 md:hidden"
           >
-            <div className="page-container py-4 flex flex-col gap-1">
+            <div className="page-container divide-y divide-white/8">
               {NAV_LINKS.map(link => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-surface-subtle transition-colors"
+                  className="flex items-center justify-between py-5 t-label text-[rgba(240,237,232,0.6)] hover:text-[#f0ede8] hover:text-accent transition-colors"
                 >
-                  <span className="t-heading">{link.label}</span>
-                  <span className="text-ink-disabled">→</span>
+                  {link.label}
+                  <span>→</span>
                 </Link>
               ))}
-              <hr className="my-3 border-border-subtle" />
-              <a
-                href="https://wa.me/447591922247?text=HI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-accent w-full justify-center"
-              >
-                <span aria-hidden="true">💬</span>
-                Text us on WhatsApp
-              </a>
+              <div className="py-5">
+                <a
+                  href="https://wa.me/447591922247?text=HI"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-accent w-full justify-center"
+                >
+                  Text on WhatsApp ↗
+                </a>
+              </div>
             </div>
           </motion.div>
         )}

@@ -3,7 +3,7 @@ import { ArticleCard } from "@/components/cards/ArticleCard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Articles — SOR7ED",
+  title: "Intelligence — SOR7ED",
   description: "Honest, ND-first writing. No fluff. Always a next step.",
 };
 
@@ -24,33 +24,34 @@ export default async function IntelligencePage() {
   const rest = articles.slice(3);
 
   return (
-    <div className="pt-16">
-      {/* Page Header */}
-      <div className="border-b border-border-subtle">
-        <div className="page-container py-12 md:py-16">
-          <div className="max-w-2xl">
-            <p className="t-label text-accent mb-4">Articles</p>
-            <h1 className="t-display mb-5 text-balance">
-              The content your brain has been waiting for
-            </h1>
-            <p className="t-body text-pretty max-w-lg">
-              Honest, ND-first writing. Every post ends with a WhatsApp keyword
-              — text it and get a practical tool.
-            </p>
-          </div>
+    <div className="pt-14 bg-[#080f11] min-h-screen">
+
+      {/* ── Page Header: brutalist rule ── */}
+      <div className="page-container">
+        <div className="py-16 md:py-20 border-b border-white/8">
+          <p className="t-label text-accent mb-4">Intelligence / Articles</p>
+          <h1 className="t-display text-[#f0ede8] text-balance max-w-2xl mb-5">
+            The content your brain has been waiting for
+          </h1>
+          <p className="t-body max-w-lg">
+            Honest, ND-first writing. Every post ends with a WhatsApp keyword — text it and get a practical tool.
+          </p>
         </div>
       </div>
 
-      {/* Editorial Layout */}
       {articles.length > 0 && (
-        <div className="page-container section-sm">
-          {/* Featured + Secondary */}
+        <div className="page-container">
+
+          {/* ── Featured Hero Spread ── */}
           {featured && (
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12 pb-12 border-b border-border-subtle">
-              <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-12 border-b border-white/8 py-12 md:py-16 gap-px bg-white/8">
+              {/* Big feature */}
+              <div className="lg:col-span-7 bg-[#080f11] pr-0 lg:pr-10">
                 <ArticleCard {...featured} excerpt={featured.summary} variant="featured" />
               </div>
-              <div className="lg:col-span-2 flex flex-col justify-between gap-6">
+
+              {/* Secondary pair */}
+              <div className="lg:col-span-5 bg-[#080f11] pl-0 lg:pl-10 border-t lg:border-t-0 lg:border-l border-white/8 pt-10 lg:pt-0 flex flex-col justify-between gap-10">
                 {secondary.map(article => (
                   <ArticleCard
                     key={article.slug}
@@ -63,40 +64,41 @@ export default async function IntelligencePage() {
             </div>
           )}
 
-          {/* Remaining Articles */}
+          {/* ── Rest of articles ── */}
           {rest.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              {/* Latest - Compact List */}
-              <div className="lg:col-span-1">
-                <p className="t-label mb-6">Latest</p>
-                <div>
-                  {rest.slice(0, 6).map(article => (
-                    <ArticleCard
-                      key={article.slug}
-                      {...article}
-                      excerpt={article.summary}
-                      variant="compact"
-                    />
-                  ))}
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 py-12 md:py-16 gap-px bg-white/8">
+
+              {/* Compact list sidebar */}
+              <div className="lg:col-span-4 bg-[#080f11] pr-0 lg:pr-10">
+                <p className="t-label mb-6 text-[rgba(240,237,232,0.38)]">Latest</p>
+                {rest.slice(0, 6).map(article => (
+                  <ArticleCard
+                    key={article.slug}
+                    {...article}
+                    excerpt={article.summary}
+                    variant="compact"
+                  />
+                ))}
               </div>
 
-              {/* All Articles - Card Grid */}
-              <div className="lg:col-span-2">
-                <p className="t-label mb-6">All articles</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Card grid */}
+              <div className="lg:col-span-8 bg-[#080f11] pl-0 lg:pl-10 border-t lg:border-t-0 lg:border-l border-white/8 pt-10 lg:pt-0">
+                <p className="t-label mb-6 text-[rgba(240,237,232,0.38)]">All articles</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/8">
                   {rest.slice(6).map(article => (
-                    <ArticleCard
-                      key={article.slug}
-                      {...article}
-                      excerpt={article.summary}
-                      variant="default"
-                    />
+                    <div key={article.slug} className="bg-[#080f11]">
+                      <ArticleCard
+                        {...article}
+                        excerpt={article.summary}
+                        variant="default"
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
             </div>
           )}
+
         </div>
       )}
 
