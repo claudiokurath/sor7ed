@@ -86,12 +86,10 @@ export default async function IntelligencePage() {
             >
               <div className="relative aspect-square overflow-hidden bg-zinc-900 mb-3">
                 {article.cover_image ? (
-                  <Image
+                  <img
                     src={article.cover_image}
                     alt={article.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
                   <div className="w-full h-full bg-zinc-800" />
