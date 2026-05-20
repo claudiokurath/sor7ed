@@ -25,7 +25,7 @@ export default function VisualCard({
   subtitle,
   readTime,
   imageUrl,
-  fallbackColor = '#FFD107',
+  fallbackColor = '#ff7a45',
   href,
   aspectRatio = 'tool',
   priority = false,

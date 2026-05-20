@@ -29,9 +29,9 @@ export default function ToolNotFound() {
           <Link
             href="/tools"
             className="inline-flex items-center justify-center px-8 py-4 
-                       rounded-xl font-anton tracking-wider text-black bg-[#ffd107] 
+                       rounded-xl font-anton tracking-wider text-black bg-[#ff7a45] 
                        text-sm hover:scale-105 transition-all duration-300
-                       shadow-[0_0_20px_rgba(255,209,7,0.2)] uppercase"
+                       shadow-[0_0_20px_rgba(255,122,69,0.2)] uppercase"
           >
             See all diagnostics →
           </Link>

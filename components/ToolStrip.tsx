@@ -67,7 +67,7 @@ export default function ToolStrip({ tools, title = "Tactical Tools", subtitle }:
             <h2 className="text-2xl md:text-4xl font-anton tracking-wider leading-[1.1] mb-4 uppercase">
               <span className="text-white block">{title}</span>
               {subtitle && (
-                <span className="text-[#ffd107] block mt-1">
+                <span className="text-[#ff7a45] block mt-1">
                   {subtitle}
                 </span>
               )}

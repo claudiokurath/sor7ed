@@ -128,9 +128,9 @@ function ToolLoadingState({ toolName }: { toolName?: string }) {
         {/* Animated diagnostic indicator */}
         <div className="relative w-16 h-16 mx-auto">
           <div className="absolute inset-0 border-2 border-white/10 rounded-full" />
-          <div className="absolute inset-0 border-2 border-t-[#ffd107] rounded-full animate-spin" />
-          <div className="absolute inset-2 bg-[#ffd107]/10 rounded-full flex items-center justify-center">
-            <div className="w-2 h-2 bg-[#ffd107] rounded-full animate-pulse" />
+          <div className="absolute inset-0 border-2 border-t-[#2dd4bf] rounded-full animate-spin" />
+          <div className="absolute inset-2 bg-[#2dd4bf]/10 rounded-full flex items-center justify-center">
+            <div className="w-2 h-2 bg-[#2dd4bf] rounded-full animate-pulse" />
           </div>
         </div>
 
