@@ -437,13 +437,13 @@ async function deleteStaleRecords(table: string, syncedSlugs: string[]) {
 async function sync() {
   console.log('Starting safe synchronization...')
   
-  // 1. Fetch data first to validate API connectivity
-  const protocolsData = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID, {
+  // 1a. Fetch ONLY published/live records to upsert to Supabase
+  const publishedProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID, {
     property: 'Status',
     status: { equals: 'Published' }
   })
   
-  const toolsData = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID, {
+  const liveTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID, {
     property: 'Status',
     status: { does_not_equal: 'Draft' }
   })
@@ -451,22 +451,33 @@ async function sync() {
   const branchesDbId = env.NOTION_BRANCHES_DB_ID || 'bf1e89a5167e484b9fc85376031f72e3';
   const branchesData = await fetchAllNotionPages(branchesDbId);
   
-  if (protocolsData.length === 0 && toolsData.length === 0 && branchesData.length === 0) {
+  if (publishedProtocols.length === 0 && liveTools.length === 0 && branchesData.length === 0) {
     console.error('[Sync] No data retrieved from Notion. Aborting sync to prevent data loss.')
     return
   }
 
-  // 2. Sync new/updated records first (non-destructive upserts)
-  const syncedProtocolSlugs = await syncProtocols(protocolsData)
-  const syncedToolSlugs = await syncTools(toolsData)
+  // 1b. Fetch ALL records from Notion (regardless of status) just for stale-cleanup reference.
+  // This ensures we ONLY delete articles/tools that no longer exist in Notion at all,
+  // NOT articles that simply have a Draft/Unpublished status.
+  const allProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID)
+  const allTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID)
+
+  const allProtocolSlugs = allProtocols.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
+  const allToolSlugs = allTools.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
+
+  // 2. Upsert only published/live records
+  const syncedProtocolSlugs = await syncProtocols(publishedProtocols)
+  const syncedToolSlugs = await syncTools(liveTools)
   const syncedBranchSlugs = await syncBranches(branchesData)
 
-  // 3. Clean up stale records after successful sync has completed without throwing
-  await deleteStaleRecords('protocols', syncedProtocolSlugs)
-  await deleteStaleRecords('tools', syncedToolSlugs)
+  // 3. Delete ONLY records that no longer exist anywhere in Notion (not just unpublished ones)
+  await deleteStaleRecords('protocols', allProtocolSlugs)
+  await deleteStaleRecords('tools', allToolSlugs)
   await deleteStaleRecords('branches', syncedBranchSlugs)
   
   console.log('All syncs complete successfully!')
+  console.log(`[Sync] Published protocols on site: ${syncedProtocolSlugs.length}`)
+  console.log(`[Sync] Live tools on site: ${syncedToolSlugs.length}`)
 }
 
 sync().catch(console.error)
