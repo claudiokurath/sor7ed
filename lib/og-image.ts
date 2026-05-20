@@ -1,3 +1,4 @@
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 export const DEFAULT_OG_IMAGE = '/Images/og-explore.png';
 
 /**
@@ -5,10 +6,10 @@ export const DEFAULT_OG_IMAGE = '/Images/og-explore.png';
  * Optimizes Supabase storage images and ensures local/relative paths are absolute.
  */
 export function resolveOgImageUrl(
-  rawUrl: string | null | undefined, 
-  siteUrl: string
+  rawUrl: string | null | undefined,
+  fallback = DEFAULT_OG_IMAGE
 ): string {
-  if (!rawUrl) return `${siteUrl}${DEFAULT_OG_IMAGE}`;
+  if (!rawUrl) return `${SITE_URL}${fallback}`;
 
   // External URLs (not Supabase storage) - use as-is
   if (rawUrl.startsWith('http') && 
@@ -28,5 +29,5 @@ export function resolveOgImageUrl(
 
   // Local/relative images - ensure absolute URL for social scrapers
   const cleanPath = rawUrl.startsWith('/') ? rawUrl : `/${rawUrl}`;
-  return `${siteUrl}${cleanPath}`;
+  return `${SITE_URL}${cleanPath}`;
 }

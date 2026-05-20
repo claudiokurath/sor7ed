@@ -86,7 +86,7 @@ export async function generateMetadata({
     };
   }
 
-  const resolvedOgImageUrl = resolveOgImageUrl(ogImageUrl, SITE_URL);
+  const resolvedOgImageUrl = resolveOgImageUrl(ogImageUrl);
 
   return {
     title: item.title,

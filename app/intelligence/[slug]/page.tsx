@@ -53,7 +53,7 @@ export async function generateMetadata({
                      article.excerpt || 
                      `Field Intelligence briefing on ${article.title}.`;
 
-  const resolvedImage = resolveOgImageUrl(article.cover_image, SITE_URL);
+  const resolvedImage = resolveOgImageUrl(article.cover_image);
 
   return {
     title: `${article.title} | SOR7ED`,
