@@ -1,9 +1,14 @@
+export const DEFAULT_OG_IMAGE = '/Images/og-explore.png';
+
 /**
  * Resolves raw image URLs to absolute paths compatible with social media scrapers.
  * Optimizes Supabase storage images and ensures local/relative paths are absolute.
  */
-export function resolveOgImageUrl(rawUrl: string | null, siteUrl: string): string {
-  if (!rawUrl) return `${siteUrl}/Images/og-explore.png`;
+export function resolveOgImageUrl(
+  rawUrl: string | null | undefined, 
+  siteUrl: string
+): string {
+  if (!rawUrl) return `${siteUrl}${DEFAULT_OG_IMAGE}`;
 
   // External URLs (not Supabase storage) - use as-is
   if (rawUrl.startsWith('http') && 

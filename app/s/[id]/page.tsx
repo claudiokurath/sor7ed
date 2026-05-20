@@ -1,24 +1,22 @@
 import type { Metadata } from 'next';
 import { redirect, notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import type { SaveCard } from '@/types/whatsapp';
 import { cache } from 'react';
-import { resolveOgImageUrl } from '@/lib/og-image';
+import { resolveOgImageUrl, DEFAULT_OG_IMAGE } from '@/lib/og-image';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
 function extractSlugFromUrl(url: string): string | null {
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(url, SITE_URL); // Base URL handles relative paths
     const segments = parsed.pathname.replace(/\/$/, '').split('/').filter(Boolean);
     return segments.at(-1) ?? null;
-  } catch {
-    console.warn(`[SaveCard] Invalid URL: ${url}`);
+  } catch (error) {
+    console.warn(`[SaveCard] Invalid URL: ${url}`, error);
     return null;
   }
 }
 
-// Cached to prevent duplicate queries between generateMetadata and page component
 const getSaveCardWithMetadata = cache(async (id: string) => {
   const supabase = await createClient();
   
@@ -28,16 +26,20 @@ const getSaveCardWithMetadata = cache(async (id: string) => {
     .eq('id', id)
     .single();
 
+  if (error) {
+    console.error(`[SaveCard] Database error for item ${id}:`, error.message);
+  }
+
   if (error || !item) {
     return {
       item: null,
       description: 'Your saved item from SOR7ED.',
-      ogImageUrl: '/og-default.png'
+      ogImageUrl: DEFAULT_OG_IMAGE
     };
   }
 
   let description = 'Saved from SOR7ED';
-  let ogImageUrl = '/og-default.png';
+  let ogImageUrl: string = DEFAULT_OG_IMAGE;
 
   const slug = extractSlugFromUrl(item.url);
   if (slug) {
@@ -46,6 +48,7 @@ const getSaveCardWithMetadata = cache(async (id: string) => {
         .from('tools')
         .select('short_description, cover_image')
         .eq('slug', slug)
+        .eq('status', 'Live') // Security: only published tools
         .single();
       if (tool) {
         description = tool.short_description || description;
@@ -56,6 +59,7 @@ const getSaveCardWithMetadata = cache(async (id: string) => {
         .from('protocols')
         .select('summary, cover_image, meta_description')
         .eq('slug', slug)
+        .eq('status', 'Published') // Security: only published articles
         .single();
       if (article) {
         description = article.meta_description || article.summary || description;
