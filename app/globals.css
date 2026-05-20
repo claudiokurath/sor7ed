@@ -363,3 +363,17 @@
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
 }
+
+/* ── Focus Mode Global Overrides ── */
+body.focus-mode {
+  background-color: #f7f4eb !important;
+  color: #1c1917 !important;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+body.focus-mode main {
+  background-color: #f7f4eb !important;
+  color: #1c1917 !important;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+

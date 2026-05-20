@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       .eq('consumed', false)
       .gt('expires_at', new Date().toISOString())
       .single();
-
+https://www.midjourney.com/jobs/6e7e8d48-37a4-4676-844d-d520669903c1?index=3
     if (error || !sessionData) {
       console.error('Invalid or expired bridge token:', token);
       return NextResponse.redirect(

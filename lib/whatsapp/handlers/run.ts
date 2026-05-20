@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import type { WaResponse } from '@/types/whatsapp';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
@@ -7,7 +7,7 @@ export async function handleRun(
   userWaId: string,
   toolSlug: string
 ): Promise<WaResponse> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Resolve tool by slug or keyword
   const { data: tool } = await supabase

@@ -1,5 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
-import { generateShortId } from '@/lib/utils/shortid';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchExternalOg } from '@/lib/og/fetch-og';
 import type { WaResponse } from '@/types/whatsapp';
 
@@ -9,89 +8,91 @@ export async function handleSave(
   userWaId: string, 
   input: string
 ): Promise<WaResponse> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   
   // Determine if input is URL or slug
   const isUrl = input.startsWith('http://') || input.startsWith('https://');
   
   let title = input;
-  let description = 'Saved from SOR7ED';
-  let ogImageUrl = `${SITE_URL}/og-default.png`;
   let targetUrl = `${SITE_URL}/tools/${input}`;
-  let type: 'tool' | 'blog' | 'external' = 'tool';
-  let sourceId: string | undefined = input;
-  let sourceUrl: string | undefined;
+  let category = 'Tool';
 
   if (isUrl) {
-    // Handle external URLs
-    type = 'external';
-    sourceId = undefined;
-    sourceUrl = input;
+    category = 'External';
     targetUrl = input;
     
     // Fetch OG tags for external URLs
     const og = await fetchExternalOg(input);
     title = og.title ?? input;
-    description = og.description ?? 'Saved from SOR7ED';
-    ogImageUrl = og.image ?? ogImageUrl;
   } else {
     // Try to resolve as tool slug first
     const { data: tool } = await supabase
       .from('tools')
-      .select('name, slug, description, cover_image')
+      .select('name, slug')
       .eq('slug', input)
       .single();
 
     if (tool) {
-      type = 'tool';
+      category = 'Tool';
       title = tool.name;
-      description = tool.description ?? description;
-      ogImageUrl = tool.cover_image ?? ogImageUrl;
       targetUrl = `${SITE_URL}/tools/${tool.slug}`;
     } else {
       // Try as article slug
       const { data: article } = await supabase
         .from('protocols')
-        .select('title, slug, summary, cover_image')
+        .select('title, slug')
         .eq('slug', input)
         .single();
 
       if (article) {
-        type = 'blog';
+        category = 'Article';
         title = article.title;
-        description = article.summary ?? description;
-        ogImageUrl = article.cover_image ?? ogImageUrl;
         targetUrl = `${SITE_URL}/intelligence/${article.slug}`;
       }
     }
   }
 
-  // Check for existing save (idempotency)
+  // 1. Resolve user_id from phone number (with or without plus prefix)
+  const { data: profile } = await supabase
+    .from('users')
+    .select('user_id')
+    .or(`whatsapp_number.eq.+${userWaId},whatsapp_number.eq.${userWaId}`)
+    .maybeSingle();
+
+  const userId = profile?.user_id || null;
+
+  // 2. Check for existing save (idempotency)
   const { data: existing } = await supabase
     .from('saved_items')
     .select('id')
-    .eq('user_wa_id', userWaId)
-    .eq(isUrl ? 'source_url' : 'source_id', isUrl ? sourceUrl : sourceId)
-    .single();
+    .eq('url', targetUrl)
+    .or(`phone.eq.+${userWaId},phone.eq.${userWaId}`)
+    .maybeSingle();
 
-  const shortId = existing?.id ?? generateShortId();
+  let savedId = existing?.id;
 
-  // Create new save record if doesn't exist
+  // 3. Create new save record if doesn't exist
   if (!existing) {
-    await supabase.from('saved_items').insert({
-      id: shortId,
-      user_wa_id: userWaId,
-      type,
-      source_id: sourceId,
-      source_url: sourceUrl,
-      title,
-      description,
-      og_image_url: ogImageUrl,
-      target_url: targetUrl,
-    });
+    const { data: inserted, error } = await supabase
+      .from('saved_items')
+      .insert({
+        user_id: userId,
+        phone: `+${userWaId}`,
+        url: targetUrl,
+        title,
+        category,
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('[Webhook] Failed to insert saved_item:', error.message);
+    } else if (inserted) {
+      savedId = inserted.id;
+    }
   }
 
-  const cardUrl = `${SITE_URL}/s/${shortId}`;
+  const cardUrl = `${SITE_URL}/s/${savedId}`;
 
   return {
     to: userWaId,

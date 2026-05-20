@@ -10,8 +10,9 @@ import type { WaMessage, WaResponse } from '@/types/whatsapp';
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('hub.verify_token');
   const challenge = req.nextUrl.searchParams.get('hub.challenge');
+  const expectedToken = process.env.WHATSAPP_VERIFY_TOKEN || process.env.META_WEBHOOK_VERIFY_TOKEN;
   
-  if (token === process.env.WHATSAPP_VERIFY_TOKEN) {
+  if (token === expectedToken) {
     return new NextResponse(challenge, { status: 200 });
   }
   
@@ -86,11 +87,11 @@ export async function POST(req: NextRequest) {
 }
 
 async function sendWhatsAppMessage(msg: WaResponse): Promise<void> {
-  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID || process.env.META_PHONE_NUMBER_ID;
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN || process.env.META_WHATSAPP_TOKEN;
 
   if (!phoneNumberId || !accessToken) {
-    console.error('[Webhook] Missing WhatsApp credentials');
+    console.error('[Webhook] Missing WhatsApp credentials (WHATSAPP_PHONE_NUMBER_ID/META_PHONE_NUMBER_ID or WHATSAPP_ACCESS_TOKEN/META_WHATSAPP_TOKEN)');
     return;
   }
 
@@ -105,7 +106,7 @@ async function sendWhatsAppMessage(msg: WaResponse): Promise<void> {
   };
 
   const res = await fetch(
-    `https://graph.facebook.com/v19.0/${phoneNumberId}/messages`,
+    `https://graph.facebook.com/v25.0/${phoneNumberId}/messages`,
     {
       method: 'POST',
       headers: {

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import type { WaResponse } from '@/types/whatsapp';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
@@ -25,12 +25,12 @@ export async function handleArticle(
   userWaId: string,
   articleSlug: string
 ): Promise<WaResponse[]> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Resolve article by slug or keyword
   const { data: article } = await supabase
     .from('protocols')
-    .select('title, slug, keyword, content')
+    .select('title, slug, keyword, tldr, protocol')
     .or(`slug.eq.${articleSlug},keyword.ilike.${articleSlug}`)
     .single();
 
@@ -42,8 +42,14 @@ export async function handleArticle(
     }];
   }
 
+  // Combine TL;DR and Protocol instructions
+  const combinedContent = [
+    article.tldr ? `*TL;DR*\n${article.tldr}` : '',
+    article.protocol ? `*Protocol*\n${article.protocol}` : ''
+  ].filter(Boolean).join('\n\n');
+
   // Chunk content to fit WhatsApp length limits
-  const chunks = splitArticleContent(article.content || "No content available.");
+  const chunks = splitArticleContent(combinedContent || "No content available.");
   
   return chunks.map((chunk, index) => ({
     to: userWaId,

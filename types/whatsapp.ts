@@ -21,14 +21,11 @@ export type WaResponse = {
 };
 
 export type SaveCard = {
-  id: string;             // Short ID (e.g., "abc123")
-  user_wa_id: string;     // WhatsApp user identifier
-  type: 'tool' | 'blog' | 'external';
-  source_id?: string;     // Tool/blog slug
-  source_url?: string;    // External URL
+  id: string;
+  user_id: string | null;
+  phone: string;
+  url: string;
   title: string;
-  description: string;
-  og_image_url: string;
-  target_url: string;     // Redirect destination
-  created_at: string;
+  category: string;
+  saved_at: string;
 };

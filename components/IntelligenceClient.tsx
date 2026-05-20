@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
-import { siteConfig } from '@/lib/constants';
+import { siteConfig, branches } from '@/lib/constants';
 
 import ArticleCover from './ArticleCover';
 import AudioBriefing from './AudioBriefing';
@@ -43,6 +43,9 @@ export default function IntelligenceClient({ article }: { article: Article }) {
     const [isSaved, setIsSaved] = useState(false);
 
     const router = useRouter();
+
+    // Map branch name to its specific branch color
+    const branchColor = branches.find(b => b.name.toLowerCase() === article.branch?.toLowerCase())?.color || '#2dd4bf';
 
     useEffect(() => {
         async function checkUser() {
@@ -84,7 +87,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 item_slug: article.slug,
                 item_name: article.title,
                 item_keyword: article.keyword,
-                item_color: '#3B82F6', // Default color for protocols
+                item_color: branchColor,
                 item_branch: article.branch
             });
 
@@ -144,12 +147,17 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 className="fixed top-0 left-0 right-0 h-1 z-[60] origin-left"
                 style={{ 
                     scaleX: scrollYProgress,
-                    backgroundColor: article.color || '#3B82F6'
+                    backgroundColor: branchColor
                 }}
             />
             {/* Premium Header */}
             <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
-                <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors">
+                <Link 
+                    href="/" 
+                    className={`text-xs tracking-[0.3em] uppercase font-semibold transition-colors duration-300 ${
+                        isFocusMode ? 'text-stone-400 hover:text-stone-600' : 'text-teal-500/40 hover:text-teal-400/80'
+                    }`}
+                >
                     SOR7ED
                 </Link>
                 
@@ -157,13 +165,17 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     <div className="flex items-center gap-6">
                         <Link
                             href="/dashboard"
-                            className="text-white/50 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
+                            className={`text-xs tracking-widest uppercase transition-colors font-semibold ${
+                                isFocusMode ? 'text-stone-500 hover:text-stone-800' : 'text-teal-400/60 hover:text-teal-300'
+                            }`}
                         >
                             Dashboard
                         </Link>
                         <button
                             onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-                            className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors"
+                            className={`text-xs tracking-widest uppercase transition-colors ${
+                                isFocusMode ? 'text-stone-400 hover:text-stone-700' : 'text-white/30 hover:text-white/60'
+                            }`}
                         >
                             Sign Out
                         </button>
@@ -171,7 +183,9 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 ) : (
                     <Link
                         href="/signup"
-                        className="text-white/30 hover:text-white text-xs tracking-widest uppercase transition-colors font-medium"
+                        className={`text-xs tracking-widest uppercase transition-colors font-semibold ${
+                            isFocusMode ? 'text-stone-400 hover:text-stone-800' : 'text-teal-400/50 hover:text-teal-300'
+                        }`}
                     >
                         Sign In →
                     </Link>
@@ -183,7 +197,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
               <ArticleCover
                 keyword={article.keyword}
                 branch={article.branch}
-                color={article.color || "#3B82F6"}
+                color={branchColor}
                 title={article.title}
                 imageUrl={article.cover_image || undefined}
               />
@@ -192,12 +206,20 @@ export default function IntelligenceClient({ article }: { article: Article }) {
             {/* Article Header */}
             <div className="mb-12">
                 <span 
-                    className="text-xs px-3 py-1 rounded-full mb-6 inline-block font-medium tracking-widest uppercase bg-white/5 text-white/50 border border-white/10"
+                    className={`text-[10px] px-3.5 py-1 rounded-full mb-6 inline-block font-mono font-bold tracking-widest uppercase transition-all duration-300 ${
+                        isFocusMode 
+                            ? 'bg-stone-200 text-stone-700 border border-stone-300' 
+                            : 'bg-teal-500/10 text-teal-400 border border-teal-500/25'
+                    }`}
                 >
                     {article.branch}
                 </span>
                 
-                <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tight">
+                <h1 
+                    className={`text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tight transition-colors duration-300 ${
+                        isFocusMode ? 'text-stone-900' : 'text-white'
+                    }`}
+                >
                     {article.title}
                 </h1>
 
@@ -205,38 +227,42 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 <div className="flex flex-wrap gap-3">
                     <button 
                         onClick={toggleAudio}
-                        className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
+                        className={`flex items-center gap-3 px-5 py-3 rounded-xl border font-semibold text-xs transition-all duration-300 ${
                             isPlaying 
-                                ? 'bg-white text-black border-white shadow-lg' 
-                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
+                                ? (isFocusMode ? 'bg-stone-900 text-stone-100 border-stone-900 shadow-md' : 'bg-teal-400 text-black border-teal-300 shadow-lg shadow-teal-500/10')
+                                : (isFocusMode 
+                                    ? 'bg-stone-100 border-stone-200 text-stone-700 hover:bg-stone-200' 
+                                    : 'bg-[#0f1719] border-teal-500/10 text-teal-400/80 hover:bg-teal-500/10 hover:text-teal-300')
                         }`}
                     >
-                        <span className="text-lg">{isPlaying ? '⏹' : '▶'}</span>
-                        <span>{isPlaying ? 'Stop' : 'Listen'}</span>
+                        <span className="text-sm">{isPlaying ? '⏹' : '▶'}</span>
+                        <span>{isPlaying ? 'Stop Listening' : 'Listen Aloud'}</span>
                     </button>
 
                     <button 
                         onClick={() => setIsFocusMode(!isFocusMode)}
-                        className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
+                        className={`flex items-center gap-3 px-5 py-3 rounded-xl border font-semibold text-xs transition-all duration-300 ${
                             isFocusMode 
-                                ? 'bg-blue-500 text-white border-blue-400 shadow-lg' 
-                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
+                                ? 'bg-[#ff7a45] text-white border-[#ff7a45] shadow-md shadow-orange-500/10' 
+                                : 'bg-[#0f1719] border-teal-500/10 text-teal-400/80 hover:bg-teal-500/10 hover:text-teal-300'
                         }`}
                     >
-                        <span className="text-lg">{isFocusMode ? '✨' : '🧘'}</span>
+                        <span className="text-sm">{isFocusMode ? '✨' : '🧘'}</span>
                         <span>{isFocusMode ? 'Focus On' : 'Focus Mode'}</span>
                     </button>
 
                     <button 
                         onClick={toggleSave}
-                        className={`flex items-center gap-3 px-6 py-3 rounded-full border font-semibold text-sm transition-all duration-300 ${
+                        className={`flex items-center gap-3 px-5 py-3 rounded-xl border font-semibold text-xs transition-all duration-300 ${
                             isSaved 
-                                ? 'bg-green-500/10 text-green-400 border-green-500/20' 
-                                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/30'
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                                : (isFocusMode 
+                                    ? 'bg-stone-100 border-stone-200 text-stone-700 hover:bg-stone-200' 
+                                    : 'bg-[#0f1719] border-teal-500/10 text-teal-400/80 hover:bg-teal-500/10 hover:text-teal-300')
                         }`}
                     >
-                        <span className="text-lg">{isSaved ? '✓' : '🔖'}</span>
-                        <span>{isSaved ? 'Saved' : 'Save Protocol'}</span>
+                        <span className="text-sm">{isSaved ? '✓' : '🔖'}</span>
+                        <span>{isSaved ? 'Saved to Library' : 'Save Protocol'}</span>
                     </button>
                 </div>
             </div>
@@ -248,25 +274,38 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                         audioUrl={article.audio_url}
                         title={article.title}
                         duration={article.audio_duration_seconds}
-                        branchColor={article.color || '#3B82F6'}
+                        branchColor={branchColor}
                         protocolSlug={article.slug}
                     />
                 </div>
             )}
 
             {/* Main Article Content */}
-            <div className="space-y-6 text-white/80 text-lg leading-relaxed mb-16 border-t border-white/10 pt-12">
-                
+            <div 
+                className={`space-y-6 text-lg leading-relaxed mb-16 border-t pt-12 transition-colors duration-300 ${
+                    isFocusMode 
+                        ? 'border-stone-200 text-stone-850' 
+                        : 'border-white/10 text-teal-100/80'
+                }`}
+            >
                 {/* SYSTEM: TL;DR Section */}
                 {article.tldr && (
                     <motion.div 
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="mb-12 bg-white/5 border-l-2 border-white/20 p-6 font-mono"
+                        transition={{ delay: 0.3 }}
+                        className={`mb-12 border-l-2 p-6 font-mono rounded-r-xl transition-all duration-300 ${
+                            isFocusMode 
+                                ? 'bg-stone-100 border-stone-400 text-stone-700' 
+                                : 'bg-[#0d221d] border-teal-500/30 text-teal-300/90'
+                        }`}
                     >
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-3">SYSTEM: TL;DR</p>
-                        <p className="text-white/70 text-base leading-relaxed">
+                        <p className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 ${
+                            isFocusMode ? 'text-stone-400' : 'text-teal-500/40'
+                        }`}>
+                            SYSTEM: TL;DR
+                        </p>
+                        <p className="text-base leading-relaxed">
                             {article.tldr}
                         </p>
                     </motion.div>
@@ -284,7 +323,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                             return (
                                 <ol key={index} className="list-decimal list-outside pl-6 space-y-2 mb-2">
                                     {items.map((item, j) => (
-                                        <li key={j} className="text-white/70 text-base leading-relaxed">
+                                        <li key={j} className={`text-base leading-relaxed ${isFocusMode ? 'text-stone-800' : 'text-teal-100/70'}`}>
                                             {item.replace(/^\d+[\.\)]\s+/, "")}
                                         </li>
                                     ))}
@@ -298,7 +337,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                             return (
                                 <ul key={index} className="list-disc list-outside pl-6 space-y-2 mb-2">
                                     {items.map((item, j) => (
-                                        <li key={j} className="text-white/70 text-base leading-relaxed">
+                                        <li key={j} className={`text-base leading-relaxed ${isFocusMode ? 'text-stone-800' : 'text-teal-100/70'}`}>
                                             {item.replace(/^[-•]\s+/, "")}
                                         </li>
                                     ))}
@@ -309,7 +348,12 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                         // Heading: short line in ALL CAPS or ends with ":"
                         if (trimmed.length < 80 && (trimmed === trimmed.toUpperCase() || trimmed.endsWith(":"))) {
                             return (
-                                <h2 key={index} className="font-display uppercase text-white text-lg tracking-wide mt-10 mb-2">
+                                <h2 
+                                    key={index} 
+                                    className={`font-display uppercase text-base tracking-widest mt-12 mb-4 font-bold transition-colors duration-300 ${
+                                        isFocusMode ? 'text-stone-900' : 'text-[#ff7a45]'
+                                    }`}
+                                >
                                     {trimmed.replace(/:$/, "")}
                                 </h2>
                             );
@@ -317,7 +361,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
 
                         // Normal paragraph
                         return (
-                            <p key={index} className="text-white/70 text-base leading-relaxed">
+                            <p key={index} className={`text-base leading-relaxed ${isFocusMode ? 'text-stone-800' : 'text-teal-100/70'}`}>
                                 {trimmed}
                             </p>
                         );
@@ -327,18 +371,28 @@ export default function IntelligenceClient({ article }: { article: Article }) {
 
             {/* Separate Dynamic CTA Section */}
             <motion.div
-                className="my-16 bg-[#0f0f0f] border border-white/5 rounded-[32px] sm:rounded-[40px] p-6 sm:p-10 md:p-14 text-center relative overflow-hidden"
-                initial={{ opacity: 0, scale: 0.95 }}
+                className={`my-16 border rounded-[32px] p-8 sm:p-12 text-center relative overflow-hidden transition-all duration-300 ${
+                    isFocusMode 
+                        ? 'bg-stone-100 border-stone-200 text-stone-900' 
+                        : 'bg-gradient-to-br from-[#0c1517] to-[#142327] border-white/5 text-white shadow-2xl'
+                }`}
+                initial={{ opacity: 0, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
             >
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 blur-[100px] rounded-full" />
+                {!isFocusMode && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full" />
+                )}
                 
-                <h3 className="text-xl sm:text-2xl md:text-4xl font-black mb-4 sm:mb-6 relative z-10 leading-tight">
+                <h3 className={`text-xl sm:text-2xl md:text-3xl font-black mb-4 relative z-10 leading-tight ${
+                    isFocusMode ? 'text-stone-900' : 'text-white'
+                }`}>
                     {article.cta_headline || "Get the Protocol"}
                 </h3>
 
-                <div className="text-white/40 mb-8 sm:mb-12 max-w-xl mx-auto text-base sm:text-lg md:text-xl leading-relaxed relative z-10 font-medium">
+                <div className={`mb-8 sm:mb-10 max-w-xl mx-auto text-sm sm:text-base leading-relaxed relative z-10 font-medium ${
+                    isFocusMode ? 'text-stone-600' : 'text-teal-100/40'
+                }`}>
                     {article.cta ? (
                         <p>{article.cta}</p>
                     ) : (
@@ -346,7 +400,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     )}
                 </div>
 
-                <div className="flex flex-col items-center gap-6 relative z-10">
+                <div className="flex flex-col items-center gap-4 relative z-10">
                     <SaveToPhoneButton
                         title={article.title}
                         summary={article.summary || article.tldr || undefined}
@@ -354,7 +408,9 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                         label="GET IT SOR7ED"
                         className="w-full max-w-sm"
                     />
-                    <p className="text-white/20 text-[10px] font-bold tracking-[0.2em] uppercase">
+                    <p className={`text-[10px] font-bold tracking-[0.25em] uppercase ${
+                        isFocusMode ? 'text-stone-400' : 'text-teal-400/30'
+                    }`}>
                         Rich link + protocol sent to your WhatsApp
                     </p>
                 </div>
@@ -362,22 +418,34 @@ export default function IntelligenceClient({ article }: { article: Article }) {
 
             {/* Deep Dive Section */}
             {article.deep_dive && (
-                <div className="mb-20 border border-white/10 rounded-3xl overflow-hidden bg-[#111111]">
+                <div className={`mb-20 border rounded-3xl overflow-hidden transition-all duration-300 ${
+                    isFocusMode 
+                        ? 'bg-stone-100 border-stone-200' 
+                        : 'bg-[#0a0f10]/80 border-white/5 shadow-xl'
+                }`}>
                     <button 
                         onClick={() => setShowDeepDive(!showDeepDive)}
-                        className="w-full px-8 py-6 flex justify-between items-center hover:bg-white/5 transition-all duration-300 group"
+                        className={`w-full px-8 py-6 flex justify-between items-center transition-all duration-300 group ${
+                            isFocusMode ? 'hover:bg-stone-200/50' : 'hover:bg-teal-500/5'
+                        }`}
                     >
                         <div className="flex items-center gap-4">
-                            <span className="text-2xl">🧠</span>
+                            <span className="text-xl">🧠</span>
                             <div className="text-left">
-                                <h3 className="font-bold text-lg group-hover:text-white transition-colors">Deep Dive</h3>
-                                <p className="text-white/40 text-sm">The science and context behind this protocol</p>
+                                <h3 className={`font-bold text-base transition-colors ${
+                                    isFocusMode ? 'text-stone-850 group-hover:text-stone-900' : 'text-teal-300/80 group-hover:text-white'
+                                }`}>
+                                    Deep Dive
+                                </h3>
+                                <p className={`text-xs ${isFocusMode ? 'text-stone-400' : 'text-teal-400/30'}`}>
+                                    The science and context behind this protocol
+                                </p>
                             </div>
                         </div>
                         <motion.span 
                             animate={{ rotate: showDeepDive ? 180 : 0 }}
                             transition={{ duration: 0.3 }}
-                            className="text-2xl text-white/40 group-hover:text-white/60 transition-colors"
+                            className={`text-xl ${isFocusMode ? 'text-stone-400 group-hover:text-stone-700' : 'text-teal-400/30 group-hover:text-teal-300'}`}
                         >
                             ↓
                         </motion.span>
@@ -390,9 +458,11 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                                 animate={{ height: "auto", opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                                className="border-t border-white/10"
+                                className={`border-t ${isFocusMode ? 'border-stone-200' : 'border-white/5'}`}
                             >
-                                <div className="p-8 text-white/70 leading-relaxed space-y-4">
+                                <div className={`p-8 leading-relaxed space-y-4 text-base ${
+                                    isFocusMode ? 'text-stone-700' : 'text-teal-100/60'
+                                }`}>
                                     {article.deep_dive.split('\n\n').map((paragraph: string, index: number) => (
                                         <p key={index}>{paragraph}</p>
                                     ))}
