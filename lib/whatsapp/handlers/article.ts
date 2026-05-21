@@ -30,7 +30,7 @@ export async function handleArticle(
   // Resolve article by slug or keyword
   const { data: article } = await supabase
     .from('protocols')
-    .select('title, slug, keyword, tldr, protocol')
+    .select('title, slug, keyword, tldr, protocol, cover_image, summary')
     .or(`slug.eq.${articleSlug},keyword.ilike.${articleSlug}`)
     .single();
 
@@ -41,6 +41,29 @@ export async function handleArticle(
       preview_url: false,
     }];
   }
+
+  // Generate / Upsert rich link for the article so WhatsApp preview bot can crawl it unauthenticated
+  const linkSlug = `art-${article.slug}`;
+  
+  try {
+    const { error: upsertError } = await supabase
+      .from('rich_links')
+      .upsert({
+        slug: linkSlug,
+        title: article.title,
+        description: article.summary || article.tldr || 'Read this protocol on SOR7ED.',
+        target_url: `${SITE_URL}/intelligence/${article.slug}`,
+        image_url: article.cover_image || ''
+      }, { onConflict: 'slug' });
+
+    if (upsertError) {
+      console.error(`[RichLinks] Failed to upsert article rich link:`, upsertError.message);
+    }
+  } catch (e) {
+    console.error(`[RichLinks] Exception upserting article rich link:`, e);
+  }
+
+  const articleUrl = `${SITE_URL}/r/${linkSlug}`;
 
   // Combine TL;DR and Protocol instructions
   const combinedContent = [
@@ -54,8 +77,8 @@ export async function handleArticle(
   return chunks.map((chunk, index) => ({
     to: userWaId,
     text: index === 0 
-      ? `${article.title}\n\n${chunk}` 
+      ? `${article.title}\n${articleUrl}\n\n${chunk}` 
       : chunk,
-    preview_url: index === 0, // Only first chunk might get preview if there's a link
+    preview_url: index === 0, // Only first chunk gets preview if there's a link
   }));
 }

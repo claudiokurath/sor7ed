@@ -48,7 +48,7 @@ const getSaveCardWithMetadata = cache(async (id: string) => {
         .from('tools')
         .select('short_description, cover_image')
         .eq('slug', slug)
-        .eq('status', 'Live') // Security: only published tools
+        .neq('status', 'Draft') // Security: only published tools
         .single();
       if (tool) {
         description = tool.short_description || description;
@@ -59,7 +59,7 @@ const getSaveCardWithMetadata = cache(async (id: string) => {
         .from('protocols')
         .select('summary, cover_image, meta_description')
         .eq('slug', slug)
-        .eq('status', 'Published') // Security: only published articles
+        .neq('status', 'Draft') // Security: only published articles
         .single();
       if (article) {
         description = article.meta_description || article.summary || description;

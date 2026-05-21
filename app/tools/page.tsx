@@ -15,7 +15,7 @@ export default async function ToolsPage() {
   const { data: tools } = await supabase
     .from("tools")
     .select("slug, name, cover_image, short_description, branch")
-    .eq("status", "Published")
+    .neq("status", "Draft")
     .order("featured", { ascending: false });
 
   const items = tools ?? [];
