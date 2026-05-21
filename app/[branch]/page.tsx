@@ -4,11 +4,11 @@ import { notFound } from "next/navigation";
 
 const BRANCHES: Record<string, { label: string; emoji: string; desc: string; color: string }> = {
   "keep-going":   { label: "Keep Going",   emoji: "⚡", desc: "Energy, momentum and getting unstuck when your brain refuses to cooperate.", color: "#00C48A" },
-  "spend-smart":  { label: "Spend Smart",  emoji: "💷", desc: "Money clarity, budgeting without shame, and financial admin that doesn\'t spiral.", color: "#00A0C4" },
+  "spend-smart":  { label: "Spend Smart",  emoji: "💷", desc: "Money clarity, budgeting without shame, and financial admin that doesn't spiral.", color: "#00A0C4" },
   "feel-good":    { label: "Feel Good",    emoji: "🌿", desc: "Rest, body regulation, nervous system tools, and getting enough sleep.", color: "#9B00C4" },
   "plan-ahead":   { label: "Plan Ahead",   emoji: "🗓", desc: "Structure, scheduling, and planning systems that actually fit your brain.", color: "#00C4C4" },
   "be-connected": { label: "Be Connected", emoji: "🤝", desc: "Relationships, communication scripts, and handling hard conversations.", color: "#3C8CE8" },
-  "be-yourself":  { label: "Be Yourself",  emoji: "🪞", desc: "Identity, self-knowledge, masking, and understanding how you\'re wired.", color: "#C400C4" },
+  "be-yourself":  { label: "Be Yourself",  emoji: "🪞", desc: "Identity, self-knowledge, masking, and understanding how you're wired.", color: "#C400C4" },
   "level-up":     { label: "Level Up",     emoji: "🚀", desc: "Skills, career, learning strategies, and work that plays to your strengths.", color: "#C4A000" },
 };
 
@@ -27,34 +27,57 @@ export default async function BranchPage({ params }: Props) {
   if (!b) notFound();
 
   const supabase = await createClient();
-  const { data: posts } = await supabase
-    .from("protocols")
-    .select("slug, title, branch, summary, cover_image, read_time")
-    .eq("status", "Published")
-    .ilike("branch", b.label)
-    .order("created_at", { ascending: false });
-
-  const { data: tools } = await supabase
-    .from("tools")
-    .select("slug, title, branch, description, cover_image")
-    .eq("status", "Published")
-    .ilike("branch", b.label)
-    .order("created_at", { ascending: false });
+  
+  const [
+    { data: dbBranch },
+    { data: posts },
+    { data: tools }
+  ] = await Promise.all([
+    supabase
+      .from("branches")
+      .select("cover_image")
+      .ilike("slug", branch)
+      .single(),
+    supabase
+      .from("protocols")
+      .select("slug, title, branch, summary, cover_image, read_time")
+      .neq("status", "Draft")
+      .ilike("branch", b.label)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("tools")
+      .select("slug, name, branch, short_description, cover_image")
+      .neq("status", "Draft")
+      .ilike("branch", b.label)
+      .order("created_at", { ascending: false })
+  ]);
 
   const articles = posts ?? [];
   const toolList = tools ?? [];
 
   return (
-    <main className="pt-20">
+    <main className="min-h-screen bg-black pt-14">
       {/* Branch hero */}
-      <section className="section-sm border-b border-border-subtle" data-branch={branch}>
-        <div className="page-container">
-          <Link href="/explore" className="t-label text-[#00C4C4] hover:underline mb-6 block">← All branches</Link>
+      <section className="relative h-[45vh] w-full overflow-hidden border-b border-white/10 bg-[#080f11] flex items-end">
+        {dbBranch?.cover_image ? (
+          <img
+            src={dbBranch.cover_image}
+            alt={b.label}
+            className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-40 brightness-75"
+          />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-[#080f11]" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+        
+        {/* Editorial Text Overlay */}
+        <div className="relative z-10 w-full page-container pb-10 flex flex-col justify-end">
+          <Link href="/explore" className="t-label text-[#2dd4bf] hover:underline mb-4 block">← All branches</Link>
           <div className="flex items-start gap-4">
             <span className="text-4xl mt-1">{b.emoji}</span>
             <div>
-              <h1 className="t-display mb-3" style={{ color: b.color }}>{b.label}</h1>
-              <p className="t-body max-w-xl">{b.desc}</p>
+              <h1 className="t-display mb-3 text-white uppercase font-black tracking-tight" style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}>{b.label}</h1>
+              <p className="text-white/60 text-sm md:text-base max-w-xl leading-relaxed">{b.desc}</p>
             </div>
           </div>
         </div>
@@ -71,12 +94,12 @@ export default async function BranchPage({ params }: Props) {
                   className="group bg-[#080f11] flex flex-col overflow-hidden hover:bg-[#0d1619] transition-colors duration-200">
                   <div className="relative w-full aspect-video overflow-hidden bg-[#0d1619]">
                     {tool.cover_image ? (
-                      <img src={tool.cover_image} alt={tool.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <img src={tool.cover_image} alt={tool.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     ) : <div className="w-full h-full" />}
                   </div>
                   <div className="p-5 flex flex-col gap-2">
-                    <h3 className="t-heading text-sm line-clamp-2 group-hover:text-[#00C4C4] transition-colors">{tool.title}</h3>
-                    {tool.description && <p className="t-small line-clamp-2">{tool.description}</p>}
+                    <h3 className="t-heading text-sm line-clamp-2 group-hover:text-[#2dd4bf] transition-colors uppercase font-bold">{tool.name}</h3>
+                    {tool.short_description && <p className="t-small line-clamp-2">{tool.short_description}</p>}
                   </div>
                 </Link>
               ))}
@@ -100,7 +123,7 @@ export default async function BranchPage({ params }: Props) {
                     ) : <div className="w-full h-full" />}
                   </div>
                   <div className="p-5 flex flex-col gap-2">
-                    <h3 className="t-heading text-sm line-clamp-2 group-hover:text-[#00C4C4] transition-colors">{post.title}</h3>
+                    <h3 className="t-heading text-sm line-clamp-2 group-hover:text-[#2dd4bf] transition-colors uppercase font-bold">{post.title}</h3>
                     {post.summary && <p className="t-small line-clamp-2">{post.summary}</p>}
                     {post.read_time && <span className="t-label opacity-50">{post.read_time} min read</span>}
                   </div>
