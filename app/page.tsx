@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
 
 const BRANCHES: Array<{ slug: string; label: string; emoji: string; desc: string }> = [
   { slug: "keep-going",   label: "Keep Going",    emoji: "⚡", desc: "Energy, momentum, getting unstuck" },
@@ -11,17 +12,8 @@ const BRANCHES: Array<{ slug: string; label: string; emoji: string; desc: string
   { slug: "level-up",     label: "Level Up",      emoji: "🚀", desc: "Skills, growth, work" },
 ];
 
-const BRANCH_POSTER_TEXTS: Record<string, string> = {
-  "keep-going": "EP GOING",
-  "spend-smart": "PEND SMART",
-  "feel-good": "EL GOOD",
-  "plan-ahead": "LAN AHEAD",
-  "be-connected": "CONNECTED",
-  "be-yourself": "YOURSELF",
-  "level-up": "VEL UP",
-};
-
 export default async function HomePage() {
+  const config = await getSiteConfig();
   const supabase = await createClient();
 
   const { data: posts } = await supabase
@@ -64,16 +56,12 @@ export default async function HomePage() {
       {/* ── HERO ──────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex items-end overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-[#080f11]">
+        <div className="absolute inset-0" style={{ backgroundColor: 'var(--color-surface)' }}>
           <img
-            src="/Images/home/hero.png"
+            src={config.home_hero?.image || "/Images/home/hero.jpg"}
             alt="Hero Background"
-            className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-30 brightness-50"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#080f11] via-[#080f11]/30 to-transparent" />
-          {/* Teal ambient */}
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#00C4C4]/6 blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-[#E8453C]/5 blur-[100px] pointer-events-none" />
         </div>
 
         <div className="relative page-container pb-20 pt-32">
@@ -84,15 +72,13 @@ export default async function HomePage() {
               <span className="tag">No app needed</span>
             </div>
 
-            <h1 className="t-hero mb-6 text-balance">
-              Life admin,{" "}
-              <span className="text-[#00C4C4]">actually</span>{" "}
-              sorted.
+            <h1 className="t-hero mb-6 text-balance text-white">
+              {renderFormattedText(config.home_hero_title?.text, 'var(--color-accent)')}
             </h1>
 
-            <p className="t-body max-w-xl mb-10 text-lg">
-              Practical protocols for neurodivergent adults — delivered straight to WhatsApp. No app, no overwhelm.
-            </p>
+            <div className="t-body max-w-xl mb-10 text-lg text-white/60">
+              {renderFormattedText(config.home_hero_subtitle?.text, 'var(--color-accent)')}
+            </div>
 
             <div className="flex flex-wrap gap-4">
               <Link href="/tools" className="btn btn-accent btn-lg">
@@ -113,11 +99,11 @@ export default async function HomePage() {
       </section>
 
       {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
-      <section className="section border-t border-border-subtle bg-[#080f11]/30">
+      <section className="section border-t border-border-subtle bg-surface-subtle/30">
         <div className="page-container">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="t-label text-[#00C4C4] mb-2 font-mono tracking-widest">THE SYSTEM</p>
+              <p className="t-label text-accent mb-2 font-mono tracking-widest">THE SYSTEM</p>
               <h2 className="t-display">7 Branches</h2>
             </div>
             <Link href="/explore" className="btn btn-ghost btn-sm hidden md:inline-flex border-white/10 hover:border-white">
@@ -131,32 +117,25 @@ export default async function HomePage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {branchList.slice(0, 4).map((b) => (
                 <Link
-                  key={b.slug}
-                  href={`/${b.slug}`}
-                  className="group relative aspect-[3/4] border border-white/10 hover:border-[#00C4C4]/50 overflow-hidden transition-all duration-300"
+                   key={b.slug}
+                   href={`/${b.slug}`}
+                   className="group relative aspect-square border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
                 >
-                  {/* Image */}
+                  {/* Image (Square 1:1, full color) */}
                   <img
                     src={b.cover_image}
                     alt={b.name}
-                    className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90" />
-                  
-                  {/* Top Display text */}
-                  <div className="absolute top-4 left-4 right-4">
-                    <span className="font-display text-5xl sm:text-6xl text-white font-black leading-none block select-none uppercase">
-                      {BRANCH_POSTER_TEXTS[b.slug] || b.name}
-                    </span>
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                   {/* Bottom details */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                     <div>
-                      <p className="t-heading text-xs text-white/90 mb-1">{b.name}</p>
-                      <p className="text-[10px] text-white/60 line-clamp-1 leading-none">{b.description}</p>
+                      <p className="t-heading text-xs text-white font-bold mb-1">{b.name}</p>
+                      <p className="text-[10px] text-white/80 line-clamp-1 leading-none">{b.description}</p>
                     </div>
-                    <span className="text-[#00C4C4] font-bold text-sm shrink-0 ml-2">→</span>
+                    <span className="text-accent font-bold text-sm shrink-0 ml-2">→</span>
                   </div>
                 </Link>
               ))}
@@ -168,30 +147,23 @@ export default async function HomePage() {
                 <Link
                   key={b.slug}
                   href={`/${b.slug}`}
-                  className="group relative aspect-[3/4] lg:w-[calc(25%-18px)] border border-white/10 hover:border-[#00C4C4]/50 overflow-hidden transition-all duration-300"
+                  className="group relative aspect-square lg:w-[calc(25%-18px)] border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
                 >
-                  {/* Image */}
+                  {/* Image (Square 1:1, full color) */}
                   <img
                     src={b.cover_image}
                     alt={b.name}
-                    className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/90" />
-                  
-                  {/* Top Display text */}
-                  <div className="absolute top-4 left-4 right-4">
-                    <span className="font-display text-5xl sm:text-6xl text-white font-black leading-none block select-none uppercase">
-                      {BRANCH_POSTER_TEXTS[b.slug] || b.name}
-                    </span>
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                   {/* Bottom details */}
-                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                     <div>
-                      <p className="t-heading text-xs text-white/90 mb-1">{b.name}</p>
-                      <p className="text-[10px] text-white/60 line-clamp-1 leading-none">{b.description}</p>
+                      <p className="t-heading text-xs text-white font-bold mb-1">{b.name}</p>
+                      <p className="text-[10px] text-white/80 line-clamp-1 leading-none">{b.description}</p>
                     </div>
-                    <span className="text-[#00C4C4] font-bold text-sm shrink-0 ml-2">→</span>
+                    <span className="text-accent font-bold text-sm shrink-0 ml-2">→</span>
                   </div>
                 </Link>
               ))}
@@ -205,7 +177,7 @@ export default async function HomePage() {
         <div className="page-container">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="t-label text-[#00C4C4] mb-2">Read</p>
+              <p className="t-label text-accent mb-2">Read</p>
               <h2 className="t-display">Blog</h2>
             </div>
             <Link href="/intelligence" className="btn btn-ghost btn-sm hidden md:inline-flex">
@@ -218,39 +190,36 @@ export default async function HomePage() {
               <Link
                 key={post.slug}
                 href={`/intelligence/${post.slug}`}
-                className="group relative aspect-[3/4] border border-white/10 hover:border-[#00C4C4]/50 overflow-hidden transition-all duration-300 flex flex-col justify-end"
+                className="group bg-[#0d1619] border border-white/10 overflow-hidden hover:border-accent/50 transition-all duration-300 flex flex-col justify-between"
               >
-                {post.cover_image ? (
-                  <img
-                    src={post.cover_image}
-                    alt={post.title}
-                    className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[#0d1619]" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/95" />
-
-                {/* Bottom solid text box container */}
-                <div className="relative z-10 w-full bg-[#0d1619]/95 border-t border-white/10 p-5 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="tag tag-accent bg-black/40 border-[#00C4C4]/20 text-[9px] px-1.5 py-0.5">{post.branch}</span>
-                    <span className="text-[10px] text-white/40 font-mono">{post.read_time ? `${post.read_time} min` : ""}</span>
+                <div>
+                  {/* Image container: aspect-video (16:9) to fit landscape images perfectly */}
+                  <div className="relative w-full aspect-video overflow-hidden bg-[#0d1619] border-b border-white/5">
+                    {post.cover_image ? (
+                      <img
+                        src={post.cover_image}
+                        alt={post.title}
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-102 transition-all duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-[#131e21]">
+                        <span className="t-label opacity-30">No Image</span>
+                      </div>
+                    )}
                   </div>
-                  
-                  <h3 className="t-heading text-sm font-bold text-white group-hover:text-[#00C4C4] transition-colors leading-snug line-clamp-2 uppercase">
-                    {post.title}
-                  </h3>
-                  
-                  {post.summary && (
-                    <p className="text-[11px] text-white/60 line-clamp-2 font-sans leading-normal">
-                      {post.summary}
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-1 text-[9px] font-mono tracking-widest text-[#00C4C4]">
-                    <span>READ PROTOCOL</span>
-                    <span>→</span>
+                  <div className="p-5 flex flex-col gap-2">
+                    <span className="tag tag-accent bg-black/40 border-accent/20 text-[9px] px-1.5 py-0.5 self-start">{post.branch}</span>
+                    <h3 className="t-heading text-sm font-bold text-white group-hover:text-accent transition-colors leading-snug line-clamp-2 uppercase">
+                      {post.title}
+                    </h3>
+                    {post.summary && <p className="text-[11px] text-white/60 line-clamp-2 font-sans leading-normal">{post.summary}</p>}
+                  </div>
+                </div>
+
+                <div className="p-5 pt-0 mt-auto">
+                  <div className="flex items-center justify-between pt-3 border-t border-white/5 text-[9px] font-mono tracking-widest text-accent">
+                    <span className="text-white/40 font-mono font-normal normal-case">{post.read_time ? `${post.read_time} min read` : ""}</span>
+                    <span>READ PROTOCOL →</span>
                   </div>
                 </div>
               </Link>
@@ -264,11 +233,11 @@ export default async function HomePage() {
       </section>
 
       {/* ── TOOLS SECTION ────────────────────────────────────────── */}
-      <section className="section border-t border-border-subtle bg-[#080f11]/30">
+      <section className="section border-t border-border-subtle bg-surface-subtle/30">
         <div className="page-container">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="t-label text-[#E8453C] mb-2">Use</p>
+              <p className="t-label text-coral mb-2">Use</p>
               <h2 className="t-display">Tools</h2>
             </div>
             <Link href="/tools" className="btn btn-ghost btn-sm hidden md:inline-flex">
@@ -281,39 +250,36 @@ export default async function HomePage() {
               <Link
                 key={tool.slug}
                 href={`/tools/${tool.slug}`}
-                className="group relative aspect-[3/4] border border-white/10 hover:border-[#E8453C]/50 overflow-hidden transition-all duration-300 flex flex-col justify-end"
+                className="group bg-[#0d1619] border border-white/10 overflow-hidden hover:border-coral/50 transition-all duration-300 flex flex-col justify-between"
               >
-                {tool.cover_image ? (
-                  <img
-                    src={tool.cover_image}
-                    alt={tool.name}
-                    className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[#0d1619]" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/95" />
-
-                {/* Bottom solid text box container */}
-                <div className="relative z-10 w-full bg-[#0d1619]/95 border-t border-white/10 p-5 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <span className="tag bg-black/40 border-[#E8453C]/20 text-[#E8453C] text-[9px] px-1.5 py-0.5">{tool.branch}</span>
-                    <span className="text-[10px] text-white/40 font-mono">Interactive</span>
+                <div>
+                  {/* Image container: aspect-video (16:9) to fit landscape tool images perfectly */}
+                  <div className="relative w-full aspect-video overflow-hidden bg-[#0d1619] border-b border-white/5">
+                    {tool.cover_image ? (
+                      <img
+                        src={tool.cover_image}
+                        alt={tool.name}
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-102 transition-all duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-[#131e21]">
+                        <span className="t-label opacity-30">No Image</span>
+                      </div>
+                    )}
                   </div>
-                  
-                  <h3 className="t-heading text-sm font-bold text-white group-hover:text-[#E8453C] transition-colors leading-snug line-clamp-2 uppercase">
-                    {tool.name}
-                  </h3>
-                  
-                  {tool.short_description && (
-                    <p className="text-[11px] text-white/60 line-clamp-2 font-sans leading-normal">
-                      {tool.short_description}
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-1 text-[9px] font-mono tracking-widest text-[#E8453C]">
-                    <span>LAUNCH TOOL</span>
-                    <span>→</span>
+                  <div className="p-5 flex flex-col gap-2">
+                    <span className="tag bg-black/40 border-coral/20 text-coral text-[9px] px-1.5 py-0.5 self-start">{tool.branch}</span>
+                    <h3 className="t-heading text-sm font-bold text-white group-hover:text-coral transition-colors leading-snug line-clamp-2 uppercase">
+                      {tool.name}
+                    </h3>
+                    {tool.short_description && <p className="text-[11px] text-white/60 line-clamp-2 font-sans leading-normal">{tool.short_description}</p>}
+                  </div>
+                </div>
+
+                <div className="p-5 pt-0 mt-auto">
+                  <div className="flex items-center justify-between pt-3 border-t border-white/5 text-[9px] font-mono tracking-widest text-coral">
+                    <span className="text-white/40 font-mono font-normal">INTERACTIVE</span>
+                    <span>LAUNCH TOOL →</span>
                   </div>
                 </div>
               </Link>

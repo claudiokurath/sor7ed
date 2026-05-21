@@ -2,6 +2,7 @@ import { Client } from '@notionhq/client'
 import { createClient } from '@supabase/supabase-js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { cleanBlogPost, cleanProtocolField } from '../lib/utils/clean-blog'
 
 // Robust environment variable loader
 function loadEnvironment(): Record<string, string> {
@@ -195,6 +196,28 @@ function getLocalCoverImage(slug: string, keyword: string): string | null {
         console.log(`[Sync] Found local cover in public/Images/branches/: /Images/branches/${spaceFilename}.${ext}`);
         return `/Images/branches/${spaceFilename}.${ext}`;
       }
+
+      // Check 5: public/Images/tools/filename.ext
+      const toolCheckPath = path.join(process.cwd(), 'public', 'Images', 'tools', `${filename}.${ext}`);
+      if (fs.existsSync(toolCheckPath)) {
+        console.log(`[Sync] Found local cover in public/Images/tools/: /Images/tools/${filename}.${ext}`);
+        return `/Images/tools/${filename}.${ext}`;
+      }
+
+      // Check 6: public/Images/tools/filename (with spaces).ext
+      const toolCheckSpacePath = path.join(process.cwd(), 'public', 'Images', 'tools', `${spaceFilename}.${ext}`);
+      if (fs.existsSync(toolCheckSpacePath)) {
+        console.log(`[Sync] Found local cover in public/Images/tools/: /Images/tools/${spaceFilename}.${ext}`);
+        return `/Images/tools/${spaceFilename}.${ext}`;
+      }
+
+      // Check 7: public/Images/tools/filename uppercase.ext
+      const upperSpaceFilename = spaceFilename.toUpperCase();
+      const toolCheckUpperSpacePath = path.join(process.cwd(), 'public', 'Images', 'tools', `${upperSpaceFilename}.${ext}`);
+      if (fs.existsSync(toolCheckUpperSpacePath)) {
+        console.log(`[Sync] Found local cover in public/Images/tools/: /Images/tools/${upperSpaceFilename}.${ext}`);
+        return `/Images/tools/${upperSpaceFilename}.${ext}`;
+      }
     }
   }
 
@@ -278,8 +301,8 @@ async function syncProtocols(pages: NotionPage[]): Promise<string[]> {
       branch: getSelect(props.Branch),
       keyword,
       tldr: getText(props['TL;DR']),
-      problem: getText(props['Blog Post']),
-      protocol: getText(props.Protocol),
+      problem: cleanBlogPost(getText(props['Blog Post']), title),
+      protocol: cleanProtocolField(getText(props.Protocol), title),
       cta: getText(props.CTA),
       excerpt: getText(props.Excerpt),
       seo_title: getText(props['SEO Title']),
@@ -338,7 +361,7 @@ async function syncTools(pages: NotionPage[]): Promise<string[]> {
       branch: getSelect(props.Branch),
       keyword,
       tldr: getText(props['TL,:DR']) || getText(props['TL;DR']), // Handle potential typo
-      description: getText(props['Blog Post']),
+      description: cleanBlogPost(getText(props['Blog Post']), name),
       long_description: getText(props['Long Description']),
       short_description: getText(props['Short Description']),
       featured: getCheckbox(props.Featured),
@@ -412,42 +435,94 @@ async function syncBranches(pages: NotionPage[]): Promise<string[]> {
 /**
  * Safely removes stale items that exist in the database but are no longer in the synced list.
  */
-async function deleteStaleRecords(table: string, syncedSlugs: string[]) {
-  if (syncedSlugs.length === 0) return
+async function deleteStaleRecords(table: string, syncedKeys: string[]) {
+  if (syncedKeys.length === 0) return
 
-  // 1. Get all current slugs in the database
+  const keyColumn = table === 'site_config' ? 'key' : 'slug'
+
+  // 1. Get all current keys in the database
   const { data, error: fetchError } = await supabase
     .from(table)
-    .select('slug')
-    .neq('slug', 'keep-it-safe-placeholder')
+    .select(keyColumn)
 
   if (fetchError) {
-    console.error(`[Sync] Failed to fetch existing slugs for ${table} cleanup:`, fetchError.message)
+    if (fetchError.code === 'PGRST205') return; // Skip if table doesn't exist yet
+    console.error(`[Sync] Failed to fetch existing keys for ${table} cleanup:`, fetchError.message)
     return
   }
 
-  // 2. Identify stale slugs (in DB but not in synced list)
-  const existingSlugs = data.map(item => item.slug)
-  const staleSlugs = existingSlugs.filter(slug => !syncedSlugs.includes(slug))
+  // 2. Identify stale keys (in DB but not in synced list)
+  const existingKeys = data.map(item => (item as any)[keyColumn])
+  const staleKeys = existingKeys.filter(k => !syncedKeys.includes(k))
 
-  if (staleSlugs.length === 0) {
+  if (staleKeys.length === 0) {
     console.log(`[Sync] No stale records to clean up in ${table}`)
     return
   }
 
-  console.log(`[Sync] Cleaning up ${staleSlugs.length} stale records in ${table}:`, staleSlugs)
+  console.log(`[Sync] Cleaning up ${staleKeys.length} stale records in ${table}:`, staleKeys)
 
-  // 3. Delete those specific slugs
+  // 3. Delete those specific keys
   const { error: deleteError } = await supabase
     .from(table)
     .delete()
-    .in('slug', staleSlugs)
+    .in(keyColumn, staleKeys)
 
   if (deleteError) {
     console.error(`[Sync] Failed to delete stale records from ${table}:`, deleteError.message)
   } else {
     console.log(`[Sync] Successfully cleaned up stale records from ${table}`)
   }
+}
+
+async function syncSiteConfig(pages: NotionPage[]): Promise<string[]> {
+  console.log(`[Sync] Processing ${pages.length} site configs...`)
+  
+  // Check if site_config table exists in Supabase
+  const { error: tableCheck } = await supabase.from('site_config').select('key').limit(1)
+  if (tableCheck && tableCheck.code === 'PGRST205') {
+    console.warn('\n[Warning] Table "site_config" does not exist in Supabase yet.')
+    console.warn('Please execute the SQL migration in "supabase/migrations/20260521_add_site_config.sql" in your Supabase dashboard to enable database-driven styling and config.\n')
+    return []
+  }
+
+  const results = await runWithLimit(pages, 5, async (page, index) => {
+    const props = page.properties
+    const key = getText(props.Key);
+    if (!key) return '';
+    const name = getText(props.Name);
+    const text_value = getText(props['Text Value']);
+    const color = getText(props.Color);
+    const description = getText(props.Description);
+    const active = getCheckbox(props.Active);
+    
+    let image_url = '';
+    const rawCover = getCover(page) || getFiles(props.Image) || getUrl(props.Image);
+    if (rawCover) {
+      image_url = await uploadCoverImageToSupabase(rawCover, 'site-config', key);
+    }
+
+    const data = {
+      key,
+      name,
+      value_text: text_value || null,
+      value_color: color || null,
+      image_url: image_url || null,
+      description: description || null,
+      active
+    }
+
+    const { error } = await supabase.from('site_config').upsert(data, { onConflict: 'key' })
+    if (error) {
+      console.error(`[Sync] Error syncing site config "${data.name}":`, error.message)
+      throw error;
+    }
+    
+    console.log(`[Sync] Synced site config (${index + 1}/${pages.length}): ${data.name}`)
+    return key;
+  });
+
+  return results.filter(Boolean);
 }
 
 async function sync() {
@@ -466,34 +541,39 @@ async function sync() {
   
   const branchesDbId = env.NOTION_BRANCHES_DB_ID || 'bf1e89a5167e484b9fc85376031f72e3';
   const branchesData = await fetchAllNotionPages(branchesDbId);
+
+  const siteConfigDbId = env.NOTION_SITE_CONFIG_DB_ID || '3670d601-4acc-8137-a1e3-daf1e0bdfa51';
+  const siteConfigs = await fetchAllNotionPages(siteConfigDbId);
   
-  if (publishedProtocols.length === 0 && liveTools.length === 0 && branchesData.length === 0) {
+  if (publishedProtocols.length === 0 && liveTools.length === 0 && branchesData.length === 0 && siteConfigs.length === 0) {
     console.error('[Sync] No data retrieved from Notion. Aborting sync to prevent data loss.')
     return
   }
 
   // 1b. Fetch ALL records from Notion (regardless of status) just for stale-cleanup reference.
-  // This ensures we ONLY delete articles/tools that no longer exist in Notion at all,
-  // NOT articles that simply have a Draft/Unpublished status.
   const allProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID)
   const allTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID)
 
   const allProtocolSlugs = allProtocols.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
   const allToolSlugs = allTools.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
+  const allConfigKeys = siteConfigs.map(p => getText(p.properties.Key)).filter(Boolean)
 
-  // 2. Upsert only published/live records
+  // 2. Upsert only published/live/active records
   const syncedProtocolSlugs = await syncProtocols(publishedProtocols)
   const syncedToolSlugs = await syncTools(liveTools)
   const syncedBranchSlugs = await syncBranches(branchesData)
+  const syncedConfigKeys = await syncSiteConfig(siteConfigs)
 
-  // 3. Delete ONLY records that no longer exist anywhere in Notion (not just unpublished ones)
+  // 3. Delete ONLY records that no longer exist anywhere in Notion
   await deleteStaleRecords('protocols', allProtocolSlugs)
   await deleteStaleRecords('tools', allToolSlugs)
   await deleteStaleRecords('branches', syncedBranchSlugs)
+  await deleteStaleRecords('site_config', allConfigKeys)
   
   console.log('All syncs complete successfully!')
   console.log(`[Sync] Published protocols on site: ${syncedProtocolSlugs.length}`)
   console.log(`[Sync] Live tools on site: ${syncedToolSlugs.length}`)
+  console.log(`[Sync] Site config parameters synced: ${syncedConfigKeys.length}`)
 }
 
 sync().catch(console.error)

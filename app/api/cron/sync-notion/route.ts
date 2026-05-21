@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { cleanBlogPost, cleanProtocolField } from '@/lib/utils/clean-blog';
 
 export const dynamic = 'force-dynamic';
 
@@ -186,9 +187,9 @@ async function syncProtocols(force = false) {
           status:           status(p['Status']),
           summary:          text(p['Summary']),
           excerpt:          text(p['Excerpt']),
-          problem:          text(p['Blog Post']),
+          problem:          cleanBlogPost(text(p['Blog Post']), text(p['Title'])),
           cta:              text(p['CTA']),
-          protocol:         text(p['Protocol']),
+          protocol:         cleanProtocolField(text(p['Protocol']), text(p['Title'])),
           keyword:          text(p['WhatsApp Trigger']),
           cover_image:      notionImageUrl,
           read_time:        text(p['Read Time']),
@@ -276,7 +277,7 @@ async function syncTools(force = false) {
         branch:            select(p['Branch']),
         keyword:           text(p['WhatsApp Trigger']),
         tldr:              text(p['TL;DR']),
-        description:       text(p['Blog Post']),
+        description:       cleanBlogPost(text(p['Blog Post']), text(p['Name'])),
         short_description: text(p['Short Description']),
         featured:          checkbox(p['Featured']),
         color:             text(p['Color']) || '#ffffff',

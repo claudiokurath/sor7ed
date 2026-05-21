@@ -44,10 +44,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+import { getSiteConfig } from "@/lib/getSiteConfig";
+
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const config = await getSiteConfig();
+
+  const accent = config.home_accent_color?.color || '#00C4C4';
+  const coral = config.home_accent_sec_color?.color || '#E8453C';
+  const bg = config.home_bg_color?.color || '#080f11';
+
+  const styleOverride = {
+    backgroundColor: bg,
+    '--color-surface': bg,
+    '--color-accent': accent,
+    '--color-accent-dim': accent + '1a', // 10% opacity
+    '--color-accent-border': accent + '40', // 25% opacity
+    '--color-coral': coral,
+    '--color-coral-dim': coral + '1a', // 10% opacity
+    '--color-coral-border': coral + '40', // 25% opacity
+  } as React.CSSProperties;
+
   return (
     <html lang="en" className={`${leagueGothic.variable} ${dmMono.variable} ${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" style={styleOverride}>
         <Navbar />
         {/* pt-16 accounts for Navbar height */}
         <main className="flex-1">{children}</main>
