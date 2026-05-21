@@ -23,8 +23,8 @@ export default async function HomePage() {
 
   const { data: tools } = await supabase
     .from("tools")
-    .select("slug, title, branch, description, cover_image")
-    .eq("status", "Published")
+    .select("slug, name, branch, short_description, cover_image")
+    .neq("status", "Draft")
     .order("created_at", { ascending: false })
     .limit(6);
 
@@ -37,7 +37,12 @@ export default async function HomePage() {
       <section className="relative min-h-screen flex items-end overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 bg-[#080f11]">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#080f11]/40 to-[#080f11]" />
+          <img
+            src="/Images/home/hero.png"
+            alt="Hero Background"
+            className="absolute inset-0 w-full h-full object-cover filter grayscale opacity-30 brightness-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080f11] via-[#080f11]/30 to-transparent" />
           {/* Teal ambient */}
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#00C4C4]/6 blur-[120px] pointer-events-none" />
           <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-[#E8453C]/5 blur-[100px] pointer-events-none" />
@@ -193,7 +198,7 @@ export default async function HomePage() {
                   {tool.cover_image ? (
                     <img
                       src={tool.cover_image}
-                      alt={tool.title}
+                      alt={tool.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
@@ -204,8 +209,8 @@ export default async function HomePage() {
                 </div>
                 <div className="p-5 flex flex-col gap-2 flex-1">
                   <span className="tag self-start" style={{ borderColor: "rgba(232,69,60,0.25)", color: "#E8453C", background: "rgba(232,69,60,0.08)" }}>{tool.branch}</span>
-                  <h3 className="t-heading text-sm line-clamp-2 group-hover:text-[#E8453C] transition-colors">{tool.title}</h3>
-                  {tool.description && <p className="t-small line-clamp-2">{tool.description}</p>}
+                  <h3 className="t-heading text-sm line-clamp-2 group-hover:text-[#E8453C] transition-colors">{tool.name}</h3>
+                  {tool.short_description && <p className="t-small line-clamp-2">{tool.short_description}</p>}
                 </div>
               </Link>
             ))}
