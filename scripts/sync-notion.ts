@@ -157,10 +157,11 @@ async function fetchAllNotionPages(database_id: string, filter?: any): Promise<N
 function getLocalCoverImage(slug: string, keyword: string): string | null {
   const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
   
-  // Potential filenames to check
+  // Potential filenames to check (fully normalized to lowercase and hyphenated)
   const filenames = [
-    slug,
-    keyword?.toLowerCase().trim().replace(/\s+/g, '-'),
+    slug?.toLowerCase().trim(),
+    slug?.toLowerCase().trim().replace(/[\s_]+/g, '-'),
+    keyword?.toLowerCase().trim().replace(/[\s_]+/g, '-'),
     keyword?.toLowerCase().trim()
   ].filter(Boolean);
 
@@ -178,6 +179,21 @@ function getLocalCoverImage(slug: string, keyword: string): string | null {
       if (fs.existsSync(rootPath)) {
         console.log(`[Sync] Found local cover in public/: /${filename}.${ext}`);
         return `/${filename}.${ext}`;
+      }
+
+      // Check 3: public/Images/branches/filename.ext
+      const branchPath = path.join(process.cwd(), 'public', 'Images', 'branches', `${filename}.${ext}`);
+      if (fs.existsSync(branchPath)) {
+        console.log(`[Sync] Found local cover in public/Images/branches/: /Images/branches/${filename}.${ext}`);
+        return `/Images/branches/${filename}.${ext}`;
+      }
+
+      // Check 4: public/Images/branches/filename (with spaces).ext
+      const spaceFilename = filename.replace(/-/g, ' ');
+      const branchSpacePath = path.join(process.cwd(), 'public', 'Images', 'branches', `${spaceFilename}.${ext}`);
+      if (fs.existsSync(branchSpacePath)) {
+        console.log(`[Sync] Found local cover in public/Images/branches/: /Images/branches/${spaceFilename}.${ext}`);
+        return `/Images/branches/${spaceFilename}.${ext}`;
       }
     }
   }
