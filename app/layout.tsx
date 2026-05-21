@@ -1,18 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Inter } from "next/font/google";
+import { League_Gothic, DM_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
 
-const geist = Geist({
+const leagueGothic = League_Gothic({
   subsets: ['latin'],
-  variable: '--font-geist-var',
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  weight: ['300', '400', '500'],
+  display: 'swap',
 });
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter-var',
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
 });
 
 export const viewport: Viewport = {
@@ -37,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${leagueGothic.variable} ${dmMono.variable} ${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Navbar />
         {/* pt-16 accounts for Navbar height */}
