@@ -3,144 +3,80 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/explore", label: "7 Branches" },
+  { href: "/intelligence", label: "Blog" },
   { href: "/tools", label: "Tools" },
-  { href: "/intelligence", label: "Articles" },
-  { href: "/explore", label: "7 Areas" },
-  { href: "/about", label: "About" },
+  { href: "/archive", label: "Archive" },
+  { href: "/auth/login", label: "Login" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
     <>
-      <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-[#080f11]/95 backdrop-blur-md border-b border-white/8"
-            : "bg-transparent"
-        }`}
-      >
+      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        scrolled || open ? "bg-[#080f11]/98 backdrop-blur-md border-b border-white/8" : "bg-transparent"
+      }`}>
         <div className="page-container">
-          <div className="flex items-center justify-between h-14 border-b border-white/8">
+          <div className="flex items-center justify-between h-14">
+
             {/* Wordmark */}
-            <Link href="/" className="flex items-center group">
-              <span className="font-display text-base font-black tracking-widest text-[#f0ede8] uppercase">
-                SOR
-              </span>
-              <span
-                className="font-display text-base font-black tracking-widest text-accent transition-all duration-300 group-hover:opacity-70"
-              >
-                7
-              </span>
-              <span className="font-display text-base font-black tracking-widest text-[#f0ede8] uppercase">
-                ED
-              </span>
+            <Link href="/" className="flex items-center gap-0 group" aria-label="SOR7ED home">
+              <span className="font-display text-xl tracking-widest text-[#f0ede8] uppercase">SOR</span>
+              <span className="font-display text-xl tracking-widest text-[#00C4C4] uppercase">7</span>
+              <span className="font-display text-xl tracking-widest text-[#f0ede8] uppercase">ED</span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-0 divide-x divide-white/8">
-              {NAV_LINKS.map(link => {
-                const active = pathname.startsWith(link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`t-label px-5 py-5 transition-all duration-150 ${
-                      active
-                        ? "text-accent"
-                        : "text-[rgba(240,237,232,0.38)] hover:text-[#f0ede8]"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {/* Actions */}
-            <div className="flex items-center gap-0 divide-x divide-white/8">
-              <Link
-                href="/dashboard"
-                className="hidden sm:inline-flex t-label px-5 py-5 text-[rgba(240,237,232,0.38)] hover:text-[#f0ede8] transition-colors"
-              >
-                Dashboard
-              </Link>
-              <a
-                href="https://wa.me/447591922247?text=HI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="t-label px-5 py-5 text-accent hover:bg-accent hover:text-[#080f11] transition-all duration-150 flex items-center gap-2"
-              >
-                Get Started ↗
-              </a>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="md:hidden px-4 py-5 text-[rgba(240,237,232,0.38)] hover:text-[#f0ede8] transition-colors"
-                aria-label="Toggle menu"
-                aria-expanded={menuOpen}
-              >
-                <div className="flex flex-col gap-[5px] w-4">
-                  <span className={`block h-px bg-current transition-all duration-200 ${menuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
-                  <span className={`block h-px bg-current transition-all duration-200 ${menuOpen ? "opacity-0" : ""}`} />
-                  <span className={`block h-px bg-current transition-all duration-200 ${menuOpen ? "-rotate-45 -translate-y-[6px]" : ""}`} />
-                </div>
-              </button>
-            </div>
+            {/* Hamburger */}
+            <button
+              onClick={() => setOpen(o => !o)}
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              className="flex flex-col justify-center items-end gap-[5px] w-10 h-10 group"
+            >
+              <span className={`block h-px bg-[#f0ede8] transition-all duration-300 ${open ? "w-6 rotate-45 translate-y-[6px]" : "w-6"}`} />
+              <span className={`block h-px bg-[#f0ede8] transition-all duration-300 ${open ? "opacity-0 w-4" : "w-4"}`} />
+              <span className={`block h-px bg-[#f0ede8] transition-all duration-300 ${open ? "w-6 -rotate-45 -translate-y-[6px]" : "w-6"}`} />
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="fixed inset-x-0 top-14 z-40 bg-[#080f11] border-b border-white/8 md:hidden"
-          >
-            <div className="page-container divide-y divide-white/8">
-              {NAV_LINKS.map(link => (
+      {/* Full-screen menu */}
+      <div className={`fixed inset-0 z-40 bg-[#080f11] flex flex-col justify-center transition-all duration-500 ${
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}>
+        <nav className="page-container">
+          <ul className="flex flex-col gap-0 divide-y divide-white/8">
+            {NAV_LINKS.map(({ href, label }) => (
+              <li key={href}>
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className="flex items-center justify-between py-5 t-label text-[rgba(240,237,232,0.6)] hover:text-[#f0ede8] hover:text-accent transition-colors"
+                  href={href}
+                  className={`block py-5 t-display transition-colors duration-200 ${
+                    pathname === href ? "text-[#00C4C4]" : "text-[#f0ede8] hover:text-[#00C4C4]"
+                  }`}
                 >
-                  {link.label}
-                  <span>→</span>
+                  {label}
                 </Link>
-              ))}
-              <div className="py-5">
-                <a
-                  href="https://wa.me/447591922247?text=HI"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-accent w-full justify-center"
-                >
-                  Text on WhatsApp ↗
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </>
   );
 }
