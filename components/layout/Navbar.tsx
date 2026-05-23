@@ -31,7 +31,7 @@ export default function Navbar() {
       <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled || open ? "bg-[#080f11]/98 backdrop-blur-md border-b border-white/8" : "bg-transparent"
       }`}>
-        <div className="page-container">
+        <div className="page-container lg:max-w-none lg:px-[6%] xl:px-[10%]">
           <div className="flex items-center justify-between h-14">
 
             {/* Wordmark */}
@@ -46,7 +46,7 @@ export default function Navbar() {
               onClick={() => setOpen(o => !o)}
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
-              className="flex flex-col justify-center items-end gap-[5px] w-10 h-10 group"
+              className="flex flex-col justify-center items-end gap-[5px] w-11 h-11 group"
             >
               <span className={`block h-px bg-[#f0ede8] transition-all duration-300 ${open ? "w-6 rotate-45 translate-y-[6px]" : "w-6"}`} />
               <span className={`block h-px bg-[#f0ede8] transition-all duration-300 ${open ? "opacity-0 w-4" : "w-4"}`} />

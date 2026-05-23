@@ -77,7 +77,7 @@ export default function ResultsScreen({ result, onWhatsAppCTA, isAuthenticated }
       <section className="min-h-screen flex flex-col justify-center items-center px-6 snap-start relative">
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.08] blur-[100px]"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.08] blur-[100px] transform-gpu"
                 style={{ background: `radial-gradient(circle, ${branchColor} 0%, transparent 70%)` }}
             />
         </div>

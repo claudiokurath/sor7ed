@@ -35,8 +35,8 @@ export default async function ToolsPage() {
   return (
     <div style={localStyle} className="min-h-screen pt-24 pb-20 relative overflow-hidden transition-colors duration-500">
       {/* Ambient background glow */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-coral/4 blur-[130px] pointer-events-none" />
-      <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-accent/3 blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-coral/4 blur-[130px] pointer-events-none transform-gpu" />
+      <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-accent/3 blur-[100px] pointer-events-none transform-gpu" />
 
       <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 relative z-10">
         {/* Header */}
@@ -79,7 +79,7 @@ export default async function ToolsPage() {
                 
                 {/* Text box */}
                 <div className="p-5 flex flex-col gap-2">
-                  <span className="tag bg-black/40 border-coral/20 text-coral text-[9px] px-1.5 py-0.5 self-start">{tool.branch}</span>
+                  <span className="tag bg-black/40 border-coral/20 text-coral text-[10px] self-start">{tool.branch}</span>
                   <h3 className="t-heading text-sm font-bold text-white group-hover:text-coral transition-colors leading-snug line-clamp-2 uppercase">
                     {tool.name}
                   </h3>

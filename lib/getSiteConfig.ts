@@ -35,22 +35,22 @@ const DEFAULT_CONFIG: Record<string, { text: string; color: string; image: strin
   home_hero: { text: '', color: '', image: '/Images/home/hero.jpg', active: true },
   intelligence_hero: { text: '', color: '', image: '/HERO.png', active: true },
   og_explore: { text: '', color: '', image: '/Images/og-explore.png', active: true },
-  home_bg_color: { text: '', color: '#080f11', image: '', active: true },
+  home_bg_color: { text: '', color: '#000000', image: '', active: true },
   home_accent_color: { text: '', color: '#00C4C4', image: '', active: true },
   home_accent_sec_color: { text: '', color: '#E8453C', image: '', active: true },
-  home_hero_title: { text: 'Life admin, *actually* sorted.', color: '', image: '', active: true },
+  home_hero_title: { text: 'Life admin, *actually* sor7ed.', color: '', image: '', active: true },
   home_hero_subtitle: { text: 'Practical protocols for neurodivergent adults — delivered straight to WhatsApp. No app, no overwhelm.', color: '', image: '', active: true },
 
   // explore page
   explore_hero_title: { text: 'Everything maps to *one* of seven areas', color: '', image: '', active: true },
   explore_hero_subtitle: { text: 'SOR7ED covers the seven areas most affected by executive dysfunction, ADHD, autism, and burnout. Pick yours.', color: '', image: '', active: true },
-  explore_bg_color: { text: '', color: '#080f11', image: '', active: true },
+  explore_bg_color: { text: '', color: '#000000', image: '', active: true },
   explore_accent_color: { text: '', color: '#00C4C4', image: '', active: true },
 
   // tools page
   tools_hero_title: { text: '*Tools*', color: '', image: '', active: true },
   tools_hero_subtitle: { text: 'High-value audits designed for neurodivergent minds. Complete the assessment to unlock your personalised protocol on WhatsApp.', color: '', image: '', active: true },
-  tools_bg_color: { text: '', color: '#080f11', image: '', active: true },
+  tools_bg_color: { text: '', color: '#000000', image: '', active: true },
   tools_accent_color: { text: '', color: '#E8453C', image: '', active: true },
 
   // intelligence page

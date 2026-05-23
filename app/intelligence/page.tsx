@@ -113,7 +113,7 @@ export default async function IntelligencePage() {
 
                 {/* Text box */}
                 <div className="p-5 flex flex-col gap-2">
-                  <span className="tag tag-accent bg-black/40 border-accent/20 text-[9px] px-1.5 py-0.5 self-start">{article.branch}</span>
+                  <span className="tag tag-accent bg-black/40 border-accent/20 text-[10px] self-start">{article.branch}</span>
                   <h3 className="t-heading text-sm font-bold text-white group-hover:text-accent transition-colors leading-snug line-clamp-2 uppercase">
                     {article.title}
                   </h3>

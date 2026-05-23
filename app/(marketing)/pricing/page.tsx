@@ -18,7 +18,7 @@ export default function PricingPage() {
       <div className="page-container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
           {/* Free Tier */}
-          <div className="card p-8">
+          <div className="card p-6 sm:p-8">
             <p className="t-label mb-3">Free</p>
             <p className="font-display text-4xl font-medium tracking-tight mb-1">£0</p>
             <p className="t-small mb-8">Forever free to start</p>
@@ -42,7 +42,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pro Tier */}
-          <div className="card p-8 border-accent/30 bg-accent-dim">
+          <div className="card p-6 sm:p-8 border-accent/30 bg-accent-dim">
             <div className="flex items-center justify-between mb-3">
               <p className="t-label">Unlimited</p>
               <span className="tag tag-accent">Most popular</span>

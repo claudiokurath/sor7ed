@@ -45,6 +45,7 @@ export const metadata: Metadata = {
 };
 
 import { getSiteConfig } from "@/lib/getSiteConfig";
+import BottomNav from "@/components/BottomNav";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const config = await getSiteConfig();
@@ -68,8 +69,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" className={`${leagueGothic.variable} ${dmMono.variable} ${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col" style={styleOverride}>
         <Navbar />
-        {/* pt-16 accounts for Navbar height */}
-        <main className="flex-1">{children}</main>
+        {/* pt-16 accounts for Navbar height, pb-20 on mobile avoids overlap with BottomNav */}
+        <main className="flex-1 pb-20 md:pb-0">{children}</main>
+        <BottomNav />
         <SiteFooter />
       </body>
     </html>

@@ -170,3 +170,103 @@ export function cleanProtocolField(text: string, title: string): string {
   
   return formatHeadings(cleaned);
 }
+
+/**
+ * Clean markdown wrapper or leading json text from Notion templates.
+ */
+export function cleanJsonString(str: string): string {
+  let cleaned = str.trim();
+  // Remove markdown block wraps if present
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```[a-zA-Z0-9]*\n/, '').replace(/\n```$/, '');
+  } else if (cleaned.startsWith('json')) {
+    cleaned = cleaned.substring(4).trim();
+  }
+  return cleaned.trim();
+}
+
+/**
+ * Parses dynamic Notion template strings into uniform question definitions.
+ */
+export function parseTemplateToQuestions(templateStr: string): any[] {
+  if (!templateStr || templateStr.trim() === '') return [];
+  try {
+    const cleaned = cleanJsonString(templateStr);
+    const parsed = JSON.parse(cleaned);
+    
+    let rawFields: any[] = [];
+    if (parsed.fields && Array.isArray(parsed.fields)) {
+      rawFields = parsed.fields;
+    } else if (typeof parsed === 'object' && parsed !== null) {
+      // It's an object map structure (like noise-sensitivity-mixer)
+      rawFields = Object.entries(parsed).map(([key, val]: [string, any]) => {
+        return {
+          id: key,
+          ...val
+        };
+      });
+    }
+
+    // Filter out readonly fields
+    const activeFields = rawFields.filter(f => !f.readonly);
+
+    // Map each field to a uniform question structure
+    return activeFields.map(f => {
+      const id = String(f.id || '');
+      const text = f.label || f.text || '';
+      
+      // Resolve input type
+      let type = 'text';
+      if (f.type === 'slider' || f.slider !== undefined || f.inputType === 'slider' || f.dataType === 'slider') {
+        type = 'slider';
+      } else if (f.type === 'toggle' || f.toggle !== undefined || f.inputType === 'toggle' || f.dataType === 'toggle') {
+        type = 'toggle';
+      } else if (f.type === 'number' || f.inputType === 'number' || f.dataType === 'number') {
+        type = 'number';
+      } else if (f.type === 'textarea' || f.inputType === 'textarea' || f.dataType === 'textarea') {
+        type = 'textarea';
+      } else if (f.type === 'select' || f.options !== undefined) {
+        type = 'select';
+      } else if (f.type === 'input') {
+        type = f.subtype || 'text';
+      } else if (f.type) {
+        type = f.type;
+      }
+
+      // Resolve default value
+      let defaultValue = f.default !== undefined ? f.default : f.defaultValue;
+      if (defaultValue === undefined) {
+        if (f.slider !== undefined) {
+          defaultValue = f.slider;
+        } else if (f.toggle !== undefined) {
+          defaultValue = f.toggle;
+        } else if (type === 'slider' || type === 'number') {
+          defaultValue = f.min !== undefined ? Number(f.min) : 0;
+        } else if (type === 'toggle') {
+          defaultValue = false;
+        } else if (type === 'select') {
+          defaultValue = f.options && f.options.length > 0 ? f.options[0] : '';
+        } else {
+          defaultValue = '';
+        }
+      }
+
+      return {
+        id,
+        text,
+        type,
+        min: f.min !== undefined ? Number(f.min) : undefined,
+        max: f.max !== undefined ? Number(f.max) : undefined,
+        step: f.step !== undefined ? Number(f.step) : undefined,
+        options: Array.isArray(f.options) ? f.options : undefined,
+        defaultValue,
+        placeholder: f.placeholder || '',
+        required: f.required !== undefined ? !!f.required : false
+      };
+    });
+  } catch (err) {
+    console.error('[parseTemplateToQuestions] Error parsing template:', err);
+    return [];
+  }
+}
+

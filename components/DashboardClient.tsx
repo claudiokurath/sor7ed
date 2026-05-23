@@ -271,7 +271,7 @@ export default function DashboardClient({
                   {greeting}{profile?.first_name ? `, ${profile.first_name}` : ''}
                 </p>
               )}
-              <h1 className="font-anton text-5xl sm:text-6xl md:text-7xl uppercase tracking-wider text-ps-white leading-none mb-4">
+              <h1 className="font-anton text-3xl sm:text-5xl md:text-6xl lg:text-7xl uppercase tracking-wider text-ps-white leading-none mb-4">
                 {profile?.first_name || 'Archive'}
               </h1>
               <div className="flex flex-wrap items-center gap-2">
@@ -310,12 +310,12 @@ export default function DashboardClient({
       {/* ── NAV TABS ── */}
       <div className="bg-ps-black border-b border-ps-white/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16">
-          <nav className="flex gap-0">
+          <nav className="flex gap-0 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             {NAV_TABS.map(section => (
               <button
                 key={section.key}
                 onClick={() => setActiveSection(section.key)}
-                className={`relative px-4 py-4 text-xs font-black uppercase tracking-[0.2em] transition-colors ${
+                className={`relative shrink-0 whitespace-nowrap px-4 py-4 text-xs font-black uppercase tracking-[0.2em] transition-colors ${
                   activeSection === section.key ? 'text-ps-white' : 'text-ps-gray-400 hover:text-ps-gray-700'
                 }`}
               >
@@ -714,16 +714,16 @@ export default function DashboardClient({
                         role="switch"
                         aria-checked={item.value}
                         aria-label={item.label}
-                        className={`relative w-11 h-6 border-2 transition-colors shrink-0 rounded-full ${
+                        className={`relative w-14 h-8 border-2 transition-colors shrink-0 rounded-full ${
                           item.value 
                             ? 'bg-ps-yellow border-ps-yellow' 
                             : 'bg-ps-black border-white/20'
                         }`}
                       >
-                        <span className={`absolute top-0.5 w-4 h-4 rounded-full transition-all ${
+                        <span className={`absolute top-[2px] w-6 h-6 rounded-full transition-all ${
                           item.value 
-                            ? 'left-5 bg-ps-black' 
-                            : 'left-0.5 bg-ps-white'
+                            ? 'left-[26px] bg-ps-black' 
+                            : 'left-[2px] bg-ps-white'
                         }`} />
                       </button>
                     </div>

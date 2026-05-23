@@ -150,47 +150,6 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     backgroundColor: branchColor
                 }}
             />
-            {/* Premium Header */}
-            <div className="absolute top-8 left-0 right-0 flex justify-between items-center px-4 sm:px-6 md:px-16">
-                <Link 
-                    href="/" 
-                    className={`text-xs tracking-[0.3em] uppercase font-semibold transition-colors duration-300 ${
-                        isFocusMode ? 'text-stone-400 hover:text-stone-600' : 'text-teal-500/40 hover:text-teal-400/80'
-                    }`}
-                >
-                    SOR7ED
-                </Link>
-                
-                {user ? (
-                    <div className="flex items-center gap-6">
-                        <Link
-                            href="/dashboard"
-                            className={`text-xs tracking-widest uppercase transition-colors font-semibold ${
-                                isFocusMode ? 'text-stone-500 hover:text-stone-800' : 'text-teal-400/60 hover:text-teal-300'
-                            }`}
-                        >
-                            Dashboard
-                        </Link>
-                        <button
-                            onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-                            className={`text-xs tracking-widest uppercase transition-colors ${
-                                isFocusMode ? 'text-stone-400 hover:text-stone-700' : 'text-white/30 hover:text-white/60'
-                            }`}
-                        >
-                            Sign Out
-                        </button>
-                    </div>
-                ) : (
-                    <Link
-                        href="/signup"
-                        className={`text-xs tracking-widest uppercase transition-colors font-semibold ${
-                            isFocusMode ? 'text-stone-400 hover:text-stone-800' : 'text-teal-400/50 hover:text-teal-300'
-                        }`}
-                    >
-                        Sign In →
-                    </Link>
-                )}
-            </div>
 
             {/* Article Cover Visual */}
             <div className="mb-12">
@@ -381,7 +340,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 viewport={{ once: true }}
             >
                 {!isFocusMode && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full transform-gpu" />
                 )}
                 
                 <h3 className={`text-xl sm:text-2xl md:text-3xl font-black mb-4 relative z-10 leading-tight ${
@@ -404,6 +363,8 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     <SaveToPhoneButton
                         title={article.title}
                         summary={article.summary || article.tldr || undefined}
+                        keyword={article.keyword}
+                        pageUrl={`/intelligence/${article.slug}`}
                         size="lg"
                         label="GET IT SOR7ED"
                         className="w-full max-w-sm"

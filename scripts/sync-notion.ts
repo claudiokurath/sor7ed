@@ -2,7 +2,7 @@ import { Client } from '@notionhq/client'
 import { createClient } from '@supabase/supabase-js'
 import * as fs from 'fs'
 import * as path from 'path'
-import { cleanBlogPost, cleanProtocolField } from '../lib/utils/clean-blog'
+import { cleanBlogPost, cleanProtocolField, parseTemplateToQuestions } from '../lib/utils/clean-blog'
 
 // Robust environment variable loader
 function loadEnvironment(): Record<string, string> {
@@ -354,18 +354,21 @@ async function syncTools(pages: NotionPage[]): Promise<string[]> {
       }
     }
 
-    const rawQuestions = getText(props.Questions);
+    const rawTemplate = getText(props.Template);
+    const summary = getText(props.Summary);
+    const parsedQuestions = parseTemplateToQuestions(rawTemplate);
+
     const data = {
       name,
       slug,
       branch: getSelect(props.Branch),
       keyword,
-      tldr: getText(props['TL,:DR']) || getText(props['TL;DR']), // Handle potential typo
+      tldr: getText(props['TL,:DR']) || getText(props['TL;DR']) || summary, // Handle potential typo or use summary
       description: cleanBlogPost(getText(props['Blog Post']), name),
-      long_description: getText(props['Long Description']),
-      short_description: getText(props['Short Description']),
+      long_description: summary,
+      short_description: summary,
       featured: getCheckbox(props.Featured),
-      questions: safeJsonParse(rawQuestions, []),
+      questions: parsedQuestions,
       color: getText(props.Color) || '#ffffff',
       meta_description: getText(props['Meta Description']),
       cover_image,
@@ -528,16 +531,9 @@ async function syncSiteConfig(pages: NotionPage[]): Promise<string[]> {
 async function sync() {
   console.log('Starting safe synchronization...')
   
-  // 1a. Fetch ONLY published/live records to upsert to Supabase
-  const publishedProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID, {
-    property: 'Status',
-    status: { equals: 'Published' }
-  })
-  
-  const liveTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID, {
-    property: 'Status',
-    status: { does_not_equal: 'Draft' }
-  })
+  // 1. Fetch ALL records from Notion databases (regardless of status)
+  const allProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID)
+  const allTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID)
   
   const branchesDbId = env.NOTION_BRANCHES_DB_ID || 'bf1e89a5167e484b9fc85376031f72e3';
   const branchesData = await fetchAllNotionPages(branchesDbId);
@@ -545,22 +541,18 @@ async function sync() {
   const siteConfigDbId = env.NOTION_SITE_CONFIG_DB_ID || '3670d601-4acc-8137-a1e3-daf1e0bdfa51';
   const siteConfigs = await fetchAllNotionPages(siteConfigDbId);
   
-  if (publishedProtocols.length === 0 && liveTools.length === 0 && branchesData.length === 0 && siteConfigs.length === 0) {
+  if (allProtocols.length === 0 && allTools.length === 0 && branchesData.length === 0 && siteConfigs.length === 0) {
     console.error('[Sync] No data retrieved from Notion. Aborting sync to prevent data loss.')
     return
   }
-
-  // 1b. Fetch ALL records from Notion (regardless of status) just for stale-cleanup reference.
-  const allProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID)
-  const allTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID)
 
   const allProtocolSlugs = allProtocols.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
   const allToolSlugs = allTools.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
   const allConfigKeys = siteConfigs.map(p => getText(p.properties.Key)).filter(Boolean)
 
-  // 2. Upsert only published/live/active records
-  const syncedProtocolSlugs = await syncProtocols(publishedProtocols)
-  const syncedToolSlugs = await syncTools(liveTools)
+  // 2. Upsert all records (this will sync statuses like 'Draft' directly to Supabase)
+  const syncedProtocolSlugs = await syncProtocols(allProtocols)
+  const syncedToolSlugs = await syncTools(allTools)
   const syncedBranchSlugs = await syncBranches(branchesData)
   const syncedConfigKeys = await syncSiteConfig(siteConfigs)
 
@@ -571,8 +563,8 @@ async function sync() {
   await deleteStaleRecords('site_config', allConfigKeys)
   
   console.log('All syncs complete successfully!')
-  console.log(`[Sync] Published protocols on site: ${syncedProtocolSlugs.length}`)
-  console.log(`[Sync] Live tools on site: ${syncedToolSlugs.length}`)
+  console.log(`[Sync] Protocols synced: ${syncedProtocolSlugs.length}`)
+  console.log(`[Sync] Tools synced: ${syncedToolSlugs.length}`)
   console.log(`[Sync] Site config parameters synced: ${syncedConfigKeys.length}`)
 }
 

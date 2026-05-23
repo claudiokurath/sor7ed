@@ -89,11 +89,8 @@ export default async function ToolPage({
   const resolvedSearchParams = await searchParams;
   const supabase = await createClient();
 
-  // Auth gate — members only
+  // Fetch user if exists (do not block guest access)
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect(`/signup?mode=login&next=/tools/${resolvedParams.slug}`);
-  }
 
   const { data: tool, error } = await supabase
     .from('tools')

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { cleanBlogPost, cleanProtocolField } from '@/lib/utils/clean-blog';
+import { cleanBlogPost, cleanProtocolField, parseTemplateToQuestions } from '@/lib/utils/clean-blog';
 
 export const dynamic = 'force-dynamic';
 
@@ -128,7 +128,7 @@ async function persistCoverImage(slug: string, notionUrl: string, force = false)
 
 type NotionPage = { id: string; properties: Record<string, unknown> };
 
-async function queryNotion(databaseId: string, filter: Record<string, unknown>): Promise<NotionPage[]> {
+async function queryNotion(databaseId: string, filter?: Record<string, unknown>): Promise<NotionPage[]> {
   const pages: NotionPage[] = [];
   let cursor: string | undefined;
 
@@ -141,7 +141,7 @@ async function queryNotion(databaseId: string, filter: Record<string, unknown>):
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        filter,
+        ...(filter && Object.keys(filter).length > 0 ? { filter } : {}),
         ...(cursor ? { start_cursor: cursor } : {}),
       }),
     });
@@ -159,10 +159,7 @@ async function queryNotion(databaseId: string, filter: Record<string, unknown>):
 // ---- Sync protocols (articles) ----
 
 async function syncProtocols(force = false) {
-  const pages = await queryNotion(PROTOCOLS_DB_ID, {
-    property: 'Status',
-    status: { equals: 'Published' },
-  });
+  const pages = await queryNotion(PROTOCOLS_DB_ID);
 
   const supabase = getSupabase();
 
@@ -240,10 +237,7 @@ async function syncProtocols(force = false) {
 async function syncTools(force = false) {
   if (!TOOLS_DB_ID) return { synced: 0, deleted: 0, images: 0 };
 
-  const pages = await queryNotion(TOOLS_DB_ID, {
-    property: 'Status',
-    status: { does_not_equal: 'Draft' },
-  });
+  const pages = await queryNotion(TOOLS_DB_ID);
 
   const supabase = getSupabase();
 
@@ -254,8 +248,9 @@ async function syncTools(force = false) {
     row: {
       name: string; slug: string; branch: string; keyword: string;
       tldr: string; description: string; short_description: string;
+      long_description: string;
       featured: boolean; color: string; meta_description: string;
-      cover_image: string; status: string;
+      cover_image: string; status: string; questions: any[];
     };
   };
 
@@ -267,6 +262,10 @@ async function syncTools(force = false) {
     const file = notionFile(p['Cover Image']) ?? notionFile(p['Cover Image 1']);
     const notionImageUrl = file?.url ?? '';
 
+    const rawTemplate = text(p['Template']);
+    const summary = text(p['Summary']);
+    const parsedQuestions = parseTemplateToQuestions(rawTemplate);
+
     return [{
       slug,
       notionImageUrl,
@@ -276,14 +275,16 @@ async function syncTools(force = false) {
         slug,
         branch:            select(p['Branch']),
         keyword:           text(p['WhatsApp Trigger']),
-        tldr:              text(p['TL;DR']),
+        tldr:              text(p['TL;DR']) || summary,
         description:       cleanBlogPost(text(p['Blog Post']), text(p['Name'])),
-        short_description: text(p['Short Description']),
+        short_description: summary,
+        long_description:  summary,
         featured:          checkbox(p['Featured']),
         color:             text(p['Color']) || '#ffffff',
         meta_description:  text(p['Meta Description']),
         cover_image:       notionImageUrl,
         status:            status(p['Status']) || 'Live',
+        questions:         parsedQuestions,
       },
     }];
   });

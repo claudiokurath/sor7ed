@@ -54,69 +54,36 @@ export default async function ExplorePage() {
     <div style={localStyle} className="pt-24 pb-20 min-h-screen">
       <div className="border-b border-white/10">
         <div className="page-container py-14 md:py-20">
-          <p className="t-label text-accent mb-4">7 areas of life</p>
+          <p className="t-label text-white/60 mb-4">7 areas of life</p>
           <h1 className="t-display mb-5 text-balance max-w-2xl text-white">
-            {renderFormattedText(config.explore_hero_title?.text, 'var(--color-accent)')}
+            {renderFormattedText(config.explore_hero_title?.text, 'white')}
           </h1>
           <div className="t-body max-w-xl text-pretty text-white/60">
-            {renderFormattedText(config.explore_hero_subtitle?.text, 'var(--color-accent)')}
+            {renderFormattedText(config.explore_hero_subtitle?.text, 'white')}
           </div>
         </div>
       </div>
 
-      <div className="page-container mt-12">
-        <div className="flex flex-col gap-6">
-          {/* Top row (4 cards on desktop) */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayBranches.slice(0, 4).map((branch) => (
+      <div className="page-container mt-12 lg:max-w-7xl xl:max-w-[1400px]">
+        <div className="grid grid-cols-7 gap-2 sm:gap-4 md:gap-6">
+          {displayBranches.map((branch) => (
+            <div key={branch.slug} className="flex flex-col items-center">
               <Link
-                key={branch.slug}
                 href={`/${branch.slug}`}
-                className="group relative aspect-square border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
+                className="group relative w-full aspect-square border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
               >
                 <img
                   src={branch.cover_image}
                   alt={branch.name}
                   className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                  <div>
-                    <p className="t-heading text-xs text-white font-bold mb-1">{branch.name}</p>
-                    <p className="text-[10px] text-white/80 line-clamp-1 leading-none">{branch.description}</p>
-                  </div>
-                  <span className="text-accent font-bold text-sm shrink-0 ml-2">→</span>
-                </div>
               </Link>
-            ))}
-          </div>
-
-          {/* Bottom row (3 cards centered on desktop) */}
-          <div className="grid grid-cols-2 lg:flex lg:justify-center gap-6">
-            {displayBranches.slice(4, 7).map((branch) => (
-              <Link
-                key={branch.slug}
-                href={`/${branch.slug}`}
-                className="group relative aspect-square lg:w-[calc(25%-18px)] border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
-              >
-                <img
-                  src={branch.cover_image}
-                  alt={branch.name}
-                  className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                  <div>
-                    <p className="t-heading text-xs text-white font-bold mb-1">{branch.name}</p>
-                    <p className="text-[10px] text-white/80 line-clamp-1 leading-none">{branch.description}</p>
-                  </div>
-                  <span className="text-accent font-bold text-sm shrink-0 ml-2">→</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+              {/* Description under the box, no title */}
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-white/50 mt-2 text-center leading-tight font-sans">
+                {branch.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

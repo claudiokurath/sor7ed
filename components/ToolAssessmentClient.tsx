@@ -13,9 +13,16 @@ import { generateNarrative, getScoreLevel } from "@/lib/narrative-engine";
 import { AssessmentResult, BranchSlug, NarrativeLayer, Recommendation, ProtocolStep, ScoreLevel } from "@/types/assessment";
 
 type Question = {
-  id: number;
+  id: string;
   text: string;
-  options: string[];
+  type: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  options?: string[];
+  defaultValue?: any;
+  placeholder?: string;
+  required?: boolean;
 };
 
 interface ToolAnalysis {
@@ -30,10 +37,10 @@ interface ToolAnalysis {
 
 function analyzeToolAnswers(
   toolSlug: string,
-  answers: Record<number, string>,
+  answers: Record<string, any>,
   questions: Question[]
 ): ToolAnalysis | null {
-  const r = questions.map(q => (answers[q.id] || '').toLowerCase());
+  const r = questions.map(q => (String(answers[q.id] ?? '')).toLowerCase());
   // r[0]=Q1, r[1]=Q2, r[2]=Q3, r[3]=Q4
 
   // ── MONEY RESET ──────────────────────────────────────────────
@@ -378,12 +385,25 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   whatsappContext?: { sourceKeyword: string, entryTime: string } | null
 }) {
   const [currentStep, setCurrentStep] = useState(whatsappContext ? 0 : -1); // Auto-start if from WhatsApp
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [currentVal, setCurrentVal] = useState<any>("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [, setIsSaved] = useState(false);
   const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null);
   const [showFullResults, setShowFullResults] = useState(false);
+
+  useEffect(() => {
+    if (currentStep >= 0 && currentStep < tool.questions.length) {
+      const q = tool.questions[currentStep];
+      const stored = answers[q.id];
+      if (stored !== undefined) {
+        setCurrentVal(stored);
+      } else {
+        setCurrentVal(q.defaultValue !== undefined ? q.defaultValue : "");
+      }
+    }
+  }, [currentStep, answers, tool.questions]);
 
   useEffect(() => {
     if (whatsappContext && tool.questions.length === 0) {
@@ -511,12 +531,16 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     setTimeout(() => setIsAnalyzing(false), 2500);
   };
 
-  const handleAnswer = (questionId: number, answer: string) => {
+  const handleAnswer = (questionId: string | number, answer: any, skipDelay = false) => {
     const newAnswers = { ...answers, [questionId]: answer };
     setAnswers(newAnswers);
     
     if (currentStep < tool.questions.length - 1) {
-      setTimeout(() => setCurrentStep(prev => prev + 1), 300);
+      if (skipDelay) {
+        setCurrentStep(prev => prev + 1);
+      } else {
+        setTimeout(() => setCurrentStep(prev => prev + 1), 300);
+      }
     } else {
       setCurrentStep(tool.questions.length);
       handleAssessmentComplete();
@@ -613,10 +637,10 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.4 }}
-              className="bg-black border border-white/5 rounded-[40px] p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl"
+              className="bg-black border border-white/5 rounded-3xl sm:rounded-[40px] p-5 sm:p-8 md:p-12 lg:p-16 relative overflow-hidden shadow-2xl"
             >
               <div 
-                className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-10 blur-[100px] pointer-events-none"
+                className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-10 blur-[100px] pointer-events-none transform-gpu"
                 style={{ backgroundColor: toolColor, transform: 'translate(30%, -30%)' }}
               />
               
@@ -629,23 +653,178 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
               </h2>
               
               <div className="space-y-4">
-                {tool.questions[currentStep].options.map((option, idx) => (
-                  <motion.button
-                    key={idx}
-                    onClick={() => handleAnswer(tool.questions[currentStep].id, option)}
-                    className="w-full text-left px-6 py-6 rounded-2xl border border-white/5 bg-white/[0.02] text-white/60 hover:text-white hover:bg-white/[0.05] transition-all duration-300 group flex items-start gap-5 text-base md:text-lg"
-                    whileHover={{ x: 6 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span 
-                        className="shrink-0 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-xs font-black mt-0.5 group-hover:border-white/30 transition-colors"
-                        style={{ color: toolColor }}
-                    >
-                      {String.fromCharCode(65 + idx)}
-                    </span>
-                    <span className="leading-relaxed font-medium">{option}</span>
-                  </motion.button>
-                ))}
+                {(() => {
+                  const q = tool.questions[currentStep];
+                  if (!q) return null;
+
+                  if (q.type === 'slider') {
+                    return (
+                      <div className="space-y-8 py-4">
+                        <div className="text-center">
+                          <span className="text-5xl font-extrabold tracking-tight font-mono" style={{ color: toolColor }}>
+                            {currentVal ?? q.min ?? 0}
+                          </span>
+                          {q.placeholder && (
+                            <p className="text-white/40 text-sm mt-2">{q.placeholder}</p>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <input
+                            type="range"
+                            min={q.min ?? 0}
+                            max={q.max ?? 10}
+                            step={q.step ?? 1}
+                            value={currentVal ?? q.min ?? 0}
+                            onChange={(e) => setCurrentVal(Number(e.target.value))}
+                            className="w-full h-3 bg-white/10 rounded-lg appearance-none cursor-pointer accent-current [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-7 [&::-webkit-slider-thumb]:h-7 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-current [&::-webkit-slider-thumb]:shadow-lg [&::-moz-range-thumb]:w-7 [&::-moz-range-thumb]:h-7 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-current [&::-moz-range-thumb]:border-0"
+                            style={{ color: toolColor }}
+                          />
+                          <div className="flex justify-between text-xs text-white/30 font-mono mt-2">
+                            <span>{q.min ?? 0}</span>
+                            <span>{q.max ?? 10}</span>
+                          </div>
+                        </div>
+                        <div className="pt-4">
+                          <motion.button
+                            onClick={() => handleAnswer(q.id, currentVal ?? q.min ?? 0, true)}
+                            className="w-full py-4 rounded-xl text-black font-black text-center transition-all"
+                            style={{ backgroundColor: toolColor }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Continue
+                          </motion.button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (q.type === 'toggle') {
+                    const opts = q.options && q.options.length > 0 ? q.options : ["Yes", "No"];
+                    return (
+                      <div className="grid grid-cols-2 gap-4">
+                        {opts.map((opt) => (
+                          <motion.button
+                            key={opt}
+                            onClick={() => handleAnswer(q.id, opt, false)}
+                            className="px-6 py-8 rounded-2xl border border-white/5 bg-white/[0.02] text-center font-bold text-lg hover:bg-white/[0.05] transition-all"
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {opt}
+                          </motion.button>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  if (q.type === 'number') {
+                    return (
+                      <div className="space-y-8 py-4">
+                        <div className="flex items-center justify-center gap-6">
+                          <button
+                            type="button"
+                            onClick={() => setCurrentVal((prev: any) => Math.max((q.min ?? -Infinity), (Number(prev) || 0) - (q.step ?? 1)))}
+                            className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-xl font-bold hover:bg-white/5 active:scale-95"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min={q.min}
+                            max={q.max}
+                            step={q.step}
+                            value={currentVal ?? ""}
+                            onChange={(e) => {
+                              const val = e.target.value === "" ? "" : Number(e.target.value);
+                              setCurrentVal(val);
+                            }}
+                            placeholder={q.placeholder || "0"}
+                            className="w-32 bg-transparent border-b-2 border-white/20 focus:border-white text-center text-4xl font-extrabold font-mono focus:outline-none py-2"
+                            style={{ color: toolColor }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setCurrentVal((prev: any) => Math.min((q.max ?? Infinity), (Number(prev) || 0) + (q.step ?? 1)))}
+                            className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-xl font-bold hover:bg-white/5 active:scale-95"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="pt-4">
+                          <motion.button
+                            onClick={() => handleAnswer(q.id, currentVal === "" ? (q.min ?? 0) : currentVal, true)}
+                            className="w-full py-4 rounded-xl text-black font-black text-center transition-all"
+                            style={{ backgroundColor: toolColor }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Continue
+                          </motion.button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (q.type === 'text' || q.type === 'textarea') {
+                    return (
+                      <div className="space-y-6 py-4">
+                        {q.type === 'textarea' ? (
+                          <textarea
+                            value={currentVal ?? ""}
+                            onChange={(e) => setCurrentVal(e.target.value)}
+                            placeholder={q.placeholder || "Type your response..."}
+                            rows={4}
+                            className="w-full bg-white/[0.02] border border-white/10 rounded-2xl p-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all resize-none text-lg"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={currentVal ?? ""}
+                            onChange={(e) => setCurrentVal(e.target.value)}
+                            placeholder={q.placeholder || "Type your response..."}
+                            className="w-full bg-white/[0.02] border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all text-lg"
+                          />
+                        )}
+                        <div className="pt-4">
+                          <motion.button
+                            onClick={() => handleAnswer(q.id, currentVal ?? "", true)}
+                            disabled={q.required && !String(currentVal ?? "").trim()}
+                            className="w-full py-4 rounded-xl text-black font-black text-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            style={{ backgroundColor: toolColor }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            Continue
+                          </motion.button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Default / Select / Options
+                  const options = q.options || [];
+                  return (
+                    <div className="space-y-4">
+                      {options.map((option, idx) => (
+                        <motion.button
+                          key={idx}
+                          onClick={() => handleAnswer(q.id, option, false)}
+                          className="w-full text-left px-6 py-6 rounded-2xl border border-white/5 bg-white/[0.02] text-white/60 hover:text-white hover:bg-white/[0.05] transition-all duration-300 group flex items-start gap-5 text-base md:text-lg"
+                          whileHover={{ x: 6 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span 
+                            className="shrink-0 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-xs font-black mt-0.5 group-hover:border-white/30 transition-colors"
+                            style={{ color: toolColor }}
+                          >
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="leading-relaxed font-medium">{option}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             </motion.div>
           )}

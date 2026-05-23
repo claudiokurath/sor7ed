@@ -12,10 +12,10 @@
   --color-ink-tertiary:  rgba(240,237,232,0.38);
   --color-ink-disabled:  rgba(240,237,232,0.2);
 
-  --color-surface:       #080f11;
-  --color-surface-subtle:#0d1619;
-  --color-surface-raised:#131e21;
-  --color-surface-glass: rgba(8,15,17,0.75);
+  --color-surface:       #000000;
+  --color-surface-subtle:#0a0a0a;
+  --color-surface-raised:#121212;
+  --color-surface-glass: rgba(0,0,0,0.75);
 
   --color-border:        rgba(240,237,232,0.1);
   --color-border-strong: rgba(240,237,232,0.2);
@@ -77,7 +77,7 @@
   }
 
   html {
-    background: #080f11;
+    background: #000000;
     color: #f0ede8;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -90,7 +90,7 @@
     font-size: 15px;
     line-height: 1.6;
     overflow-x: hidden;
-    background: #080f11;
+    background: #000000;
     color: #f0ede8;
   }
 
@@ -119,8 +119,13 @@
     padding-inline: var(--page-gutter);
   }
 
-  .section    { padding-block: var(--space-3xl); }
-  .section-sm { padding-block: var(--space-2xl); }
+  .section    { padding-block: var(--space-2xl); }
+  .section-sm { padding-block: var(--space-xl); }
+
+  @media (min-width: 640px) {
+    .section    { padding-block: var(--space-3xl); }
+    .section-sm { padding-block: var(--space-2xl); }
+  }
 
   /* ── Typography Scale ── */
   .t-hero {
@@ -175,7 +180,7 @@
 
   .t-label {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 400;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -199,6 +204,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 0.75rem 1.5rem;
+    min-height: 44px;
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -248,8 +254,8 @@
     color: var(--color-ink);
   }
 
-  .btn-sm { font-size: 0.6rem; padding: 0.5rem 1rem; }
-  .btn-lg { font-size: 0.75rem; padding: 0.875rem 2rem; }
+  .btn-sm { font-size: 0.65rem; padding: 0.625rem 1rem; min-height: 36px; }
+  .btn-lg { font-size: 0.75rem; padding: 0.875rem 2rem; min-height: 48px; }
 
   /* ── Card System ── */
   .card {
@@ -269,11 +275,12 @@
     align-items: center;
     gap: 0.25rem;
     font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 400;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    padding: 0.2rem 0.5rem;
+    padding: 0.3rem 0.6rem;
+    min-height: 28px;
     border-radius: 0;
     background: transparent;
     color: var(--color-ink-secondary);
@@ -405,3 +412,6 @@ body.focus-mode main {
 .text-copper     { color: var(--color-coral); }
 .ambient-copper  { background: radial-gradient(ellipse, rgba(232,69,60,0.1) 0%, transparent 70%); }
 .tag-copper      { background: var(--color-coral-dim); color: var(--color-coral); border-color: var(--color-coral-border); }
+
+/* ── Mobile safe area ── */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
