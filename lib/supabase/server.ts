@@ -1,9 +1,10 @@
+// lib/supabase/server.ts
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export async function createClient() {
-  const cookieStore = await cookies()
-
+export function createClient() {
+  const cookieStore = cookies()
+  
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,9 +19,8 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             )
           } catch (error) {
-            // This is expected if setAll is called from a Server Component
-            // but we'll log it just in case it's happening elsewhere.
-            console.warn('Supabase setAll cookies warning:', error);
+            // Handle cookie setting errors gracefully in production
+            console.warn('Cookie setting failed:', error)
           }
         },
       },
