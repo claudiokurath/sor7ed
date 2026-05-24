@@ -1,126 +1,118 @@
-import type { Metadata } from 'next';
-import { redirect, notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { cache } from 'react';
-import { resolveOgImageUrl, DEFAULT_OG_IMAGE } from '@/lib/og-image';
+// app/s/[id]/page.tsx
+import { createClient } from '@/lib/supabase/server'
+import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
+import type { Metadata } from 'next'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
-
-function extractSlugFromUrl(url: string): string | null {
-  try {
-    const parsed = new URL(url, SITE_URL); // Base URL handles relative paths
-    const segments = parsed.pathname.replace(/\/$/, '').split('/').filter(Boolean);
-    return segments.at(-1) ?? null;
-  } catch (error) {
-    console.warn(`[SaveCard] Invalid URL: ${url}`, error);
-    return null;
-  }
+interface Props {
+  params: { id: string }
 }
 
-const getSaveCardWithMetadata = cache(async (id: string) => {
-  const supabase = await createClient();
-  
-  const { data: item, error } = await supabase
-    .from('saved_items')
-    .select('*')
-    .eq('id', id)
-    .single();
+// Server-side metadata generation for social media crawlers
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const supabase = createClient()
 
-  if (error) {
-    console.error(`[SaveCard] Database error for item ${id}:`, error.message);
-  }
+  try {
+    const { data: link, error } = await supabase
+      .from('rich_links')
+      .select('title, description, target_url, image_url')
+      .eq('slug', params.id)
+      .single()
 
-  if (error || !item) {
-    return {
-      item: null,
-      description: 'Your saved item from SOR7ED.',
-      ogImageUrl: DEFAULT_OG_IMAGE
-    };
-  }
-
-  let description = 'Saved from SOR7ED';
-  let ogImageUrl: string = DEFAULT_OG_IMAGE;
-
-  const slug = extractSlugFromUrl(item.url);
-  if (slug) {
-    if (item.category === 'Tool') {
-      const { data: tool } = await supabase
-        .from('tools')
-        .select('short_description, cover_image')
-        .eq('slug', slug)
-        .neq('status', 'Draft') // Security: only published tools
-        .single();
-      if (tool) {
-        description = tool.short_description || description;
-        ogImageUrl = tool.cover_image || ogImageUrl;
-      }
-    } else if (item.category === 'Article') {
-      const { data: article } = await supabase
-        .from('protocols')
-        .select('summary, cover_image, meta_description')
-        .eq('slug', slug)
-        .neq('status', 'Draft') // Security: only published articles
-        .single();
-      if (article) {
-        description = article.meta_description || article.summary || description;
-        ogImageUrl = article.cover_image || ogImageUrl;
+    if (error || !link) {
+      console.error('Link metadata fetch failed:', { slug: params.id, error })
+      return {
+        title: 'Link Not Found',
+        description: 'This link does not exist or has been removed.',
       }
     }
-  }
 
-  return { item, description, ogImageUrl };
-});
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
-  const { id } = await params;
-  const { item, description, ogImageUrl } = await getSaveCardWithMetadata(id);
-
-  if (!item) {
     return {
-      title: 'Saved on SOR7ED',
-      description: 'Your saved item from SOR7ED.',
-    };
+      title: link.title,
+      description: link.description || undefined,
+      openGraph: {
+        title: link.title,
+        description: link.description || undefined,
+        url: link.target_url,
+        images: link.image_url
+          ? [
+              {
+                url: link.image_url,
+                width: 1200,
+                height: 630,
+                alt: link.title,
+              },
+            ]
+          : [],
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: link.title,
+        description: link.description || undefined,
+        images: link.image_url ? [link.image_url] : [],
+      },
+    }
+  } catch (error) {
+    console.error('Metadata generation error:', error)
+    return {
+      title: 'Error Loading Link',
+      description: 'An error occurred while loading this link.',
+    }
   }
-
-  const resolvedOgImageUrl = resolveOgImageUrl(ogImageUrl);
-
-  return {
-    title: item.title,
-    description,
-    openGraph: {
-      title: item.title,
-      description,
-      url: `${SITE_URL}/s/${id}`,
-      siteName: 'SOR7ED',
-      images: [{
-        url: resolvedOgImageUrl,
-        width: 1200,
-        height: 630,
-        alt: item.title,
-      }],
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: item.title,
-      description,
-      images: [resolvedOgImageUrl],
-    },
-  };
 }
 
-export default async function SaveCardPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const { item } = await getSaveCardWithMetadata(id);
+// Main page component with redirect logic
+export default async function RichLinkPage({ params }: Props) {
+  const supabase = createClient()
 
-  if (!item) notFound();
-  redirect(item.url);
+  try {
+    const { data: link, error } = await supabase
+      .from('rich_links')
+      .select('*')
+      .eq('slug', params.id)
+      .single()
+
+    // Handle non-existent links with proper 404
+    if (error || !link) {
+      console.error('Link not found:', { 
+        slug: params.id, 
+        error: error?.message,
+        timestamp: new Date().toISOString()
+      })
+      notFound()
+    }
+
+    // Track the click with enhanced user agent information
+    const headersList = headers()
+    const userAgent = headersList.get('user-agent') ?? 'unknown'
+    const referer = headersList.get('referer')
+
+    // Insert click tracking (non-blocking)
+    supabase.from('rich_link_clicks').insert({
+      link_id: link.id,
+      user_agent: userAgent,
+    }).then(({ error: clickError }) => {
+      if (clickError) {
+        console.error('Click tracking failed:', {
+          linkId: link.id,
+          slug: params.id,
+          error: clickError.message,
+          userAgent,
+          referer
+        })
+      }
+    })
+
+    // Server-side redirect to target URL
+    redirect(link.target_url)
+
+  } catch (error) {
+    console.error('Rich link page error:', {
+      slug: params.id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    })
+    notFound()
+  }
 }
