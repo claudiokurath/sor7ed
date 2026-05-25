@@ -15,6 +15,11 @@ export function parseCommand(rawText: string): WaCommand {
       return arg ? { verb: 'ARTICLE', arg } : { verb: 'UNKNOWN', arg: trimmed };
     case 'LIBRARY':
       return { verb: 'LIBRARY', arg: null };
+    case 'HI':
+    case 'HELLO':
+    case 'START':
+    case 'WELCOME':
+      return { verb: 'WELCOME', arg: null };
     case 'HELP':
     case 'MENU':
     case 'STOP':

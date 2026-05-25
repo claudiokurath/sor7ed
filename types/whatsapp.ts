@@ -3,6 +3,7 @@ export type WaCommand =
   | { verb: 'RUN'; arg: string }
   | { verb: 'ARTICLE'; arg: string }
   | { verb: 'LIBRARY'; arg: null }
+  | { verb: 'WELCOME'; arg: null }
   | { verb: 'HELP' | 'MENU' | 'STOP'; arg: null }
   | { verb: 'UNKNOWN'; arg: string };
 

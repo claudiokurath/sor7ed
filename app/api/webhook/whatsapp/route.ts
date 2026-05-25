@@ -6,6 +6,7 @@ import { handleRun } from '@/lib/whatsapp/handlers/run';
 import { handleSave } from '@/lib/whatsapp/handlers/save';
 import { handleLibrary } from '@/lib/whatsapp/handlers/library';
 import { handleArticle } from '@/lib/whatsapp/handlers/article';
+import { handleWelcome } from '@/lib/whatsapp/handlers/welcome';
 import type { WaMessage, WaResponse } from '@/types/whatsapp';
 
 function getWebhookConfig() {
@@ -114,6 +115,9 @@ async function processMessageInBackground(incoming: WaMessage) {
         break;
       case 'LIBRARY':
         responses = [await handleLibrary(incoming.from)];
+        break;
+      case 'WELCOME':
+        responses = [await handleWelcome(incoming.from)];
         break;
       case 'HELP':
       case 'MENU':
