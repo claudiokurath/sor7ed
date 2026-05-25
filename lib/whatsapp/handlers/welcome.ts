@@ -11,7 +11,7 @@ export async function handleWelcome(userWaId: string): Promise<WaResponse> {
     title: 'Welcome to SOR7ED',
     description: 'Practical protocols for neurodivergent minds — delivered to your WhatsApp.',
     target_url: `${SITE_URL}/signup`,
-    image_url: `${SITE_URL}/Images/Welcome.png`,
+    image_url: `${SITE_URL}/Images/welcome.png`,
   }, { onConflict: 'slug' });
 
   const welcomeUrl = `${SITE_URL}/r/welcome`;
