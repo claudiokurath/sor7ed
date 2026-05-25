@@ -46,7 +46,7 @@ function SignupForm() {
   const handleGoogleSignIn = async () => {
     const supabase = createClient();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
-    const next = searchParams.get('next') ?? '/dashboard';
+    const next = searchParams.get('next') ?? '/';
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}` },
@@ -160,7 +160,7 @@ function SignupForm() {
           <form action={formAction} className="space-y-4">
             <input type="hidden" name="isLogin" value={String(isLogin)} />
             <input type="hidden" name="whatsapp" value={fullWhatsApp} />
-            <input type="hidden" name="next" value={searchParams.get('next') ?? '/dashboard'} />
+            <input type="hidden" name="next" value={searchParams.get('next') ?? '/'} />
 
             {!isLogin && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
