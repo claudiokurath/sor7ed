@@ -256,8 +256,8 @@ export default function DashboardClient({
 
       {/* ── NAV TABS ── */}
       <div className="bg-ps-black border-b border-ps-white/20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16">
-          <nav className="flex gap-0 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16 flex items-center justify-between">
+          <nav className="flex gap-0 overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 flex-1">
             {NAV_TABS.map(section => (
               <button
                 key={section.key}
@@ -273,6 +273,14 @@ export default function DashboardClient({
               </button>
             ))}
           </nav>
+          <form action="/auth/signout" method="post" className="shrink-0 pl-4">
+            <button
+              type="submit"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-ps-gray-400 hover:text-ps-white transition-colors py-4"
+            >
+              Sign out
+            </button>
+          </form>
         </div>
       </div>
 
