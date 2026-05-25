@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import PageBanner from "@/components/PageBanner";
 
 export const metadata = { title: "Archive — SOR7ED" };
 
@@ -14,7 +15,8 @@ export default async function ArchivePage() {
   const articles = posts ?? [];
 
   return (
-    <main className="pt-20 pb-20">
+    <main className="pb-20">
+      <PageBanner src="/Images/banners/blog banner.png" />
       <div className="page-container">
         <div className="section-sm border-b border-border-subtle mb-10">
           <p className="t-label text-[#00C4C4] mb-2">Everything</p>

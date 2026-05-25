@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, Suspense, useActionState } from 'react';
+import PageBanner from "@/components/PageBanner";
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
@@ -60,7 +61,9 @@ function SignupForm() {
 
   if (status === 'success') {
     return (
-      <main className="min-h-screen bg-black flex items-center justify-center px-6 py-20">
+      <main className="min-h-screen bg-black flex flex-col">
+        <PageBanner src="/Images/banners/sign in banner.png" />
+        <div className="flex-1 flex items-center justify-center px-6 py-20">
         <motion.div className="max-w-lg w-full" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <p className="t-label text-accent mb-4">Account created</p>
           <h1 className="t-display text-white mb-3">
@@ -107,12 +110,14 @@ function SignupForm() {
             Both steps must be completed to access your protocols.
           </p>
         </motion.div>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black flex">
+    <main className="min-h-screen bg-black flex flex-col">
+      <PageBanner src="/Images/banners/sign in banner.png" />
       {/* Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="max-w-md w-full">

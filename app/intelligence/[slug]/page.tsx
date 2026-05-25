@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import IntelligenceClient from "@/components/IntelligenceClient";
+import PageBanner from "@/components/PageBanner";
 import { resolveOgImageUrl } from "@/lib/og-image";
 import type { Metadata } from "next";
 
@@ -96,12 +97,13 @@ export default async function IntelligenceBriefing({
   if (!article) notFound();
 
   return (
-    <main className="min-h-screen bg-[#080f11] text-white px-4 sm:px-6 py-16 sm:py-20 relative overflow-hidden transition-colors duration-500">
+    <main className="min-h-screen bg-[#080f11] text-white relative overflow-hidden transition-colors duration-500">
+      <PageBanner src="/Images/banners/blog banner.png" />
       {/* Cinematic ambient background glow */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px] pointer-events-none transform-gpu" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#ff7a45]/5 rounded-full blur-[120px] pointer-events-none transform-gpu" />
-      
-      <div className="max-w-3xl mx-auto pt-16 relative z-10">
+
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pb-20 relative z-10">
         <IntelligenceClient article={article} />
       </div>
     </main>

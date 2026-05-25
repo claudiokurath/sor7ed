@@ -1,10 +1,13 @@
 import Link from "next/link";
+import PageBanner from "@/components/PageBanner";
 
 export const metadata = { title: "Login — SOR7ED" };
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center page-container py-20">
+    <main className="min-h-screen">
+      <PageBanner src="/Images/banners/sign in banner.png" />
+      <div className="flex items-center justify-center page-container py-20">
       <div className="w-full max-w-sm">
         <div className="mb-10">
           <Link href="/" className="flex items-center gap-0 mb-8">
@@ -34,6 +37,7 @@ export default function LoginPage() {
             <Link href="/signup" className="text-[#00C4C4] hover:underline">Sign up free</Link>
           </p>
         </div>
+      </div>
       </div>
     </main>
   );

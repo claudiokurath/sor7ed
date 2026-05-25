@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardClient from "@/components/DashboardClient";
+import PageBanner from "@/components/PageBanner";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -173,13 +174,16 @@ export default async function Dashboard() {
   };
 
   return (
-    <DashboardClient
-      profile={profile}
-      initialFavorites={favorites ?? []}
-      initialHistory={safeHistory}
-      tools={tools ?? []}
-      initialSavedItems={savedItems ?? []}
-      dashboardMeta={dashboardMeta}
-    />
+    <>
+      <PageBanner src="/Images/banners/dash banner.png" />
+      <DashboardClient
+        profile={profile}
+        initialFavorites={favorites ?? []}
+        initialHistory={safeHistory}
+        tools={tools ?? []}
+        initialSavedItems={savedItems ?? []}
+        dashboardMeta={dashboardMeta}
+      />
+    </>
   );
 }

@@ -1,6 +1,9 @@
+import PageBanner from "@/components/PageBanner";
+
 export default function TermsOfServicePage() {
   return (
-    <div className="pt-16">
+    <>
+      <PageBanner src="/Images/banners/landing banner.png" />
       <div className="border-b border-border-subtle">
         <div className="page-container py-14 md:py-20">
           <p className="t-label text-accent mb-4">Legal</p>
@@ -33,6 +36,6 @@ export default function TermsOfServicePage() {
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }

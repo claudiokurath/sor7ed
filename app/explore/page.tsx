@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
+import PageBanner from "@/components/PageBanner";
 
 const FALLBACK_BRANCHES = [
   { slug: "keep-going",   name: "Keep Going",    icon: "⚡", description: "Energy, momentum, getting unstuck", color: "#00C4C4" },
@@ -28,7 +29,7 @@ export default async function ExplorePage() {
       name: b.name || fallback?.name || "",
       icon: b.icon || fallback?.icon || "⚡",
       description: b.description || fallback?.description || "",
-      cover_image: b.cover_image || `/Images/branches/${b.slug}.png`,
+      cover_image: b.cover_image || `/Images/members/${b.slug}.png`,
       color: b.color || fallback?.color || "#00C4C4"
     };
   });
@@ -36,7 +37,7 @@ export default async function ExplorePage() {
   // If Supabase fetch was completely empty, fallback to static defaults
   const displayBranches = branchList.length > 0 ? branchList : FALLBACK_BRANCHES.map(b => ({
     ...b,
-    cover_image: `/Images/branches/${b.slug}.png`
+    cover_image: `/Images/members/${b.slug}.png`
   }));
 
   const pageBg = config.explore_bg_color?.color || '#080f11';
@@ -51,7 +52,8 @@ export default async function ExplorePage() {
   } as React.CSSProperties;
 
   return (
-    <div style={localStyle} className="pt-24 pb-20 min-h-screen">
+    <div style={localStyle} className="pb-20 min-h-screen">
+      <PageBanner src="/Images/banners/7 branches banner.png" />
       <div className="border-b border-white/10">
         <div className="page-container py-14 md:py-20">
           <p className="t-label text-white/60 mb-4">7 areas of life</p>

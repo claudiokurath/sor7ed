@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
+import PageBanner from "@/components/PageBanner";
 
 export const metadata: Metadata = {
   title: 'Cookie Policy | SOR7ED',
@@ -8,8 +9,9 @@ export const metadata: Metadata = {
 
 export default function CookiesPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white px-6 py-20">
-      <div className="max-w-2xl mx-auto">
+    <main className="min-h-screen bg-[#0a0a0a] text-white">
+      <PageBanner src="/Images/banners/landing banner.png" />
+      <div className="max-w-2xl mx-auto px-6 py-20">
         <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors block mb-12">
           ← SOR7ED
         </Link>

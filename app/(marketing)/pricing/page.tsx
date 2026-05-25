@@ -1,8 +1,11 @@
 import Link from "next/link";
 
+import PageBanner from "@/components/PageBanner";
+
 export default function PricingPage() {
   return (
-    <div className="pt-16">
+    <>
+      <PageBanner src="/Images/banners/landing banner.png" />
       <div className="border-b border-border-subtle">
         <div className="page-container py-14 md:py-20 text-center">
           <p className="t-label text-accent mb-4">Pricing</p>
@@ -75,6 +78,6 @@ export default function PricingPage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

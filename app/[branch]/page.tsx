@@ -75,7 +75,7 @@ export default async function BranchPage({ params }: Props) {
     emoji: dbBranch?.icon || b.emoji,
     desc: dbBranch?.description || b.desc,
     color: dbBranch?.color || b.color,
-    cover_image: dbBranch?.cover_image || `/Images/branches/${branch}.png`
+    cover_image: dbBranch?.cover_image || `/Images/members/${branch}.png`
   };
 
   const branchColor = branchDetails.color;

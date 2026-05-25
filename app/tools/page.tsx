@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
+import PageBanner from "@/components/PageBanner";
 
 export const metadata: Metadata = {
   title: "Tools — SOR7ED",
@@ -33,7 +34,8 @@ export default async function ToolsPage() {
   } as React.CSSProperties;
 
   return (
-    <div style={localStyle} className="min-h-screen pt-24 pb-20 relative overflow-hidden transition-colors duration-500">
+    <div style={localStyle} className="min-h-screen pb-20 relative overflow-hidden transition-colors duration-500">
+      <PageBanner src="/Images/banners/tools banner.png" />
       {/* Ambient background glow */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-coral/4 blur-[130px] pointer-events-none transform-gpu" />
       <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-accent/3 blur-[100px] pointer-events-none transform-gpu" />

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import ToolAssessmentClient from "@/components/ToolAssessmentClient";
+import PageBanner from "@/components/PageBanner";
 import { Metadata } from "next";
 
 // ✅ CORRECT: Keep Promise-based params for Next.js 15
@@ -108,12 +109,15 @@ export default async function ToolPage({
   const whatsappContext = sanitizeWhatsAppParams(resolvedSearchParams);
 
   return (
-    <Suspense fallback={<ToolLoadingState toolName={tool.name} />}>
-      <ToolAssessmentClient
-        tool={tool}
-        whatsappContext={whatsappContext}
-      />
-    </Suspense>
+    <>
+      <PageBanner src="/Images/banners/tools banner.png" />
+      <Suspense fallback={<ToolLoadingState toolName={tool.name} />}>
+        <ToolAssessmentClient
+          tool={tool}
+          whatsappContext={whatsappContext}
+        />
+      </Suspense>
+    </>
   );
 }
 
