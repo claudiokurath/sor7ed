@@ -254,59 +254,6 @@ export default function DashboardClient({
         <TabManager setActiveSection={setActiveSection} />
       </Suspense>
 
-      {/* ── HEADER ── */}
-      <div className="relative border-b border-ps-white/20 overflow-hidden bg-ps-yellow" style={{ minHeight: 220 }}>
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-12 md:px-16 py-10 sm:py-14">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <Link href="/" className="text-ps-white/40 text-[10px] tracking-[0.3em] uppercase font-black hover:text-ps-white transition-colors">
-                  SOR7ED
-                </Link>
-                <span className="text-ps-white/20">/</span>
-                <span className="text-ps-white/60 text-[10px] tracking-[0.3em] uppercase font-black">Intelligence Profile</span>
-              </div>
-              {greeting && (
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-ps-white/50 mb-2">
-                  {greeting}{profile?.first_name ? `, ${profile.first_name}` : ''}
-                </p>
-              )}
-              <h1 className="font-anton text-3xl sm:text-5xl md:text-6xl lg:text-7xl uppercase tracking-wider text-ps-white leading-none mb-4">
-                {profile?.first_name || 'Archive'}
-              </h1>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="bg-ps-yellow text-ps-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
-                  ID: {profile?.whatsapp_number || 'PENDING'}
-                </span>
-                <span className="bg-ps-yellow text-ps-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
-                  STATUS: ACTIVE
-                </span>
-                <span className="border-2 border-ps-white/20 bg-ps-black text-ps-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
-                  ◆ {sortedLevel.name}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <Link
-                href="/tools"
-                className="bg-ps-yellow text-ps-black border-2 border-ps-white/20 rounded-full px-5 py-3 text-xs font-black uppercase tracking-widest hover:bg-ps-black hover:text-ps-white transition-all"
-              >
-                + Assessment
-              </Link>
-              <form action="/auth/signout" method="post">
-                <button type="submit" className="p-3 border-2 border-ps-white/20 rounded-full bg-ps-black hover:bg-ps-yellow hover:text-ps-black transition-all group">
-                  <span className="sr-only">Sign Out</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-ps-white group-hover:text-ps-white transition-colors">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-                  </svg>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* ── NAV TABS ── */}
       <div className="bg-ps-black border-b border-ps-white/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-12 md:px-16">

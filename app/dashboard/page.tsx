@@ -175,7 +175,20 @@ export default async function Dashboard() {
 
   return (
     <>
-      <PageBanner src="/Images/banners/dash banner.png" />
+      <div className="relative">
+        <PageBanner src="/Images/banners/dash banner.png" />
+        <div className="absolute inset-0 flex items-end pointer-events-none">
+          <div className="max-w-6xl w-full mx-auto px-4 sm:px-12 md:px-16 pb-8">
+            <p className="t-label text-accent mb-2 tracking-widest">Intelligence Profile</p>
+            <h1
+              className="font-display font-black uppercase text-white leading-none"
+              style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}
+            >
+              {profile?.first_name || 'Dashboard'}
+            </h1>
+          </div>
+        </div>
+      </div>
       <DashboardClient
         profile={profile}
         initialFavorites={favorites ?? []}

@@ -29,7 +29,7 @@ export default async function HomePage() {
       name: b.name || hardcoded?.label || "",
       icon: b.icon || hardcoded?.emoji || "⚡",
       description: b.description || hardcoded?.desc || "",
-      cover_image: b.cover_image || `/Images/members/${b.slug}.png`,
+      cover_image: `/Images/members/${b.slug}.png`,
       color: b.color || "#00C4C4"
     };
   });

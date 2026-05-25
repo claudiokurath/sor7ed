@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
-import PageBanner from "@/components/PageBanner";
 
 export const metadata: Metadata = {
   title: "Tools — SOR7ED",
@@ -35,26 +34,35 @@ export default async function ToolsPage() {
 
   return (
     <div style={localStyle} className="min-h-screen pb-20 relative overflow-hidden transition-colors duration-500">
-      <PageBanner src="/Images/banners/tools banner.png" />
       {/* Ambient background glow */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-coral/4 blur-[130px] pointer-events-none transform-gpu" />
       <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-accent/3 blur-[100px] pointer-events-none transform-gpu" />
 
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 relative z-10">
-        {/* Header */}
-        <div className="max-w-2xl mb-16">
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/Images/banners/tools banner.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
           <p className="t-label text-coral mb-3 font-mono tracking-widest">USE</p>
           <h1
-            className="font-display font-black uppercase text-white leading-none mb-6"
-            style={{ fontSize: "clamp(3rem, 10vw, 6.5rem)", letterSpacing: "-0.01em" }}
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
           >
             {renderFormattedText(config.tools_hero_title?.text, 'var(--color-coral)')}
           </h1>
-          <div className="text-white/60 text-base leading-relaxed">
+          <div className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
             {renderFormattedText(config.tools_hero_subtitle?.text, 'var(--color-coral)')}
           </div>
         </div>
+      </section>
 
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 relative z-10 py-16">
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {items.map((tool) => (

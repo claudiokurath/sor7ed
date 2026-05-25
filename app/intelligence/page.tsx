@@ -71,18 +71,6 @@ export default async function IntelligencePage() {
             {renderFormattedText(config.intelligence_hero_subtitle?.text, 'var(--color-accent)')}
           </div>
 
-          <p className="font-black uppercase text-white text-sm tracking-widest mb-5">
-            SOR7ED is different.
-          </p>
-
-          <ul
-            className="space-y-1.5 text-white/60 text-xs uppercase tracking-widest"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            <li>• We write about the real stuff.</li>
-            <li>• The stuff that gets left out of the NHS.</li>
-            <li>• The quiet cost of pretending to be fine.</li>
-          </ul>
         </div>
       </section>
 
