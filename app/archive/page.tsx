@@ -15,7 +15,7 @@ export default async function ArchivePage() {
   const articles = posts ?? [];
 
   return (
-    <main className="pb-20">
+    <div className="pb-20">
       <PageBanner src="/Images/banners/blog banner.png" />
       <div className="page-container">
         <div className="section-sm border-b border-border-subtle mb-10">
@@ -58,6 +58,6 @@ export default async function ArchivePage() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

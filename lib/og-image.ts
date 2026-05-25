@@ -1,5 +1,5 @@
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
-export const DEFAULT_OG_IMAGE = '/Images/og-explore.png';
+export const DEFAULT_OG_IMAGE = '/Images/banners/landing banner.png';
 
 /**
  * Resolves raw image URLs to absolute paths compatible with social media scrapers.
