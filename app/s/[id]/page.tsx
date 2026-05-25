@@ -5,22 +5,21 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 
 interface Props {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-// Server-side metadata generation for social media crawlers
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = createClient()
+  const { id } = await params
+  const supabase = await createClient()
 
   try {
     const { data: link, error } = await supabase
       .from('rich_links')
       .select('title, description, target_url, image_url')
-      .eq('slug', params.id)
+      .eq('slug', id)
       .single()
 
     if (error || !link) {
-      console.error('Link metadata fetch failed:', { slug: params.id, error })
       return {
         title: 'Link Not Found',
         description: 'This link does not exist or has been removed.',
@@ -35,14 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         description: link.description || undefined,
         url: link.target_url,
         images: link.image_url
-          ? [
-              {
-                url: link.image_url,
-                width: 1200,
-                height: 630,
-                alt: link.title,
-              },
-            ]
+          ? [{ url: link.image_url, width: 1200, height: 630, alt: link.title }]
           : [],
         type: 'website',
       },
@@ -62,56 +54,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// Main page component with redirect logic
 export default async function RichLinkPage({ params }: Props) {
-  const supabase = createClient()
+  const { id } = await params
+  const supabase = await createClient()
 
   try {
     const { data: link, error } = await supabase
       .from('rich_links')
       .select('*')
-      .eq('slug', params.id)
+      .eq('slug', id)
       .single()
 
-    // Handle non-existent links with proper 404
     if (error || !link) {
-      console.error('Link not found:', { 
-        slug: params.id, 
-        error: error?.message,
-        timestamp: new Date().toISOString()
-      })
+      console.error('Link not found:', { slug: id, error: error?.message })
       notFound()
     }
 
-    // Track the click with enhanced user agent information
-    const headersList = headers()
+    const headersList = await headers()
     const userAgent = headersList.get('user-agent') ?? 'unknown'
-    const referer = headersList.get('referer')
 
-    // Insert click tracking (non-blocking)
     supabase.from('rich_link_clicks').insert({
       link_id: link.id,
       user_agent: userAgent,
     }).then(({ error: clickError }) => {
-      if (clickError) {
-        console.error('Click tracking failed:', {
-          linkId: link.id,
-          slug: params.id,
-          error: clickError.message,
-          userAgent,
-          referer
-        })
-      }
+      if (clickError) console.error('Click tracking failed:', clickError.message)
     })
 
-    // Server-side redirect to target URL
     redirect(link.target_url)
-
   } catch (error) {
     console.error('Rich link page error:', {
-      slug: params.id,
+      slug: id,
       error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
     })
     notFound()
   }

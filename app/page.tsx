@@ -45,8 +45,8 @@ export default async function HomePage() {
             className="absolute inset-0 w-full h-full object-cover opacity-30"
           />
           {/* Gradients to blend the background and ensure high text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         </div>
 
         <div className="relative page-container pb-12 pt-28 z-10 w-full">
@@ -100,7 +100,7 @@ export default async function HomePage() {
           </div>
 
           {/* Branches Grid */}
-          <div className="grid grid-cols-7 gap-2 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-4 md:gap-6">
             {branchList.map((b) => (
               <div key={b.slug} className="flex flex-col items-center">
                 <Link
