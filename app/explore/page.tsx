@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
-import PageBanner from "@/components/PageBanner";
 
 const FALLBACK_BRANCHES = [
   { slug: "keep-going",   name: "Keep Going",    icon: "⚡", description: "Energy, momentum, getting unstuck", color: "#00C4C4" },
@@ -53,18 +52,30 @@ export default async function ExplorePage() {
 
   return (
     <div style={localStyle} className="pb-20 min-h-screen">
-      <PageBanner src="/Images/banners/7 branches banner.png" />
-      <div className="border-b border-white/10">
-        <div className="page-container py-14 md:py-20">
-          <p className="t-label text-white/60 mb-4">7 areas of life</p>
-          <h1 className="t-display mb-5 text-balance max-w-2xl text-white">
-            {renderFormattedText(config.explore_hero_title?.text, 'white')}
+
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/Images/banners/7 branches banner.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">7 AREAS OF LIFE</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            {renderFormattedText(config.explore_hero_title?.text, 'white') || '7 Branches'}
           </h1>
-          <div className="t-body max-w-xl text-pretty text-white/60">
+          <div className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
             {renderFormattedText(config.explore_hero_subtitle?.text, 'white')}
           </div>
         </div>
-      </div>
+      </section>
 
       <div className="page-container mt-12 lg:max-w-7xl xl:max-w-[1400px]">
         <div className="grid grid-cols-7 gap-2 sm:gap-4 md:gap-6">

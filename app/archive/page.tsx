@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import PageBanner from "@/components/PageBanner";
 
 export const metadata = { title: "Archive — SOR7ED" };
 
@@ -44,13 +43,33 @@ export default async function ArchivePage() {
   ];
 
   return (
-    <div className="pb-20">
-      <PageBanner src="/Images/banners/blog banner.png" />
-      <div className="page-container">
-        <div className="section-sm border-b border-border-subtle mb-12">
-          <p className="t-label text-[#00C4C4] mb-2">Everything</p>
-          <h1 className="t-display">Archive</h1>
+    <div className="pb-20 min-h-screen bg-[#080f11]">
+
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/Images/banners/blog banner.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">EVERYTHING</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            Archive
+          </h1>
+          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+            Every article, organised by branch.
+          </p>
+        </div>
+      </section>
+
+      <div className="page-container">
 
         <div className="flex flex-col gap-16">
           {orderedBranches.map(branchName => {

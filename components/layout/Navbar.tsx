@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { href: "/explore", label: "7 Branches" },
   { href: "/intelligence", label: "Articles" },
   { href: "/tools", label: "Tools" },
-  { href: "/auth/login", label: "Login" },
+  { href: "/signup?mode=login", label: "Sign In" },
 ];
 
 export default function Navbar() {

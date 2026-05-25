@@ -130,6 +130,51 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── 7 BRANCHES EXPLAINER ────────────────────────────────── */}
+      <section className="section border-t border-border-subtle">
+        <div className="page-container">
+          <div className="mb-12">
+            <p className="t-label text-accent mb-2 font-mono tracking-widest">THE SYSTEM</p>
+            <h2 className="t-display mb-6">What are the 7 Branches?</h2>
+            <p className="t-body max-w-2xl text-white/60">
+              SOR7ED organises every protocol, tool and article into one of 7 branches of life. Start wherever feels most urgent — each branch has its own set of tools and field reads, all delivered straight to your WhatsApp.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-0 divide-y divide-white/8">
+            {branchList.map((b, i) => (
+              <Link
+                key={b.slug}
+                href={`/${b.slug}`}
+                className="group flex gap-6 py-6 md:py-8 items-center hover:bg-white/2 -mx-4 px-4 transition-colors duration-200"
+              >
+                <span className="font-display text-4xl md:text-5xl font-black text-white/10 group-hover:text-accent/30 transition-colors w-12 flex-shrink-0 text-right leading-none">
+                  0{i + 1}
+                </span>
+                <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 overflow-hidden border border-white/10 group-hover:border-accent/40 transition-colors">
+                  <img
+                    src={b.cover_image}
+                    alt={b.name}
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-display font-black uppercase text-white text-lg md:text-xl leading-none mb-1 group-hover:text-accent transition-colors">
+                    {b.name}
+                  </h3>
+                  <p className="text-white/50 text-xs md:text-sm font-sans leading-relaxed">
+                    {b.description}
+                  </p>
+                </div>
+                <span className="font-mono text-xs text-white/20 group-hover:text-accent group-hover:translate-x-1 transition-all duration-200 flex-shrink-0">
+                  →
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── FOOTER CTA ─────────────────────────────────────────── */}
       <section className="section border-t border-border-subtle">
         <div className="page-container text-center">

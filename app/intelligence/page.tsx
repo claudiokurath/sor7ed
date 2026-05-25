@@ -6,7 +6,7 @@ import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
 
 export const metadata: Metadata = {
   title: "Articles — SOR7ED",
-  description: "All the things your brain has been waiting for.",
+  description: "Practical articles for neurodivergent minds. Real insights, no fluff.",
 };
 
 export default async function IntelligencePage() {
@@ -54,6 +54,7 @@ export default async function IntelligencePage() {
 
         {/* Text content */}
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">ARTICLES</p>
           <h1
             className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl text-balance"
             style={{
@@ -65,12 +66,11 @@ export default async function IntelligencePage() {
           </h1>
 
           <div
-            className="uppercase text-white/60 text-xs tracking-widest max-w-md leading-relaxed mb-5"
+            className="text-white/60 text-base leading-relaxed max-w-md"
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {renderFormattedText(config.intelligence_hero_subtitle?.text, 'var(--color-accent)')}
           </div>
-
         </div>
       </section>
 

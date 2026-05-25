@@ -41,8 +41,8 @@ export async function generateMetadata({
 
   if (!article) {
     return { 
-      title: 'Intelligence Not Found | SOR7ED',
-      description: 'This intelligence briefing could not be found.',
+      title: 'Article Not Found | SOR7ED',
+      description: 'This article could not be found.',
     };
   }
 
@@ -52,7 +52,7 @@ export async function generateMetadata({
   const description = article.meta_description || 
                      article.problem || 
                      article.excerpt || 
-                     `Field Intelligence briefing on ${article.title}.`;
+                     `Article on ${article.title}.`;
 
   const resolvedImage = resolveOgImageUrl(article.cover_image);
 
