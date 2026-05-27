@@ -52,7 +52,7 @@ export default async function HomePage() {
             <div style={{ maxWidth: "52%" }}>
               {/* Logo */}
               <img
-                src="/Images/logo.png"
+                src="/Images/Logo2026.png"
                 alt="SOR7ED"
                 style={{ height: "clamp(28px, 4vw, 52px)", width: "auto", marginBottom: "clamp(16px, 3vw, 32px)" }}
               />
