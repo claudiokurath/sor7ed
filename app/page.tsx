@@ -37,52 +37,29 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO — full image with content overlaid left, vertically centred ── */}
-      <section className="relative w-full" style={{ minHeight: "60vh" }}>
+      {/* ── HERO — image with text already baked in ── */}
+      <section className="relative w-full">
         <img
-          src={config.home_hero?.image || "/Images/home/hero.jpg"}
-          alt="Hero"
+          src="/Images/home/hero_final.png"
+          alt="SOR7ED — Skip the Nonsense"
           className="w-full h-auto block"
-          style={{ minHeight: "60vh", objectFit: "cover", objectPosition: "right center" }}
         />
-        {/* gradient: strong on left, fades to transparent on right */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.1) 70%, transparent 100%)" }} />
-        {/* content overlay — anchored bottom-left like the brand image */}
-        <div className="absolute inset-0 flex items-end">
-          <div className="page-container w-full pb-10 md:pb-16">
-            <div style={{ maxWidth: "55%" }}>
-              {/* Logo — big, matches brand image */}
-              <img
-                src="/Images/Logo2026.png"
-                alt="SOR7ED"
-                style={{ height: "clamp(40px, 6vw, 90px)", width: "auto", marginBottom: "clamp(12px, 2vw, 20px)" }}
-              />
-              {/* Headline */}
-              <h1
-                className="font-display font-black uppercase text-white leading-none"
-                style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", letterSpacing: "-0.02em", marginBottom: "clamp(10px, 1.5vw, 18px)" }}
-              >
-                SKIP THE NONSENSE
-              </h1>
-              {/* Subtitle */}
-              <p style={{ fontSize: "clamp(0.85rem, 1.4vw, 1rem)", color: "rgba(255,255,255,0.75)", marginBottom: "clamp(16px, 2.5vw, 28px)", lineHeight: 1.5 }}>
-                {config.home_hero_subtitle?.text || "Practical tools and protocols for neurodivergent adults — delivered straight to WhatsApp"}
-              </p>
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-3">
-                <Link href="/tools" className="btn btn-lg" style={{ background: "#00C4C4", color: "#000", borderColor: "#00C4C4" }}>
-                  Browse Tools →
-                </Link>
-                <Link href="/intelligence" className="btn btn-lg btn-ghost">
-                  Read Articles
-                </Link>
-              </div>
+        {/* CTAs at the bottom-left */}
+        <div className="absolute bottom-0 left-0 right-0 pb-8 md:pb-14">
+          <div className="page-container">
+            <div className="flex flex-wrap gap-3">
+              <Link href="/tools" className="btn btn-lg" style={{ background: "#00C4C4", color: "#000", borderColor: "#00C4C4" }}>
+                Browse Tools →
+              </Link>
+              <Link href="/intelligence" className="btn btn-lg btn-ghost">
+                Read Articles
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
+            {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
       <section className="section border-t border-border-subtle bg-surface-subtle/30">
         <div className="page-container lg:max-w-[1400px]">
           {/* Header */}
