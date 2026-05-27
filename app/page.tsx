@@ -106,7 +106,7 @@ export default async function HomePage() {
                 <img
                   src={branchList[0].cover_image}
                   alt={branchList[0].name}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 md:p-10">
