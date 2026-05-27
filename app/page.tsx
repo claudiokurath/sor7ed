@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
+import HeroSlideshow from "@/components/HeroSlideshow";
 
 const BRANCHES: Array<{ slug: string; label: string; emoji: string; desc: string }> = [
   { slug: "keep-going",   label: "Keep Going",    emoji: "⚡", desc: "Energy, momentum, getting unstuck" },
@@ -36,23 +37,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO IMAGE — full natural size, title overlaid at bottom ── */}
-      <section className="relative w-full">
-        <img
-          src={config.home_hero?.image || "/Images/home/hero.jpg"}
-          alt="Hero"
-          className="w-full h-auto block"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-        <div className="absolute inset-0 flex items-end">
-          <div className="page-container pb-8 sm:pb-14 w-full">
-            <h1 className="font-display font-black uppercase text-white leading-none text-balance"
-              style={{ fontSize: "clamp(2rem, 8vw, 6rem)", letterSpacing: "-0.02em" }}>
-              SKIP THE NONSENSE
-            </h1>
-          </div>
-        </div>
-      </section>
+      {/* ── HERO SLIDESHOW — crossfades through all /Images/home/ images ── */}
+      <HeroSlideshow />
 
       {/* ── HERO SUBTITLE + CTAs ── */}
       <section className="border-b border-border-subtle bg-surface">
