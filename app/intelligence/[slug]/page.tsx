@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import IntelligenceClient from "@/components/IntelligenceClient";
-import PageBanner from "@/components/PageBanner";
 import { resolveOgImageUrl } from "@/lib/og-image";
 import type { Metadata } from "next";
 
@@ -96,10 +95,32 @@ export default async function IntelligenceBriefing({
 
   if (!article) notFound();
 
+  const bannerImage = resolveOgImageUrl(article.cover_image, '/Images/banners/blog banner.png');
+
   return (
     <main className="min-h-screen bg-[#080f11] text-white relative overflow-hidden transition-colors duration-500">
-      <PageBanner src="/Images/banners/blog banner.png" />
-      {/* Cinematic ambient background glow */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img src={bannerImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">{article.branch?.toUpperCase() || 'ARTICLE'}</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            {article.title}
+          </h1>
+          {article.summary && (
+            <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+              {article.summary}
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* Ambient glow */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px] pointer-events-none transform-gpu" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#ff7a45]/5 rounded-full blur-[120px] pointer-events-none transform-gpu" />
 

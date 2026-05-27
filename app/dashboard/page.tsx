@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardClient from "@/components/DashboardClient";
-import PageBanner from "@/components/PageBanner";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -175,20 +174,21 @@ export default async function Dashboard() {
 
   return (
     <>
-      <div className="relative">
-        <PageBanner src="/Images/banners/dash banner.png" />
-        <div className="absolute inset-0 flex items-end pointer-events-none">
-          <div className="max-w-6xl w-full mx-auto px-4 sm:px-12 md:px-16 pb-8">
-            <p className="t-label text-accent mb-2 tracking-widest">Your Dashboard</p>
-            <h1
-              className="font-display font-black uppercase text-white leading-none"
-              style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}
-            >
-              {profile?.first_name || 'Dashboard'}
-            </h1>
-          </div>
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/Images/banners/dash banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
-      </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">YOUR DASHBOARD</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            {profile?.first_name || 'Dashboard'}
+          </h1>
+        </div>
+      </section>
       <DashboardClient
         profile={profile}
         initialFavorites={favorites ?? []}

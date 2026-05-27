@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, Suspense, useActionState } from 'react';
-import PageBanner from "@/components/PageBanner";
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
@@ -59,10 +58,28 @@ function SignupForm() {
     ? `https://wa.me/${waNumber}?text=${encodeURIComponent(`VERIFY ${waVerifyCode}`)}`
     : null;
 
+  const heroBanner = (
+    <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+      <div className="absolute inset-0">
+        <img src="/Images/banners/sign in banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+      </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+        <p className="t-label text-white/50 mb-3 font-mono tracking-widest">ACCOUNT</p>
+        <h1
+          className="font-display font-black uppercase text-white leading-none max-w-2xl"
+          style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+        >
+          {isLogin ? 'Welcome Back' : 'Sign Up Free'}
+        </h1>
+      </div>
+    </section>
+  );
+
   if (status === 'success') {
     return (
       <main className="min-h-screen bg-black flex flex-col">
-        <PageBanner src="/Images/banners/sign in banner.png" />
+        {heroBanner}
         <div className="flex-1 flex items-center justify-center px-6 py-20">
         <motion.div className="max-w-lg w-full" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <p className="t-label text-accent mb-4">Account created</p>
@@ -117,7 +134,7 @@ function SignupForm() {
 
   return (
     <main className="min-h-screen bg-black flex flex-col">
-      <PageBanner src="/Images/banners/sign in banner.png" />
+      {heroBanner}
       {/* Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-20">
         <div className="max-w-md w-full">
