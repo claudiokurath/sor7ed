@@ -43,6 +43,22 @@ export default function HeroSlideshow() {
         />
       ))}
 
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent pointer-events-none" />
+
+      {/* Title */}
+      <div className="absolute inset-0 flex items-end pointer-events-none">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pb-12 sm:pb-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">PRACTICAL PROTOCOLS</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none"
+            style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", letterSpacing: "-0.02em" }}
+          >
+            SKIP THE<br />NONSENSE
+          </h1>
+        </div>
+      </div>
+
       {/* Dot indicators — bottom right */}
       <div className="absolute bottom-5 right-6 flex gap-1.5 pointer-events-none z-10">
         {IMAGES.map((_, i) => (
