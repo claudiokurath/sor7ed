@@ -36,50 +36,49 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative min-h-[50vh] lg:min-h-[65vh] flex items-center overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-surface">
-          <img
-            src={config.home_hero?.image || "/Images/home/hero.jpg"}
-            alt="Hero Background"
-            className="absolute inset-0 w-full h-full object-cover object-bottom opacity-70"
-          />
-          {/* Single left-to-right overlay — light enough to see the image */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
-        </div>
+      <section className="relative w-full">
+        {/* Full image at natural size — no cropping */}
+        <img
+          src={config.home_hero?.image || "/Images/home/hero.jpg"}
+          alt="Hero"
+          className="w-full h-auto block"
+        />
+        {/* Overlay + title sit on top of the image */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
+        <div className="absolute inset-0 flex items-end">
+          <div className="page-container pb-12 pt-28 w-full">
+            <div className="max-w-3xl">
+              {/* Logo */}
+              <div className="mb-6">
+                <img
+                  src="/Images/Logo2026.png"
+                  alt="SOR7ED Logo"
+                  className="h-10 sm:h-12 w-auto"
+                />
+              </div>
 
-        <div className="relative page-container pb-12 pt-28 z-10 w-full">
-          <div className="max-w-3xl">
-            {/* Logo */}
-            <div className="mb-6">
-              <img
-                src="/Images/Logo2026.png"
-                alt="SOR7ED Logo"
-                className="h-10 sm:h-12 w-auto"
-              />
-            </div>
+              <div className="flex flex-wrap gap-2 mb-6">
+                <span className="tag text-white border-white/20">ND-first</span>
+                <span className="tag">WhatsApp-delivered</span>
+                <span className="tag">No app needed</span>
+              </div>
 
-            <div className="flex flex-wrap gap-2 mb-6">
-              <span className="tag text-white border-white/20">ND-first</span>
-              <span className="tag">WhatsApp-delivered</span>
-              <span className="tag">No app needed</span>
-            </div>
+              <h1 className="t-hero mb-6 text-balance text-white">
+                SKIP THE NONSENSE
+              </h1>
 
-            <h1 className="t-hero mb-6 text-balance text-white">
-              SKIP THE NONSENSE
-            </h1>
+              <div className="t-body max-w-xl mb-8 text-lg text-white/60">
+                {renderFormattedText(config.home_hero_subtitle?.text, 'white')}
+              </div>
 
-            <div className="t-body max-w-xl mb-8 text-lg text-white/60">
-              {renderFormattedText(config.home_hero_subtitle?.text, 'white')}
-            </div>
-
-            <div className="flex flex-wrap gap-4">
-              <Link href="/tools" className="btn btn-lg" style={{ background: '#00C4C4', color: '#000', borderColor: '#00C4C4' }}>
-                Browse Tools →
-              </Link>
-              <Link href="/intelligence" className="btn btn-lg" style={{ background: '#00C4C4', color: '#000', borderColor: '#00C4C4' }}>
-                Read Articles
-              </Link>
+              <div className="flex flex-wrap gap-4">
+                <Link href="/tools" className="btn btn-lg" style={{ background: '#00C4C4', color: '#000', borderColor: '#00C4C4' }}>
+                  Browse Tools →
+                </Link>
+                <Link href="/intelligence" className="btn btn-lg" style={{ background: '#00C4C4', color: '#000', borderColor: '#00C4C4' }}>
+                  Read Articles
+                </Link>
+              </div>
             </div>
           </div>
         </div>
