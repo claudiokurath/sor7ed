@@ -39,12 +39,12 @@ export default function BranchesGrid({ branches }: { branches: Branch[] }) {
             key={b.slug}
             href={`/${b.slug}`}
             className="group relative flex-none snap-start overflow-hidden"
-            style={{ width: "260px", height: "320px" }}
+            style={{ width: "260px", height: "260px", background: "#000" }}
           >
             <img
               src={b.cover_image}
               alt={b.name}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
             />
 
           </Link>
