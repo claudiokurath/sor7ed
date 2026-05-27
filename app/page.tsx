@@ -37,26 +37,13 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO — image with text already baked in ── */}
-      <section className="relative w-full">
+      {/* ── HERO — image with everything baked in ── */}
+      <section className="w-full">
         <img
           src="/Images/home/hero_final.png"
           alt="SOR7ED — Skip the Nonsense"
           className="w-full h-auto block"
         />
-        {/* CTAs at the bottom-left */}
-        <div className="absolute bottom-0 left-0 right-0 pb-8 md:pb-14">
-          <div className="page-container">
-            <div className="flex flex-wrap gap-3">
-              <Link href="/tools" className="btn btn-lg" style={{ background: "#00C4C4", color: "#000", borderColor: "#00C4C4" }}>
-                Browse Tools →
-              </Link>
-              <Link href="/intelligence" className="btn btn-lg btn-ghost">
-                Read Articles
-              </Link>
-            </div>
-          </div>
-        </div>
       </section>
 
             {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
