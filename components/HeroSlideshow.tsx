@@ -27,8 +27,13 @@ export default function HeroSlideshow() {
   }, []);
 
   return (
-    <section className="relative w-full overflow-hidden" style={{ height: "100vh" }}>
-      {/* Slideshow images — crossfade via opacity transition */}
+    <section
+      className="relative w-full overflow-hidden"
+      // 100svh = stable viewport height (excludes mobile browser chrome)
+      // fallback to 100vh for older browsers
+      style={{ height: "100svh", minHeight: "100vh" } as React.CSSProperties}
+    >
+      {/* Slideshow images */}
       {IMAGES.map((src, i) => (
         <img
           key={src}
@@ -36,37 +41,41 @@ export default function HeroSlideshow() {
           alt=""
           aria-hidden="true"
           className={[
-            "absolute inset-0 w-full h-full object-cover",
+            "absolute inset-0 w-full h-full object-cover object-center",
             "transition-opacity duration-1000 ease-in-out",
             i === current ? "opacity-100" : "opacity-0",
           ].join(" ")}
         />
       ))}
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent pointer-events-none" />
+      {/* Gradient: bottom-up (strong) for text legibility on mobile + left-to-right on desktop */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent pointer-events-none hidden sm:block" />
 
-      {/* Title */}
-      <div className="absolute inset-0 flex items-end pointer-events-none">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pb-12 sm:pb-20 w-full">
-          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">PRACTICAL PROTOCOLS</p>
-          <h1
-            className="font-display font-black uppercase text-white leading-none"
-            style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", letterSpacing: "-0.02em" }}
-          >
-            SKIP THE<br />NONSENSE
-          </h1>
-        </div>
+      {/* Text — centred */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-5 text-center">
+        <p
+          className="font-mono tracking-widest uppercase mb-4 text-white/50"
+          style={{ fontSize: "clamp(0.6rem, 2.5vw, 0.75rem)" }}
+        >
+          PRACTICAL PROTOCOLS
+        </p>
+        <h1
+          className="font-display font-black uppercase text-white leading-[0.9]"
+          style={{ fontSize: "clamp(3.5rem, 12vw, 7rem)", letterSpacing: "-0.02em" }}
+        >
+          SKIP THE<br />NONSENSE
+        </h1>
       </div>
 
-      {/* Dot indicators — bottom right */}
-      <div className="absolute bottom-5 right-6 flex gap-1.5 pointer-events-none z-10">
+      {/* Dot indicators */}
+      <div className="absolute bottom-5 right-5 flex gap-2 pointer-events-none z-10">
         {IMAGES.map((_, i) => (
           <span
             key={i}
             className={[
-              "block h-1.5 rounded-full transition-all duration-500",
-              i === current ? "bg-white w-4" : "bg-white/30 w-1.5",
+              "block h-1 rounded-full transition-all duration-500",
+              i === current ? "bg-white w-5" : "bg-white/30 w-1",
             ].join(" ")}
           />
         ))}
