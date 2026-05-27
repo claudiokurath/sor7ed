@@ -42,11 +42,10 @@ export default async function HomePage() {
           <img
             src={config.home_hero?.image || "/Images/home/hero.jpg"}
             alt="Hero Background"
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
+            className="absolute inset-0 w-full h-full object-cover object-bottom opacity-70"
           />
-          {/* Gradients to blend the background and ensure high text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          {/* Single left-to-right overlay — light enough to see the image */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent" />
         </div>
 
         <div className="relative page-container pb-12 pt-28 z-10 w-full">
