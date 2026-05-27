@@ -37,12 +37,12 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO — image with everything baked in ── */}
-      <section className="w-full">
+      {/* ── HERO — image constrained to viewport height ── */}
+      <section className="w-full overflow-hidden" style={{ maxHeight: "100vh" }}>
         <img
           src="/Images/home/hero_final.png"
           alt="SOR7ED — Skip the Nonsense"
-          className="w-full h-auto block"
+          style={{ width: "100%", height: "100vh", objectFit: "cover", objectPosition: "center center", display: "block" }}
         />
       </section>
 
