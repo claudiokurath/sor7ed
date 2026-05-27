@@ -93,15 +93,15 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {/* Editorial grid: feature card top-left, CTAs top-right, 6 cards below */}
+          {/* Grid: feature card full-width top, then 3 cols × 2 rows */}
           {branchList.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
+            <div className="flex flex-col gap-3 md:gap-4">
 
-              {/* Featured card — first branch, spans 2 cols wide and tall */}
+              {/* Featured card — first branch, full width */}
               <Link
                 href={`/${branchList[0].slug}`}
-                className="group relative col-span-2 row-span-2 overflow-hidden"
-                style={{ aspectRatio: "2/1.3" }}
+                className="group relative w-full overflow-hidden"
+                style={{ aspectRatio: "16/7" }}
               >
                 <img
                   src={branchList[0].cover_image}
@@ -109,58 +109,42 @@ export default async function HomePage() {
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-5 md:p-8">
+                <div className="absolute bottom-0 left-0 p-6 md:p-10">
                   <p
                     className="font-display font-black uppercase text-white leading-none"
-                    style={{ fontSize: "clamp(1.8rem, 4vw, 3.5rem)", letterSpacing: "-0.02em" }}
+                    style={{ fontSize: "clamp(2rem, 6vw, 5rem)", letterSpacing: "-0.02em" }}
                   >
                     {branchList[0].name}
                   </p>
                 </div>
               </Link>
 
-              {/* CTAs — top right column */}
-              <div className="flex flex-col gap-3 justify-center">
-                <Link
-                  href="/intelligence"
-                  className="btn w-full justify-center font-display font-black uppercase text-black bg-white border-white hover:bg-white/90"
-                  style={{ fontSize: "clamp(0.75rem, 1.5vw, 1rem)", letterSpacing: "-0.01em", padding: "1rem 1.25rem" }}
-                >
-                  READ ARTICLES
-                </Link>
-                <Link
-                  href="/tools"
-                  className="btn w-full justify-center font-display font-black uppercase text-black bg-white border-white hover:bg-white/90"
-                  style={{ fontSize: "clamp(0.75rem, 1.5vw, 1rem)", letterSpacing: "-0.01em", padding: "1rem 1.25rem" }}
-                >
-                  BROWSE TOOLS
-                </Link>
-              </div>
-
               {/* Remaining 6 branches — 3 columns × 2 rows */}
-              {branchList.slice(1).map((b) => (
-                <Link
-                  key={b.slug}
-                  href={`/${b.slug}`}
-                  className="group relative overflow-hidden"
-                  style={{ aspectRatio: "1/1" }}
-                >
-                  <img
-                    src={b.cover_image}
-                    alt={b.name}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-0 left-0 p-3 md:p-4">
-                    <p
-                      className="font-display font-black uppercase text-white leading-none"
-                      style={{ fontSize: "clamp(0.8rem, 2vw, 1.4rem)", letterSpacing: "-0.02em" }}
-                    >
-                      {b.name}
-                    </p>
-                  </div>
-                </Link>
-              ))}
+              <div className="grid grid-cols-3 gap-3 md:gap-4">
+                {branchList.slice(1).map((b) => (
+                  <Link
+                    key={b.slug}
+                    href={`/${b.slug}`}
+                    className="group relative overflow-hidden"
+                    style={{ aspectRatio: "1/1" }}
+                  >
+                    <img
+                      src={b.cover_image}
+                      alt={b.name}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 p-3 md:p-5">
+                      <p
+                        className="font-display font-black uppercase text-white leading-none"
+                        style={{ fontSize: "clamp(0.9rem, 2.5vw, 1.6rem)", letterSpacing: "-0.02em" }}
+                      >
+                        {b.name}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>
