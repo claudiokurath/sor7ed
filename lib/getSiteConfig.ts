@@ -32,7 +32,7 @@ export function renderFormattedText(text: string | null | undefined, highlightCo
 
 // Hardcoded default values for styling, text, and images across the website
 const DEFAULT_CONFIG: Record<string, { text: string; color: string; image: string; active: boolean }> = {
-  home_hero: { text: '', color: '', image: '/Images/home/hero.jpg', active: true },
+  home_hero: { text: '', color: '', image: '/Images/hero_new.png', active: true },
   intelligence_hero: { text: '', color: '', image: '/HERO.png', active: true },
   og_explore: { text: '', color: '', image: '/Images/og-explore.png', active: true },
   home_bg_color: { text: '', color: '#000000', image: '', active: true },
