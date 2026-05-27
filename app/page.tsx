@@ -47,25 +47,25 @@ export default async function HomePage() {
         />
         {/* gradient: strong on left, fades to transparent on right */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.1) 70%, transparent 100%)" }} />
-        {/* content overlay — left half only */}
-        <div className="absolute inset-0 flex items-center">
-          <div className="page-container w-full">
-            <div style={{ maxWidth: "52%" }}>
-              {/* Logo */}
+        {/* content overlay — anchored bottom-left like the brand image */}
+        <div className="absolute inset-0 flex items-end">
+          <div className="page-container w-full pb-10 md:pb-16">
+            <div style={{ maxWidth: "55%" }}>
+              {/* Logo — big, matches brand image */}
               <img
                 src="/Images/Logo2026.png"
                 alt="SOR7ED"
-                style={{ height: "clamp(28px, 4vw, 52px)", width: "auto", marginBottom: "clamp(16px, 3vw, 32px)" }}
+                style={{ height: "clamp(40px, 6vw, 90px)", width: "auto", marginBottom: "clamp(12px, 2vw, 20px)" }}
               />
               {/* Headline */}
               <h1
                 className="font-display font-black uppercase text-white leading-none"
-                style={{ fontSize: "clamp(2.2rem, 7vw, 5.5rem)", letterSpacing: "-0.02em", marginBottom: "clamp(12px, 2vw, 24px)" }}
+                style={{ fontSize: "clamp(2.5rem, 8vw, 6.5rem)", letterSpacing: "-0.02em", marginBottom: "clamp(10px, 1.5vw, 18px)" }}
               >
                 SKIP THE NONSENSE
               </h1>
               {/* Subtitle */}
-              <p style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.1rem)", color: "rgba(255,255,255,0.75)", marginBottom: "clamp(20px, 3vw, 36px)", lineHeight: 1.5 }}>
+              <p style={{ fontSize: "clamp(0.85rem, 1.4vw, 1rem)", color: "rgba(255,255,255,0.75)", marginBottom: "clamp(16px, 2.5vw, 28px)", lineHeight: 1.5 }}>
                 {config.home_hero_subtitle?.text || "Practical tools and protocols for neurodivergent adults — delivered straight to WhatsApp"}
               </p>
               {/* CTAs */}
