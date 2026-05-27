@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     locale: 'en_GB',
     images: [
       {
-        url: '/Images/hero_new.png',
+        url: '/Images/home/hero_new.png',
         width: 1200,
         height: 630,
         alt: 'SOR7ED — Practical protocols for neurodivergent minds',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/Images/hero_new.png'],
+    images: ['/Images/home/hero_new.png'],
   },
 };
 
