@@ -91,28 +91,27 @@ export default async function BranchPage({ params }: Props) {
   return (
     <main style={localStyle} className="min-h-screen bg-black pt-14 transition-colors duration-500">
       {/* Branch hero */}
-      <section className="relative h-[45vh] w-full overflow-hidden border-b border-white/10 bg-[#080f11] flex items-end">
-        {branchDetails.cover_image ? (
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
           <img
             src={branchDetails.cover_image}
             alt={branchDetails.label}
-            className="absolute inset-0 w-full h-full object-cover opacity-50 brightness-75"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-        ) : (
-          <div className="absolute inset-0 w-full h-full bg-[#080f11]" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-        
-        {/* Editorial Text Overlay */}
-        <div className="relative z-10 w-full page-container pb-10 flex flex-col justify-end">
-          <Link href="/explore" className="t-label text-accent hover:underline mb-4 block">← All branches</Link>
-          <div className="flex items-start gap-4">
-            <span className="text-4xl mt-1">{branchDetails.emoji}</span>
-            <div>
-              <h1 className="t-display mb-3 text-white uppercase font-black tracking-tight" style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}>{branchDetails.label}</h1>
-              <p className="text-white/60 text-sm md:text-base max-w-xl leading-relaxed">{branchDetails.desc}</p>
-            </div>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <Link href="/explore" className="t-label text-white/50 hover:text-white mb-4 block font-mono tracking-widest transition-colors">← ALL BRANCHES</Link>
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">{branchDetails.emoji}</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            {branchDetails.label}
+          </h1>
+          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+            {branchDetails.desc}
+          </p>
         </div>
       </section>
 

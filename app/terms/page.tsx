@@ -1,18 +1,25 @@
-import PageBanner from "@/components/PageBanner";
-
 export default function TermsOfServicePage() {
   return (
     <>
-      <PageBanner src="/Images/banners/landing banner.png" />
-      <div className="border-b border-border-subtle">
-        <div className="page-container py-14 md:py-20">
-          <p className="t-label text-accent mb-4">Legal</p>
-          <h1 className="t-display mb-5">Terms of Service</h1>
-          <p className="t-body max-w-lg text-pretty">
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/Images/banners/landing banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">LEGAL</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            Terms of Service
+          </h1>
+          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
             The rules and guidelines for using SOR7ED. Last updated: May 2026.
           </p>
         </div>
-      </div>
+      </section>
 
       <div className="page-container py-16">
         <div className="max-w-3xl prose prose-neutral">

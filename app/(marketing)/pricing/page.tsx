@@ -1,22 +1,27 @@
 import Link from "next/link";
 
-import PageBanner from "@/components/PageBanner";
-
 export default function PricingPage() {
   return (
     <>
-      <PageBanner src="/Images/banners/landing banner.png" />
-      <div className="border-b border-border-subtle">
-        <div className="page-container py-14 md:py-20 text-center">
-          <p className="t-label text-accent mb-4">Pricing</p>
-          <h1 className="t-display mb-5 text-balance">
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/Images/banners/landing banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">PRICING</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
             Simple, transparent pricing.
           </h1>
-          <p className="t-body max-w-lg mx-auto text-pretty">
+          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
             Start free. Upgrade when you need more. No subscriptions, no lock-in.
           </p>
         </div>
-      </div>
+      </section>
 
       <div className="page-container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
@@ -28,7 +33,7 @@ export default function PricingPage() {
             <ul className="space-y-3 mb-8">
               {[
                 "5 free tool runs",
-                "Unlimited saves", 
+                "Unlimited saves",
                 "All 7 areas of life",
                 "WhatsApp delivery",
                 "All articles"
@@ -56,7 +61,7 @@ export default function PricingPage() {
               {[
                 "Unlimited tool runs",
                 "Unlimited saves",
-                "All 7 areas of life", 
+                "All 7 areas of life",
                 "WhatsApp delivery",
                 "All articles",
                 "Priority support"

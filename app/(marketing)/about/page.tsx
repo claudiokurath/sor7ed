@@ -1,23 +1,25 @@
-import PageBanner from "@/components/PageBanner";
-
 export default function AboutPage() {
   return (
     <>
-      <PageBanner src="/Images/banners/landing banner.png" />
-      <div className="border-b border-border-subtle">
-        <div className="page-container py-14 md:py-24">
-          <div className="max-w-2xl">
-            <p className="t-label text-accent mb-4">About</p>
-            <h1 className="t-display mb-6 text-balance">
-              We exist for the 1 in 5.
-            </h1>
-            <p className="t-body text-lg text-pretty">
-              Because neurodivergent adults deserve tools built for how their
-              brain actually works — not how productivity gurus think it should.
-            </p>
-          </div>
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/Images/banners/landing banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
-      </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">ABOUT</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            We exist for the 1 in 5.
+          </h1>
+          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+            Because neurodivergent adults deserve tools built for how their brain actually works — not how productivity gurus think it should.
+          </p>
+        </div>
+      </section>
 
       {/* Mission Section */}
       <div className="border-b border-border-subtle">
@@ -30,7 +32,7 @@ export default function AboutPage() {
             <div className="space-y-3">
               {[
                 "Start on demand",
-                "Remember steps without prompting", 
+                "Remember steps without prompting",
                 "Tolerate complex apps",
                 "Stay consistently motivated",
               ].map(item => (
@@ -65,7 +67,7 @@ export default function AboutPage() {
             <p className="t-label text-ink-tertiary mb-3">Important</p>
             <p className="t-body">
               SOR7ED is <strong className="text-ink font-semibold">not</strong> therapy,
-              medical advice, or a crisis service. It is practical infrastructure 
+              medical advice, or a crisis service. It is practical infrastructure
               for life admin. If you are in crisis, call 999 or text SHOUT to 85258.
             </p>
           </div>

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
-import PageBanner from "@/components/PageBanner";
 
 export const metadata: Metadata = {
   title: 'Cookie Policy | SOR7ED',
@@ -10,15 +9,30 @@ export const metadata: Metadata = {
 export default function CookiesPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white">
-      <PageBanner src="/Images/banners/landing banner.png" />
+      {/* ── HERO ── */}
+      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <img src="/Images/banners/landing banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+        </div>
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">LEGAL</p>
+          <h1
+            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
+            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+          >
+            Cookie Policy
+          </h1>
+          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+            We only use essential session cookies required for authentication. Last updated: May 2026.
+          </p>
+        </div>
+      </section>
+
       <div className="max-w-2xl mx-auto px-6 py-20">
         <Link href="/" className="text-white/20 text-xs tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors block mb-12">
           ← SOR7ED
         </Link>
-
-        <p className="text-[9px] uppercase tracking-[0.4em] text-white/20 mb-4 font-black">Legal</p>
-        <h1 className="text-4xl font-black tracking-tight mb-3">Cookie Policy</h1>
-        <p className="text-white/30 text-sm mb-12">Last updated: May 2026</p>
 
         <div className="prose prose-invert prose-sm max-w-none space-y-10 text-white/60 leading-relaxed">
 
