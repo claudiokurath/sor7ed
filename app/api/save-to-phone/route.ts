@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { isCSWOpen, queueMessage } from "@/lib/whatsapp/csw";
 
 const getAdmin = () => createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,6 +42,22 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
         }
 
+        // One message: title + summary + URL — WhatsApp renders URL as rich link card
+        const messageBody = `*${title}*${summary ? `\n\n${summary}` : ''}\n\n${pageUrl}`;
+
+        // Meta only allows free-form messages within the 24-hour customer service window.
+        // If the window is closed, queue the message for delivery on the user's next inbound.
+        const windowOpen = await isCSWOpen(profile.whatsapp_number);
+
+        if (!windowOpen) {
+            await queueMessage(profile.whatsapp_number, messageBody, 'save-to-phone', true);
+            return NextResponse.json({
+                success: true,
+                queued: true,
+                message: "Saved! Send us any message on WhatsApp and we'll deliver it instantly.",
+            });
+        }
+
         const to = profile.whatsapp_number.replace(/^\+/, "");
         const apiUrl = `https://graph.facebook.com/v25.0/${process.env.META_PHONE_NUMBER_ID}/messages`;
         const headers = {
@@ -48,8 +65,6 @@ export async function POST(req: NextRequest) {
             "Content-Type": "application/json",
         };
 
-        // One message: title + summary + URL — WhatsApp renders URL as rich link card
-        const body = `*${title}*${summary ? `\n\n${summary}` : ''}\n\n${pageUrl}`;
         const textRes = await fetch(apiUrl, {
             method: "POST",
             headers,
@@ -58,7 +73,7 @@ export async function POST(req: NextRequest) {
                 recipient_type: "individual",
                 to,
                 type: "text",
-                text: { body, preview_url: true },
+                text: { body: messageBody, preview_url: true },
             }),
         });
 
@@ -68,8 +83,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Failed to send to WhatsApp." }, { status: 502 });
         }
 
-
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, queued: false });
     } catch (err) {
         console.error("save-to-phone error:", err);
         return NextResponse.json({ error: "Something went wrong." }, { status: 500 });

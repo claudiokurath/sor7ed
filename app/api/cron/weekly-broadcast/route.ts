@@ -24,14 +24,19 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ skipped: true, reason: "No featured content marked in Notion" });
     }
 
-    // Get all opted-in, non-opted-out users
+    // Get opted-in users whose customer service window is currently open.
+    // Meta only allows free-form messages within 24h of the user's last inbound;
+    // sending outside that window would fail (error 131047) or incur charges.
+    const cswCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
     const { data: users, error } = await supabase
         .from("users")
         .select("id, whatsapp_number, first_name")
         .eq("weekly_opted_in", true)
         .eq("whatsapp_opted_out", false)
         .eq("whatsapp_verified", true)
-        .not("whatsapp_number", "is", null);
+        .not("whatsapp_number", "is", null)
+        .gt("last_inbound_at", cswCutoff);
 
     if (error || !users?.length) {
         console.log("Weekly broadcast: no opted-in users or DB error", error);

@@ -7,6 +7,7 @@ import { handleSave } from '@/lib/whatsapp/handlers/save';
 import { handleLibrary } from '@/lib/whatsapp/handlers/library';
 import { handleArticle } from '@/lib/whatsapp/handlers/article';
 import { handleWelcome } from '@/lib/whatsapp/handlers/welcome';
+import { touchLastInbound, drainPendingMessages } from '@/lib/whatsapp/csw';
 import type { WaMessage, WaResponse } from '@/types/whatsapp';
 
 function getWebhookConfig() {
@@ -100,6 +101,10 @@ export async function POST(req: NextRequest) {
 
 async function processMessageInBackground(incoming: WaMessage) {
   try {
+    // Reset the 24-hour customer service window — this unlocks free messaging
+    // and also drains any messages we queued while the window was closed.
+    await touchLastInbound(incoming.from);
+
     const command = parseCommand(incoming.text);
     let responses: WaResponse[] = [];
 
@@ -131,6 +136,18 @@ async function processMessageInBackground(incoming: WaMessage) {
           to: incoming.from,
           text: "Unknown command\nTry: SAVE <tool> or visit sor7ed.com/tools",
         }];
+    }
+
+    // Drain any messages queued while the CSW was closed (e.g. from save-to-phone)
+    const pending = await drainPendingMessages(incoming.from);
+    if (pending.length > 0) {
+      responses.push(
+        ...pending.map(p => ({
+          to: incoming.from,
+          text: p.text,
+          preview_url: p.preview_url,
+        }))
+      );
     }
 
     const results = await Promise.allSettled(responses.map(sendWhatsAppMessage));
