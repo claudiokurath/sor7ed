@@ -36,45 +36,46 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO IMAGE — full natural size, title overlaid at bottom ── */}
-      <section className="relative w-full">
+      {/* ── HERO — full image with content overlaid left, vertically centred ── */}
+      <section className="relative w-full" style={{ minHeight: "60vh" }}>
         <img
           src={config.home_hero?.image || "/Images/home/hero.jpg"}
           alt="Hero"
           className="w-full h-auto block"
+          style={{ minHeight: "60vh", objectFit: "cover", objectPosition: "right center" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-        <div className="absolute inset-0 flex items-end">
-          <div className="page-container pb-8 sm:pb-14 w-full">
-            <h1 className="font-display font-black uppercase text-white leading-none text-balance"
-              style={{ fontSize: "clamp(2rem, 8vw, 6rem)", letterSpacing: "-0.02em" }}>
-              SKIP THE NONSENSE
-            </h1>
-          </div>
-        </div>
-      </section>
-
-      {/* ── HERO SUBTITLE + CTAs ── */}
-      <section className="border-b border-border-subtle bg-surface">
-        <div className="page-container py-8 sm:py-10">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-            <div className="flex-1">
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="tag">ND-first</span>
-                <span className="tag">WhatsApp-delivered</span>
-                <span className="tag">No app needed</span>
-              </div>
-              <p className="t-body max-w-xl text-white/60">
-                {renderFormattedText(config.home_hero_subtitle?.text, 'white')}
+        {/* gradient: strong on left, fades to transparent on right */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.1) 70%, transparent 100%)" }} />
+        {/* content overlay — left half only */}
+        <div className="absolute inset-0 flex items-center">
+          <div className="page-container w-full">
+            <div style={{ maxWidth: "52%" }}>
+              {/* Logo */}
+              <img
+                src="/Images/logo.png"
+                alt="SOR7ED"
+                style={{ height: "clamp(28px, 4vw, 52px)", width: "auto", marginBottom: "clamp(16px, 3vw, 32px)" }}
+              />
+              {/* Headline */}
+              <h1
+                className="font-display font-black uppercase text-white leading-none"
+                style={{ fontSize: "clamp(2.2rem, 7vw, 5.5rem)", letterSpacing: "-0.02em", marginBottom: "clamp(12px, 2vw, 24px)" }}
+              >
+                SKIP THE NONSENSE
+              </h1>
+              {/* Subtitle */}
+              <p style={{ fontSize: "clamp(0.9rem, 1.5vw, 1.1rem)", color: "rgba(255,255,255,0.75)", marginBottom: "clamp(20px, 3vw, 36px)", lineHeight: 1.5 }}>
+                {config.home_hero_subtitle?.text || "Practical tools and protocols for neurodivergent adults — delivered straight to WhatsApp"}
               </p>
-            </div>
-            <div className="flex flex-wrap gap-3 sm:flex-col sm:items-end">
-              <Link href="/tools" className="btn btn-lg" style={{ background: '#00C4C4', color: '#000', borderColor: '#00C4C4' }}>
-                Browse Tools →
-              </Link>
-              <Link href="/intelligence" className="btn btn-lg btn-ghost">
-                Read Articles
-              </Link>
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3">
+                <Link href="/tools" className="btn btn-lg" style={{ background: "#00C4C4", color: "#000", borderColor: "#00C4C4" }}>
+                  Browse Tools →
+                </Link>
+                <Link href="/intelligence" className="btn btn-lg btn-ghost">
+                  Read Articles
+                </Link>
+              </div>
             </div>
           </div>
         </div>
