@@ -46,16 +46,7 @@ export default function BranchesGrid({ branches }: { branches: Branch[] }) {
               alt={b.name}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-4">
-              <p
-                className="font-display font-black uppercase text-white leading-none"
-                style={{ fontSize: "1.3rem", letterSpacing: "-0.02em" }}
-              >
-                {b.name}
-              </p>
-              <p className="text-xs text-white/60 mt-1 leading-snug">{b.description}</p>
-            </div>
+
           </Link>
         ))}
       </div>
