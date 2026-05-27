@@ -1,6 +1,6 @@
 import Link from "next/link";
+import BranchesGrid from "@/components/BranchesGrid";
 import { createClient } from "@/lib/supabase/server";
-import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
 import HeroSlideshow from "@/components/HeroSlideshow";
 
 const BRANCHES: Array<{ slug: string; label: string; emoji: string; desc: string }> = [
@@ -14,7 +14,6 @@ const BRANCHES: Array<{ slug: string; label: string; emoji: string; desc: string
 ];
 
 export default async function HomePage() {
-  const config = await getSiteConfig();
   const supabase = await createClient();
 
   const { data: branchesData } = await supabase
@@ -40,73 +39,22 @@ export default async function HomePage() {
       {/* ── HERO SLIDESHOW — crossfades through all /Images/home/ images ── */}
       <HeroSlideshow />
 
-      {/* ── HERO SUBTITLE + CTAs ── */}
-      <section className="border-b border-border-subtle bg-surface">
-        <div className="page-container py-8 sm:py-10">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-            <div className="flex-1">
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="tag">ND-first</span>
-                <span className="tag">WhatsApp-delivered</span>
-                <span className="tag">No app needed</span>
-              </div>
-              <p className="t-body max-w-xl text-white/60">
-                {renderFormattedText(config.home_hero_subtitle?.text, 'white')}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 sm:flex-col sm:items-end">
-              <Link href="/tools" className="btn btn-lg" style={{ background: '#00C4C4', color: '#000', borderColor: '#00C4C4' }}>
-                Browse Tools →
-              </Link>
-              <Link href="/intelligence" className="btn btn-lg btn-ghost">
-                Read Articles
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
       <section className="section border-t border-border-subtle bg-surface-subtle/30">
-        <div className="page-container lg:max-w-[1600px] xl:max-w-[1800px]">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <p className="t-label text-accent mb-2 font-mono tracking-widest">THE SYSTEM</p>
-              <h2 className="t-display">7 Branches</h2>
-            </div>
-            <Link href="/explore" className="btn btn-ghost btn-sm hidden md:inline-flex border-white/10 hover:border-white">
-              All branches →
-            </Link>
+        <div className="page-container lg:max-w-[1400px]">
+          {/* Header */}
+          <div className="mb-10">
+            <h2 className="t-display mb-3">7 Branches</h2>
+            <p className="t-label text-white/40 font-mono tracking-widest uppercase max-w-2xl">
+              Every article and every tool maps to one of 7 branches —{" "}
+              the areas of life where neurodivergent adults are most underserved and most overlooked.
+            </p>
           </div>
 
-          {/* Branches Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-4 md:gap-6">
-            {branchList.map((b) => (
-              <div key={b.slug} className="flex flex-col items-center">
-                <Link
-                  href={`/${b.slug}`}
-                  className="group relative w-full aspect-square border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
-                >
-                  {/* Image (Square 1:1, full color) */}
-                  <img
-                    src={b.cover_image}
-                    alt={b.name}
-                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
-                  />
-                </Link>
-                {/* Description under the box, no title */}
-                <p className="text-[8px] sm:text-[10px] md:text-xs text-white/50 mt-2 text-center leading-tight font-sans">
-                  {b.description}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 lg:hidden">
-            <Link href="/explore" className="btn btn-ghost btn-sm w-full border-white/10 hover:border-white">
-              All branches →
-            </Link>
-          </div>
+          {/* Grid: rotating feature card + 6 small cards */}
+          {branchList.length > 0 && (
+            <BranchesGrid branches={branchList} />
+          )}
         </div>
       </section>
 
