@@ -41,6 +41,18 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: 'SOR7ED',
     locale: 'en_GB',
+    images: [
+      {
+        url: '/Images/hero_new.png',
+        width: 1200,
+        height: 630,
+        alt: 'SOR7ED — Practical protocols for neurodivergent minds',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/Images/hero_new.png'],
   },
 };
 
