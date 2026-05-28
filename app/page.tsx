@@ -1,7 +1,6 @@
 import Link from "next/link";
 import BranchesGrid from "@/components/BranchesGrid";
 import { createClient } from "@/lib/supabase/server";
-import HeroSlideshow from "@/components/HeroSlideshow";
 
 const BRANCHES: Array<{ slug: string; label: string; emoji: string; desc: string }> = [
   { slug: "keep-going",   label: "Keep Going",    emoji: "⚡", desc: "Energy, momentum, getting unstuck" },
@@ -36,9 +35,6 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO SLIDESHOW — crossfades through all /Images/home/ images ── */}
-      <HeroSlideshow />
-
       {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
       <section className="section border-t border-border-subtle bg-surface-subtle/30">
         <div className="page-container lg:max-w-[1400px]">
