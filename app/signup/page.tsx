@@ -90,7 +90,7 @@ function SignupForm() {
   const heroBanner = (
     <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
       <div className="absolute inset-0">
-        <img src="/Images/banners/sign in banner.png" alt="Sign in banner" className="absolute inset-0 w-full h-full object-cover" />
+        <img src="/Images/banners/sign%20in%20banner.png" alt="Sign in banner" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
       </div>
       <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
