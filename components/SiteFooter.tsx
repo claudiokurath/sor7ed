@@ -33,9 +33,7 @@ export default function SiteFooter() {
           <div className="text-center">
             <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3">Practical protocols for</p>
             <div className="flex items-center gap-0">
-              <span className="font-display text-4xl md:text-5xl tracking-widest uppercase text-[#f0ede8]">SOR</span>
-              <span className="font-display text-4xl md:text-5xl tracking-widest uppercase text-[#00C4C4]">7</span>
-              <span className="font-display text-4xl md:text-5xl tracking-widest uppercase text-[#f0ede8]">ED</span>
+              <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "48px", width: "auto" }} />
             </div>
             <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40 mt-3">neurodivergent minds</p>
           </div>
@@ -51,9 +49,7 @@ export default function SiteFooter() {
           {/* Brand */}
           <div className="sm:col-span-2">
             <div className="flex items-center mb-5">
-              <span className="font-display text-2xl tracking-widest uppercase text-[#f0ede8]">SOR</span>
-              <span className="font-display text-2xl tracking-widest uppercase text-[#00C4C4]">7</span>
-              <span className="font-display text-2xl tracking-widest uppercase text-[#f0ede8]">ED</span>
+              <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "32px", width: "auto" }} />
             </div>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-6 font-sans">
               Practical protocols for neurodivergent minds — delivered to your WhatsApp. No app, no subscription needed.
