@@ -99,6 +99,42 @@ export async function POST(req: NextRequest) {
   }
 }
 
+
+async function handleVerify(from: string, code: string): Promise<WaResponse> {
+  try {
+    const supabase = createServerClient();
+    // Find user by phone number and matching verify code
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('user_id, wa_verify_code, whatsapp_verified')
+      .eq('whatsapp_number', from)
+      .single();
+
+    if (error || !profile) {
+      return { to: from, text: "We couldn't find your account. Visit sor7ed.com/signup to get started." };
+    }
+
+    if (profile.whatsapp_verified) {
+      return { to: from, text: "✅ Your WhatsApp is already verified. You're all set!" };
+    }
+
+    if (!profile.wa_verify_code || profile.wa_verify_code !== code.trim()) {
+      return { to: from, text: "That code doesn't match. Check the code on sor7ed.com and try again." };
+    }
+
+    // Mark as verified
+    await supabase
+      .from('profiles')
+      .update({ whatsapp_verified: true, wa_verify_code: null })
+      .eq('user_id', profile.user_id);
+
+    return { to: from, text: "✅ Phone verified! Welcome to SOR7ED.\n\nText HELP to see what you can do." };
+  } catch (err) {
+    console.error('[handleVerify]', err);
+    return { to: from, text: "Something went wrong. Please try again." };
+  }
+}
+
 async function processMessageInBackground(incoming: WaMessage) {
   try {
     // Reset the 24-hour customer service window — this unlocks free messaging
@@ -120,6 +156,9 @@ async function processMessageInBackground(incoming: WaMessage) {
         break;
       case 'LIBRARY':
         responses = [await handleLibrary(incoming.from)];
+        break;
+      case 'VERIFY':
+        responses = [await handleVerify(incoming.from, command.arg)];
         break;
       case 'WELCOME':
         responses = [await handleWelcome(incoming.from)];
