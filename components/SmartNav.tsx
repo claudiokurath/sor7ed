@@ -66,7 +66,7 @@ export default function SmartNav() {
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between w-full">
 
           <Link href="/" className="font-display text-xl tracking-wider text-white uppercase leading-none">
-            SOR<span className="bg-ps-yellow px-0.5 text-black">7</span>ED
+            <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "28px", width: "auto", filter: "brightness(0) invert(1)" }} />
           </Link>
 
           <div className="flex items-center gap-8 text-[11px] font-display uppercase tracking-widest text-white/50">
