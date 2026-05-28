@@ -54,10 +54,10 @@ export default async function ToolsPage() {
             className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
             style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
           >
-            {renderFormattedText(config.tools_hero_title?.text, 'var(--color-coral)') || 'Tools'}
+            {renderFormattedText(config.tools_hero_title?.text, 'white') || 'Tools'}
           </h1>
           <div className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
-            {renderFormattedText(config.tools_hero_subtitle?.text, 'var(--color-coral)') || 'Diagnostics and protocols built for neurodivergent brains.'}
+            {renderFormattedText(config.tools_hero_subtitle?.text, 'white') || 'Diagnostics and protocols built for neurodivergent brains.'}
           </div>
         </div>
       </section>
