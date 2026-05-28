@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState, useEffect } from "react";
 
@@ -52,7 +53,8 @@ export default function HeroSlideshow() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent pointer-events-none hidden sm:block" />
 
       {/* Text — centred */}
-      <div className="absolute inset-0 flex flex-col items-start justify-center pointer-events-none max-w-6xl mx-auto px-5 sm:px-8 md:px-12 w-full" style={{ left: 0, right: 0 }}>
+      <div className="absolute inset-0 flex items-end">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
         <h1
           className="font-display font-black uppercase text-white leading-[0.9]"
           style={{ fontSize: "clamp(2.5rem, 7vw, 5rem)", letterSpacing: "-0.02em", marginBottom: "0.5rem" }}
@@ -63,8 +65,9 @@ export default function HeroSlideshow() {
           Built for the moments when reading isn't enough and action feels impossible.
         </p>
         <div className="flex gap-3">
-          <a href="/tools" className="bg-[#00C4C4] text-black font-bold text-sm px-6 py-3 uppercase tracking-wide hover:opacity-90 transition-opacity">Browse Tools</a>
-          <a href="/intelligence" className="border border-white text-white font-bold text-sm px-6 py-3 uppercase tracking-wide hover:bg-white hover:text-black transition-colors">Read Articles</a>
+          <Link href="/tools" className="bg-[#00C4C4] text-black font-bold text-sm px-6 py-3 uppercase tracking-wide hover:opacity-90 transition-opacity">Browse Tools</Link>
+          <Link href="/intelligence" className="border border-white text-white font-bold text-sm px-6 py-3 uppercase tracking-wide hover:bg-white hover:text-black transition-colors">Read Articles</Link>
+        </div>
         </div>
       </div>
 
