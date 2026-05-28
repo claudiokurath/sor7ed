@@ -59,6 +59,7 @@ export const metadata: Metadata = {
 
 import { getSiteConfig } from "@/lib/getSiteConfig";
 import BottomNav from "@/components/BottomNav";
+import AccessibilityMenu from "@/components/AccessibilityMenu";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const config = await getSiteConfig();
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* pt-16 accounts for Navbar height, pb-20 on mobile avoids overlap with BottomNav */}
         <main className="flex-1 pb-20 md:pb-0">{children}</main>
         <BottomNav />
+        <AccessibilityMenu />
         <SiteFooter />
       </body>
     </html>
