@@ -415,3 +415,40 @@ body.focus-mode main {
 
 /* ── Mobile safe area ── */
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+
+/* ── ACCESSIBILITY OVERRIDES ─────────────────────────────── */
+.a11y-high-contrast {
+  --color-bg:     #000000;
+  --color-surface: #000000;
+  --color-text:   #ffffff;
+  --color-border: #ffffff;
+}
+.a11y-high-contrast body {
+  background: #000 !important;
+  color: #fff !important;
+}
+.a11y-high-contrast a,
+.a11y-high-contrast button {
+  outline: 2px solid #fff;
+}
+.a11y-high-contrast img {
+  filter: contrast(1.2);
+}
+
+.a11y-dyslexia body,
+.a11y-dyslexia p,
+.a11y-dyslexia li,
+.a11y-dyslexia span {
+  font-family: "OpenDyslexic", "Comic Sans MS", sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+.a11y-large-text body,
+.a11y-large-text p,
+.a11y-large-text li {
+  font-size: 1.125rem !important;
+  line-height: 1.75;
+}
