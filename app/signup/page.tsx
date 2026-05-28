@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, Suspense } from 'react';
-import { useActionState } from 'react-dom';
+import { useState, Suspense, useActionState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
