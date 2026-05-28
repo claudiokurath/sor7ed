@@ -99,7 +99,7 @@ export default async function IntelligenceBriefing({
   const bannerImage = article.cover_image || '/Images/banners/blog banner.png';
 
   return (
-    <main className="min-h-screen bg-[#080f11] text-white relative overflow-hidden transition-colors duration-500">
+    <main className="min-h-screen bg-black text-white">
       <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <img src={bannerImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -120,10 +120,6 @@ export default async function IntelligenceBriefing({
           )}
         </div>
       </section>
-
-      {/* Ambient glow */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[120px] pointer-events-none transform-gpu" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#ff7a45]/5 rounded-full blur-[120px] pointer-events-none transform-gpu" />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pb-20 relative z-10">
         <IntelligenceClient article={article} />
