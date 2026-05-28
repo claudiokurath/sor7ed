@@ -38,7 +38,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
     const { scrollYProgress } = useScroll();
     const [isPlaying, setIsPlaying] = useState(false);
     const [showDeepDive, setShowDeepDive] = useState(false);
-    const [isFocusMode, setIsFocusMode] = useState(false);
+    const isFocusMode = false; // focus mode disabled — always dark
     const [user, setUser] = useState<User | null>(null);
     const [isSaved, setIsSaved] = useState(false);
 
