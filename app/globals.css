@@ -2,7 +2,7 @@
 
 @theme {
   /* ── Type Stack ── */
-  --font-sans:    var(--font-inter-var), 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans:    'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-display: 'League Gothic', 'Impact', sans-serif;
   --font-mono:    'DM Mono', 'JetBrains Mono', 'Courier New', monospace;
 
