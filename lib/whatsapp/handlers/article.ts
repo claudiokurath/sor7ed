@@ -53,7 +53,7 @@ export async function handleArticle(
         title: article.title,
         description: article.summary || article.tldr || 'Read this protocol on SOR7ED.',
         target_url: `${SITE_URL}/intelligence/${article.slug}`,
-        image_url: article.cover_image || null
+        image_url: (article.cover_image && !article.cover_image.includes('cdn.midjourney.com')) ? article.cover_image : null
       }, { onConflict: 'slug' });
 
     if (upsertError) {
