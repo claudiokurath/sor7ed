@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeroSlideshow from "@/components/HeroSlideshow";
 import BranchesGrid from "@/components/BranchesGrid";
 import { createClient } from "@/lib/supabase/server";
 
@@ -35,6 +36,9 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* ── HERO SLIDESHOW ── */}
+      <HeroSlideshow />
+
       {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
       <section className="section border-t border-border-subtle bg-surface-subtle/30">
         <div className="page-container lg:max-w-[1400px]">
