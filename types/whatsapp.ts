@@ -5,6 +5,7 @@ export type WaCommand =
   | { verb: 'LIBRARY'; arg: null }
   | { verb: 'WELCOME'; arg: null }
   | { verb: 'HELP' | 'MENU' | 'STOP'; arg: null }
+  | { verb: 'VERIFY'; arg: string }
   | { verb: 'UNKNOWN'; arg: string };
 
 export type WaMessage = {
