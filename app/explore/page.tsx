@@ -57,7 +57,7 @@ export default async function ExplorePage() {
       <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/Images/banners/7 branches banner.png"
+            src="/Images/banners/7%20branches%20banner.png"
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
           />
