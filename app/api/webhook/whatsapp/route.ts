@@ -8,6 +8,7 @@ import { handleLibrary } from '@/lib/whatsapp/handlers/library';
 import { handleArticle } from '@/lib/whatsapp/handlers/article';
 import { handleWelcome } from '@/lib/whatsapp/handlers/welcome';
 import { touchLastInbound, drainPendingMessages } from '@/lib/whatsapp/csw';
+import { createAdminClient } from '@/lib/supabase/admin';
 import type { WaMessage, WaResponse } from '@/types/whatsapp';
 
 function getWebhookConfig() {
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
 
 async function handleVerify(from: string, code: string): Promise<WaResponse> {
   try {
-    const supabase = createServerClient();
+    const supabase = createAdminClient();
     // Find user by phone number and matching verify code
     const { data: profile, error } = await supabase
       .from('profiles')
