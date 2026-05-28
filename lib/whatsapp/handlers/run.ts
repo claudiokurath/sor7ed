@@ -30,7 +30,7 @@ export async function handleRun(
         title: toolName,
         description: tool?.short_description || 'Answer a short diagnostic to get your personalized protocol.',
         target_url: `${SITE_URL}/tools/${resolvedSlug}`,
-        image_url: tool?.cover_image || ''
+        image_url: (tool?.cover_image && !tool.cover_image.includes('cdn.midjourney.com')) ? tool.cover_image : `${SITE_URL}/Images/banners/landing%20banner.png`
       }, { onConflict: 'slug' });
 
     if (upsertError) {
