@@ -20,6 +20,8 @@ export function parseCommand(rawText: string): WaCommand {
     case 'START':
     case 'WELCOME':
       return { verb: 'WELCOME', arg: null };
+    case 'VERIFY':
+      return arg ? { verb: 'VERIFY', arg } : { verb: 'UNKNOWN', arg: trimmed };
     case 'HELP':
     case 'MENU':
     case 'STOP':
