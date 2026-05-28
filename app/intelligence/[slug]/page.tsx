@@ -95,7 +95,8 @@ export default async function IntelligenceBriefing({
 
   if (!article) notFound();
 
-  const bannerImage = resolveOgImageUrl(article.cover_image, '/Images/banners/blog banner.png');
+  // Use cover_image directly for visual banner — resolveOgImageUrl is for OG meta tags only
+  const bannerImage = article.cover_image || '/Images/banners/blog banner.png';
 
   return (
     <main className="min-h-screen bg-[#080f11] text-white relative overflow-hidden transition-colors duration-500">
