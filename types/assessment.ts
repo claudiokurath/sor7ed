@@ -32,6 +32,12 @@ export interface NarrativeLayer {
   urgency: ScoreLevel;
 }
 
+export interface DeepDive {
+  why: string;
+  mistakes: string[];
+  timeline: string;
+}
+
 export interface AssessmentResult {
   score: number;
   normalizedScore: number;
@@ -40,6 +46,7 @@ export interface AssessmentResult {
   narrative: NarrativeLayer;
   recommendations: Recommendation[];
   protocolPreview: ProtocolStep[];
+  deepDive?: DeepDive;
   protocolId?: string;
   whatsappKeyword: string;
 }

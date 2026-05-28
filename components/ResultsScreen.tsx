@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { AssessmentResult, ScoreLevel, ProtocolStep, Recommendation } from '@/types/assessment';
+import { AssessmentResult, ScoreLevel, ProtocolStep, Recommendation, DeepDive } from '@/types/assessment';
 import { getBranchColor } from '@/lib/branch-config';
 import KeywordToken from './KeywordToken';
 
@@ -136,12 +136,17 @@ export default function ResultsScreen({ result, onWhatsAppCTA, isAuthenticated }
               </p>
             </div>
 
-            {/* Protocol Sneak Peek */}
+            {/* Protocol */}
             <ProtocolPreview
               steps={result.protocolPreview}
               branchColor={branchColor}
               isVisible={revealPhase === 'protocol' || revealPhase === 'cta'}
             />
+
+            {/* Deep Dive */}
+            {result.deepDive && (revealPhase === 'protocol' || revealPhase === 'cta') && (
+              <DeepDiveSection deepDive={result.deepDive} branchColor={branchColor} />
+            )}
 
             {/* Related Tools */}
             <RecommendationGrid
@@ -469,6 +474,89 @@ function UrgencyIndicator({ urgency, color }: { urgency: ScoreLevel; color: stri
       <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }} />
       {labels[urgency]}
     </div>
+  );
+}
+
+function DeepDiveSection({ deepDive, branchColor }: { deepDive: DeepDive; branchColor: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="mb-16"
+    >
+      <button
+        onClick={() => setOpen(prev => !prev)}
+        className="w-full flex items-center justify-between px-6 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/8 transition-all group"
+        style={{ borderColor: open ? `${branchColor}40` : undefined }}
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-lg">🔬</span>
+          <span className="text-sm font-black uppercase tracking-widest text-white/60 group-hover:text-white/80 transition-colors">
+            Deep Dive
+          </span>
+        </div>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-white/30 group-hover:text-white/50 transition-colors"
+        >
+          ↓
+        </motion.span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="pt-6 space-y-8">
+
+              {/* Why this happens */}
+              <div className="px-6 py-6 rounded-2xl bg-white/[0.03] border border-white/5">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-4" style={{ color: branchColor }}>
+                  Why This Happens
+                </p>
+                <p className="text-white/60 text-sm leading-relaxed">{deepDive.why}</p>
+              </div>
+
+              {/* Common mistakes */}
+              <div className="px-6 py-6 rounded-2xl bg-white/[0.03] border border-white/5">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 text-white/40">
+                  What Most People Get Wrong
+                </p>
+                <ul className="space-y-3">
+                  {deepDive.mistakes.map((mistake, i) => (
+                    <li key={i} className="flex gap-3 text-sm text-white/50 leading-relaxed">
+                      <span className="text-white/20 flex-shrink-0 mt-0.5">✕</span>
+                      <span>{mistake}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Timeline */}
+              <div
+                className="px-6 py-5 rounded-2xl border"
+                style={{ backgroundColor: `${branchColor}08`, borderColor: `${branchColor}20` }}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-2" style={{ color: branchColor }}>
+                  What to Expect
+                </p>
+                <p className="text-white/60 text-sm leading-relaxed">{deepDive.timeline}</p>
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
