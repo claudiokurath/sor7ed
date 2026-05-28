@@ -59,9 +59,13 @@ export default function HeroSlideshow() {
         >
           SKIP THE NONSENSE
         </h1>
-        <p className="text-white/70 text-sm md:text-base max-w-lg">
+        <p className="text-white/70 text-sm md:text-base max-w-lg mb-6">
           Built for the moments when reading isn't enough and action feels impossible.
         </p>
+        <div className="flex gap-3">
+          <a href="/tools" className="bg-[#00C4C4] text-black font-bold text-sm px-6 py-3 uppercase tracking-wide hover:opacity-90 transition-opacity">Browse Tools</a>
+          <a href="/intelligence" className="border border-white text-white font-bold text-sm px-6 py-3 uppercase tracking-wide hover:bg-white hover:text-black transition-colors">Read Articles</a>
+        </div>
       </div>
 
       {/* Dot indicators */}
