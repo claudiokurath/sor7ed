@@ -9,6 +9,7 @@ const PUBLIC_PATHS = [
   '/tools',
   '/bridge',
   '/intelligence',
+  '/explore',  // 7 branches page — public
   '/r',  // Rich link redirects
   '/s',  // Save card redirects
 ];
