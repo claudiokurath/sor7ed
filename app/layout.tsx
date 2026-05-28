@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { League_Gothic, DM_Mono, Inter } from "next/font/google";
+import { League_Gothic, DM_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
@@ -17,9 +17,10 @@ const dmMono = DM_Mono({
   display: 'swap',
 });
 
-const inter = Inter({
+const roboto = Roboto({
   subsets: ['latin'],
-  variable: '--font-inter-var',
+  weight: ['300', '400'],
+  variable: '--font-sans',
   weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
@@ -78,7 +79,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${leagueGothic.variable} ${dmMono.variable} ${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${leagueGothic.variable} ${dmMono.variable} ${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col" style={styleOverride}>
         <Navbar />
         {/* pt-16 accounts for Navbar height, pb-20 on mobile avoids overlap with BottomNav */}
