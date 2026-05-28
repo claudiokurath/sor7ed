@@ -28,11 +28,13 @@ async function syncToNotionCRM(firstName: string, email: string, whatsapp: strin
       parent: { database_id: dbId },
       properties: {
         Name: { title: [{ text: { content: firstName } }] },
-        Email: { email },
-        WhatsApp: { phone_number: whatsapp },
-        Status: { select: { name: 'Active' } },
-        Source: { select: { name: 'Website' } },
-        'Signed Up': { date: { start: new Date().toISOString().split('T')[0] } },
+        Email: { email: email },
+        'Phone Number': { phone_number: whatsapp },
+        'Member Status': { status: { name: 'Pending Verification' } },
+        'Date Joined': { date: { start: new Date().toISOString().split('T')[0] } },
+        'GDPR Consent': { checkbox: true },
+        'Subscription Tier': { select: { name: 'Free' } },
+        'WhatsApp Opted In': { checkbox: !!whatsapp },
       },
     }),
   })
