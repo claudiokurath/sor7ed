@@ -48,9 +48,7 @@ export default function HomeClient({
         <section className="bg-black flex flex-col min-h-[100dvh]">
           {/* Mobile logo */}
           <div className="md:hidden px-6 pt-8 pb-0 shrink-0">
-            <span className="font-display text-xl tracking-widest text-white uppercase">
-              SOR<span className="text-ps-yellow">7</span>ED
-            </span>
+            <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "28px", width: "auto", filter: "brightness(0) invert(1)" }} />
           </div>
 
           {/* Headline */}
