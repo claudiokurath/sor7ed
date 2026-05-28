@@ -151,18 +151,7 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 }}
             />
 
-            {/* Article Cover Visual */}
-            <div className="mb-12">
-              <ArticleCover
-                keyword={article.keyword}
-                branch={article.branch}
-                color={branchColor}
-                title={article.title}
-                imageUrl={article.cover_image || undefined}
-              />
-            </div>
-
-            {/* Article Header */}
+            {/* Article Header — title/cover already shown in page banner */}
             <div className="mb-12">
                 <span 
                     className={`text-[10px] px-3.5 py-1 rounded-full mb-6 inline-block font-mono font-bold tracking-widest uppercase transition-all duration-300 ${
@@ -173,14 +162,6 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                 >
                     {article.branch}
                 </span>
-                
-                <h1 
-                    className={`text-4xl md:text-5xl font-black mb-8 leading-tight tracking-tight transition-colors duration-300 ${
-                        isFocusMode ? 'text-stone-900' : 'text-white'
-                    }`}
-                >
-                    {article.title}
-                </h1>
 
                 {/* Read Aloud, Focus Mode & Save Buttons */}
                 <div className="flex flex-wrap gap-3">
