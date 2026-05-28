@@ -52,19 +52,16 @@ export default function HeroSlideshow() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent pointer-events-none hidden sm:block" />
 
       {/* Text — centred */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-5 text-center">
-        <p
-          className="font-mono tracking-widest uppercase mb-4 text-white/50"
-          style={{ fontSize: "clamp(0.6rem, 2.5vw, 0.75rem)" }}
-        >
-          PRACTICAL PROTOCOLS
-        </p>
+      <div className="absolute inset-0 flex flex-col items-start justify-end pointer-events-none px-8 md:px-14 pb-16 md:pb-20">
         <h1
           className="font-display font-black uppercase text-white leading-[0.9]"
-          style={{ fontSize: "clamp(3.5rem, 12vw, 7rem)", letterSpacing: "-0.02em" }}
+          style={{ fontSize: "clamp(2.5rem, 7vw, 5rem)", letterSpacing: "-0.02em", marginBottom: "0.5rem" }}
         >
-          SKIP THE<br />NONSENSE
+          SKIP THE NONSENSE
         </h1>
+        <p className="text-white/70 text-sm md:text-base max-w-lg">
+          Built for the moments when reading isn't enough and action feels impossible.
+        </p>
       </div>
 
       {/* Dot indicators */}
