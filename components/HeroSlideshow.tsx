@@ -40,7 +40,7 @@ export default function HeroSlideshow() {
           alt=""
           aria-hidden="true"
           className={[
-            "absolute inset-0 w-full h-full object-contain object-center",
+            "absolute inset-0 w-full h-full object-cover object-center",
             "transition-opacity duration-1000 ease-in-out",
             i === current ? "opacity-100" : "opacity-0",
           ].join(" ")}
