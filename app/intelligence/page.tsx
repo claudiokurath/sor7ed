@@ -52,10 +52,10 @@ export default async function IntelligencePage() {
             className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
             style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
           >
-            {renderFormattedText(config.intelligence_hero_title?.text, 'white')}
+            {renderFormattedText(config.intelligence_hero_title?.text, 'white') || 'Intelligence'}
           </h1>
           <div className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
-            {renderFormattedText(config.intelligence_hero_subtitle?.text, 'white')}
+            {renderFormattedText(config.intelligence_hero_subtitle?.text, 'white') || 'Practical articles for neurodivergent adults. No fluff, no shame.'}
           </div>
         </div>
       </section>
