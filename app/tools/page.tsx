@@ -56,7 +56,7 @@ export default async function ToolsPage() {
 		<div className="min-h-screen pb-20">
 			<section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
 				<div className="absolute inset-0">
-					<Image src="/Images/banners/tools banner.png" alt="" fill priority sizes="100vw" className="object-cover" />
+					<Image src="/Images/banners/tools%20banner.png" alt="" fill priority sizes="100vw" className="object-cover" />
 					<div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 				</div>
 				<div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
