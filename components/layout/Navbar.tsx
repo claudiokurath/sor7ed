@@ -35,9 +35,7 @@ export default function Navbar() {
 
             {/* Wordmark */}
             <Link href="/" className="flex items-center gap-0 group" aria-label="SOR7ED home">
-              <span className="font-display text-xl tracking-widest text-[#f0ede8] uppercase">SOR</span>
-              <span className="font-display text-xl tracking-widest text-[#00C4C4] uppercase">7</span>
-              <span className="font-display text-xl tracking-widest text-[#f0ede8] uppercase">ED</span>
+              <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "28px", width: "auto" }} />
             </Link>
 
             {/* Hamburger */}
