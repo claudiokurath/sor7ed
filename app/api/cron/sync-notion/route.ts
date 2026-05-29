@@ -201,9 +201,13 @@ async function syncProtocols(force = false) {
   if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
 
   // Upsert text data immediately
+  // Deduplicate by slug — keep last occurrence
+  const protocolsDeduped = Object.values(
+    Object.fromEntries(rawRows.map(r => [r.row.slug, r.row]))
+  );
   const { error: upsertError } = await supabase
     .from('protocols')
-    .upsert(rawRows.map(r => r.row), { onConflict: 'slug' });
+    .upsert(protocolsDeduped, { onConflict: 'slug' });
 
   if (upsertError) throw new Error(`Protocols upsert failed: ${upsertError.message}`);
 
@@ -291,9 +295,13 @@ async function syncTools(force = false) {
 
   if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
 
+  // Deduplicate by slug — keep last occurrence
+  const toolsDeduped = Object.values(
+    Object.fromEntries(rawRows.map(r => [r.row.slug, r.row]))
+  );
   const { error: upsertError } = await supabase
     .from('tools')
-    .upsert(rawRows.map(r => r.row), { onConflict: 'slug' });
+    .upsert(toolsDeduped, { onConflict: 'slug' });
 
   if (upsertError) throw new Error(`Tools upsert failed: ${upsertError.message}`);
 
