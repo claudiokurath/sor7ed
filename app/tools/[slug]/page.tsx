@@ -112,7 +112,7 @@ export default async function ToolPage({
       <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src={tool.cover_image || "/Images/banners/tools banner.png"}
+            src={`/Images/tools/${tool.slug}.jpg`} onError={(e) => { const img = e.target as HTMLImageElement; const fb = tool.cover_image || '/Images/banners/tools%20banner.png'; if (img.src !== fb) img.src = fb; }}
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
           />
