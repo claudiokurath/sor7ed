@@ -23,7 +23,7 @@ export default function SiteFooter() {
       {/* Branch banner image strip */}
       <div className="relative w-full h-48 md:h-64 overflow-hidden">
         <img
-          src="/Images/banners/7 branches banner.png"
+          src="/Images/banners/7%20branches%20banner.png"
           alt="SOR7ED — 7 Branches"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
