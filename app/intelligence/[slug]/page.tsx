@@ -102,7 +102,7 @@ export default async function IntelligenceBriefing({
     <main className="min-h-screen bg-black text-white">
       <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
-          <img src={bannerImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={bannerImage} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { const img = e.target as HTMLImageElement; const fallback = article.cover_image || '/Images/banners/blog%20banner.png'; if (img.src !== fallback) img.src = fallback; }} />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
