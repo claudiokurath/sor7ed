@@ -287,7 +287,7 @@ async function syncTools(force = false) {
         color:             text(p['Color']) || '#ffffff',
         meta_description:  text(p['Meta Description']),
         cover_image:       notionImageUrl,
-        status:            status(p['Status']) || 'Live',
+        status:            (['Published','Live'].includes(status(p['Status'])) ? 'Published' : (status(p['Status']) || 'Draft')),
         questions:         parsedQuestions,
       },
     }];
