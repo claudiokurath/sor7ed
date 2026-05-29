@@ -31,11 +31,11 @@ export default function Navbar() {
         scrolled || open ? "bg-[#080f11]/98 backdrop-blur-md border-b border-white/8" : "bg-transparent"
       }`}>
         <div className="page-container lg:max-w-none lg:px-[6%] xl:px-[10%]">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-center justify-between h-16">
 
             {/* Wordmark */}
             <Link href="/" className="flex items-center gap-0 group" aria-label="SOR7ED home">
-              <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "40px", width: "auto" }} />
+              <img src="/Images/Logo2026.png" alt="SOR7ED" style={{ height: "auto", width: "120px", maxHeight: "44px" }} />
             </Link>
 
             {/* Hamburger */}
