@@ -1,48 +1,60 @@
-export default function TermsOfServicePage() {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions | SOR7ED",
+  description: "Terms and conditions for using SOR7ED.",
+};
+
+export default function TermsPage() {
   return (
-    <>
-      {/* ── HERO ── */}
-      <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+    <div className="min-h-screen bg-black">
+      <section className="relative w-full min-h-[40vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/Images/banners/landing banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img src="/Images/banners/landing%20banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
-        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
+        <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 w-full">
           <p className="t-label text-white/50 mb-3 font-mono tracking-widest">LEGAL</p>
-          <h1
-            className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
-          >
-            Terms of Service
+          <h1 className="font-display font-black uppercase text-white leading-none" style={{fontSize:"clamp(2.5rem,7vw,5.5rem)",letterSpacing:"-0.01em"}}>
+            Terms & Conditions
           </h1>
-          <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
-            The rules and guidelines for using SOR7ED. Last updated: May 2026.
-          </p>
         </div>
       </section>
-
-      <div className="page-container py-16">
-        <div className="max-w-3xl prose prose-neutral">
-          <h2 className="t-title mb-4">1. Acceptance of Terms</h2>
-          <p className="t-body mb-6 text-pretty">
-            By accessing or using SOR7ED, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the service.
-          </p>
-
-          <h2 className="t-title mb-4">2. Medical Disclaimer</h2>
-          <p className="t-body mb-6 text-pretty">
-            <strong className="text-ink">SOR7ED is not a medical or therapy service.</strong> The content provided is for informational and organizational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
-          </p>
-
-          <h2 className="t-title mb-4">3. WhatsApp Integration</h2>
-          <p className="t-body mb-6 text-pretty">
-            By initiating contact with our WhatsApp bot, you consent to receiving messages from us via the WhatsApp platform. Standard messaging rates may apply depending on your carrier.
-          </p>
-
-          <p className="t-small mt-12 text-ink-tertiary">
-            This is a summary. For full legal details, please contact us at hello@sor7ed.com.
-          </p>
-        </div>
+      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-16 space-y-8 text-white/70 text-sm leading-relaxed">
+        <p className="text-white/40 font-mono text-xs">Last updated: May 2026</p>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">1. Who We Are</h2>
+          <p>SOR7ED is operated by SOR7ED Limited (Company No: 16398701), registered in England and Wales. We provide practical tools and protocols for neurodivergent adults, delivered via WhatsApp and our website at sor7ed.com.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">2. Using Our Service</h2>
+          <p>By using SOR7ED, you agree to use it for personal, non-commercial purposes only. You must be 18 or over. You must not misuse our WhatsApp bot, attempt to reverse-engineer our systems, or use the service in any unlawful way.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">3. Not Medical Advice</h2>
+          <p>SOR7ED is not a medical service, therapy provider, or crisis service. Our tools and protocols are practical life-admin infrastructure only. If you are in crisis, please call 999 or text SHOUT to 85258.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">4. Accounts</h2>
+          <p>You are responsible for keeping your account secure. We use magic link authentication — no passwords are stored. We may suspend accounts that violate these terms.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">5. Payments</h2>
+          <p>Paid subscriptions are billed monthly or annually. You may cancel at any time. Refunds are handled on a case-by-case basis — contact hello@sor7ed.com.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">6. Intellectual Property</h2>
+          <p>All content, tools, and protocols on SOR7ED are owned by SOR7ED Limited. You may not copy, reproduce, or redistribute them without written permission.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">7. Limitation of Liability</h2>
+          <p>SOR7ED is provided as-is. We are not liable for any indirect or consequential losses arising from your use of the service.</p>
+        </section>
+        <section>
+          <h2 className="font-display font-black uppercase text-white text-xl mb-3">8. Contact</h2>
+          <p>Questions? Email us at <a href="mailto:hello@sor7ed.com" className="text-[#00C4C4] hover:underline">hello@sor7ed.com</a></p>
+        </section>
       </div>
-    </>
+    </div>
   );
 }
