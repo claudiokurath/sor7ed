@@ -20,7 +20,7 @@ export default function HeroSlideshow() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-[100vh] flex items-end overflow-hidden">
+    <section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
       {/* Background image */}
       <img
         key={idx}
