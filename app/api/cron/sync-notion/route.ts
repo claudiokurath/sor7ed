@@ -332,7 +332,12 @@ async function syncTools(force = false) {
 // ---- Handler ----
 
 export async function GET(req: NextRequest) {
-  if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+  const authHeader = req.headers.get('authorization');
+  const cronHeader = req.headers.get('x-vercel-cron');
+  const validBearer = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+  const validCron = cronHeader === '1'; // Vercel sets this on cron calls
+  
+  if (!validBearer && !validCron) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
