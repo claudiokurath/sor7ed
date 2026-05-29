@@ -35,7 +35,7 @@ export default async function ToolsPage() {
 	const { data: tools, error } = await supabase
 		.from("tools")
 		.select("slug, name, cover_image, short_description, branch, status, featured")
-		.in("status", ["Published", "Live"])
+		.neq("status", "Draft")
 		.order("featured", { ascending: false })
 		.order("name", { ascending: true });
 
