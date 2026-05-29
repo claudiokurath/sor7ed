@@ -180,18 +180,6 @@ export default function IntelligenceClient({ article }: { article: Article }) {
                     </button>
 
                     <button 
-                        onClick={() => setIsFocusMode(!isFocusMode)}
-                        className={`flex items-center gap-3 px-5 py-3 rounded-xl border font-semibold text-xs transition-all duration-300 ${
-                            isFocusMode 
-                                ? 'bg-[#ff7a45] text-white border-[#ff7a45] shadow-md shadow-orange-500/10' 
-                                : 'bg-[#0f1719] border-teal-500/10 text-teal-400/80 hover:bg-teal-500/10 hover:text-teal-300'
-                        }`}
-                    >
-                        <span className="text-sm">{isFocusMode ? '✨' : '🧘'}</span>
-                        <span>{isFocusMode ? 'Focus On' : 'Focus Mode'}</span>
-                    </button>
-
-                    <button 
                         onClick={toggleSave}
                         className={`flex items-center gap-3 px-5 py-3 rounded-xl border font-semibold text-xs transition-all duration-300 ${
                             isSaved 
