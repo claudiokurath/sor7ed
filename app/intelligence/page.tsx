@@ -72,16 +72,16 @@ export default async function IntelligencePage() {
               <div>
                 {/* Image container: aspect-video (16:9) to fit landscape images perfectly */}
                 <div className="relative w-full aspect-video overflow-hidden bg-[#0d1619] border-b border-white/5">
-                  {article.cover_image ? (
+                  <div className="w-full h-full bg-[#0d1619] flex items-center justify-center">
+                    <span className="t-label opacity-20 uppercase tracking-widest">{article.branch}</span>
+                  </div>
+                  {article.cover_image && (
                     <img
                       src={article.cover_image}
                       alt={article.title}
-                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-102 transition-all duration-500"
+                      className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-[#131e21]">
-                      <span className="t-label opacity-30">No Image</span>
-                    </div>
                   )}
                 </div>
 
