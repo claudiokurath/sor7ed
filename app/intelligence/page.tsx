@@ -72,17 +72,19 @@ export default async function IntelligencePage() {
               <div>
                 {/* Image container: aspect-video (16:9) to fit landscape images perfectly */}
                 <div className="relative w-full aspect-video overflow-hidden bg-[#0d1619] border-b border-white/5">
-                  <div className="w-full h-full bg-[#0d1619] flex items-center justify-center">
+                  <div className="w-full h-full bg-[#0d1619] flex items-center justify-center absolute inset-0">
                     <span className="t-label opacity-20 uppercase tracking-widest">{article.branch}</span>
                   </div>
-                  {article.cover_image && (
-                    <img
-                      src={article.cover_image}
-                      alt={article.title}
-                      className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                  )}
+                  <img
+                    src={`/Images/articles/${article.slug}.jpg`}
+                    alt={article.title}
+                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement;
+                      if (article.cover_image && img.src !== article.cover_image) { img.src = article.cover_image; }
+                      else { img.style.display = "none"; }
+                    }}
+                  />
                 </div>
 
                 {/* Text box */}
