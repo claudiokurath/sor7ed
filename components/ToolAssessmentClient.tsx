@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+const ADHDTaxCalculator = dynamic(() => import("@/components/tool-os/ADHDTaxCalculator"), { ssr: false });
+const FinancialAutopilot = dynamic(() => import("@/components/tool-os/FinancialAutopilot"), { ssr: false });
+const DecisionParalysisSolver = dynamic(() => import("@/components/tool-os/DecisionParalysisSolver"), { ssr: false });
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -684,6 +688,21 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   tool: Tool,
   whatsappContext?: { sourceKeyword: string, entryTime: string } | null
 }) {
+  // ── Tool OS routing — priority tools use new results system ──
+  const TOOL_OS_SLUGS: Record<string, React.ComponentType<{ isPaid?: boolean }>> = {
+    "adhd-tax-calculator":      ADHDTaxCalculator,
+    "financial-autopilot":      FinancialAutopilot,
+    "decision-paralysis-solver": DecisionParalysisSolver,
+  };
+  const ToolOSComponent = TOOL_OS_SLUGS[tool.slug];
+  if (ToolOSComponent) {
+    return (
+      <div className="page-container py-12">
+        <ToolOSComponent isPaid={false} />
+      </div>
+    );
+  }
+
   const [currentStep, setCurrentStep] = useState(whatsappContext ? 0 : -1); // Auto-start if from WhatsApp
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [currentVal, setCurrentVal] = useState<any>("");
