@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 	description: "High-value audits designed for neurodivergent minds.",
 };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 type ToolCard = {
 	slug: string;
@@ -35,7 +35,6 @@ export default async function ToolsPage() {
 	const { data: tools, error } = await supabase
 		.from("tools")
 		.select("slug, name, cover_image, short_description, branch, status, featured")
-		.neq("status", "Draft")
 		.order("featured", { ascending: false })
 		.order("name", { ascending: true });
 
