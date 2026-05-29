@@ -21,7 +21,6 @@ const roboto = Roboto({
   subsets: ['latin'],
   weight: ['300', '400'],
   variable: '--font-sans',
-  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
