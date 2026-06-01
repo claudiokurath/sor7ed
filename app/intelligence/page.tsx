@@ -79,12 +79,6 @@ export default async function IntelligencePage() {
                       src={article.cover_image || `/Images/articles/${article.slug}.jpg`}
                       alt={article.title}
                       className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
-                      onError={(e) => {
-                        const img = e.target as HTMLImageElement;
-                        const local = `/Images/articles/${article.slug}.jpg`;
-                        if (img.src !== local) { img.src = local; }
-                        else { img.style.display = "none"; }
-                      }}
                     />
                   )}
                 </div>
@@ -92,7 +86,7 @@ export default async function IntelligencePage() {
                 {/* Text box */}
                 <div className="p-5 flex flex-col gap-2">
                   <span className="tag tag-accent bg-black/40 border-accent/20 text-[10px] self-start">{article.branch}</span>
-                  <h3 className="t-heading text-sm font-bold text-white group-hover:text-accent transition-colors leading-snug line-clamp-2 uppercase">
+                  <h3 className="t-heading text-sm font-bold text-white group-hover:text-accent transition-colors leading-snug line-clamp-2">
                     {article.title}
                   </h3>
                   {article.summary && (
