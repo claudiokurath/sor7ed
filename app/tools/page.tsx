@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 	description: "High-value audits designed for neurodivergent minds.",
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 type ToolCard = {
 	slug: string;
