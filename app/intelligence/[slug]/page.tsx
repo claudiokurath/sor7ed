@@ -114,7 +114,7 @@ export default async function IntelligenceBriefing({
             {article.title}
           </h1>
           {false && article.summary && (
-            <p className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+            <p className="text-white/60 text-base leading-relaxed max-w-md" >
               {article.summary}
             </p>
           )}
