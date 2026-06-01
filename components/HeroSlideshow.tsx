@@ -48,7 +48,7 @@ export default function HeroSlideshow() {
           <Link href="/tools" className="btn btn-lg" style={{ background: "#00C4C4", color: "#000", borderColor: "#00C4C4" }}>
             Browse Tools →
           </Link>
-          <Link href="/intelligence" className="btn btn-lg btn-ghost">
+          <Link href="/articles" className="btn btn-lg btn-ghost">
             Read Articles
           </Link>
         </div>
