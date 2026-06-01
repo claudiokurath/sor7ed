@@ -40,7 +40,7 @@ export default function AboutPage() {
 					<h1 className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl" style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}>
 						We exist for the 1 in 5.
 					</h1>
-					<p className="text-white/70 text-base leading-relaxed max-w-xl font-mono">
+					<p className="text-white/70 text-base leading-relaxed max-w-xl">
 						Because neurodivergent adults deserve tools built for how their brain actually works — not how productivity culture thinks it should.
 					</p>
 					<div className="mt-8 flex flex-wrap gap-3">
