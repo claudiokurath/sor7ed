@@ -8,5 +8,6 @@
       "path": "/api/cron/weekly-broadcast",
       "schedule": "0 10 * * 2"
     }
-  ]
+  ],
+  "_deploy": 1780294276
 }
