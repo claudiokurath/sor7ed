@@ -1,4 +1,4 @@
-import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function IntelligencePage() {
   const config = await getSiteConfig();
-  const supabase = createAdminClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const supabase = createAdminClient();
   const { data: posts, error } = await supabase
     .from("protocols")
     .select("slug, title, branch, summary, cover_image, read_time, keyword")
