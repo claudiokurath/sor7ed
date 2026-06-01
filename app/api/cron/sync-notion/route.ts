@@ -333,37 +333,6 @@ async function syncTools(force = false) {
 
 
 
-async function refreshRichLinks(): Promise<{ updated: number }> {
-  const supabase = getSupabase();
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
-
-  // Get all tools with fresh cover images from Supabase storage
-  const { data: tools } = await supabase
-    .from('tools')
-    .select('slug, name, short_description, cover_image')
-    .eq('status', 'Published');
-
-  if (!tools || tools.length === 0) return { updated: 0 };
-
-  let updated = 0;
-  for (const tool of tools) {
-    // Only use non-Midjourney images
-    const image_url = (tool.cover_image && !tool.cover_image.includes('cdn.midjourney.com'))
-      ? tool.cover_image
-      : `${SITE_URL}/Images/banners/landing%20banner.png`;
-
-    const { error } = await supabase.from('rich_links').upsert({
-      slug: `tool-${tool.slug}`,
-      title: tool.name,
-      description: tool.short_description || 'A practical tool for neurodivergent adults.',
-      target_url: `${SITE_URL}/tools/${tool.slug}`,
-      image_url,
-    }, { onConflict: 'slug' });
-
-    if (!error) updated++;
-  }
-  return { updated };
-}
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
   const cronHeader = req.headers.get('x-vercel-cron');
@@ -377,16 +346,15 @@ export async function GET(req: NextRequest) {
   const force = req.nextUrl.searchParams.get('force') === 'true';
 
   try {
-    const [protocols, tools, richLinks] = await Promise.all([
+    const [protocols, tools] = await Promise.all([
       syncProtocols(force),
       syncTools(force),
-      refreshRichLinks(),
     ]);
 
     console.log(`[sync-notion] protocols: ${protocols.synced} synced, ${protocols.deleted} deleted, ${protocols.images} images persisted`);
     console.log(`[sync-notion] tools: ${tools.synced} synced, ${tools.deleted} deleted, ${tools.images} images persisted`);
 
-    return NextResponse.json({ protocols, tools, richLinks });
+    return NextResponse.json({ protocols, tools });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[sync-notion] Error:', message);
