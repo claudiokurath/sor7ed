@@ -64,7 +64,7 @@ export default async function ToolsPage() {
 					<h1 className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl" style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}>
 						{heroTitle}
 					</h1>
-					<div className="text-white/60 text-base leading-relaxed max-w-md font-mono">
+					<div className="text-white/60 text-base leading-relaxed max-w-md">
 						{heroSubtitle}
 					</div>
 				</div>
@@ -95,7 +95,7 @@ export default async function ToolsPage() {
 										</div>
 										<div className="p-5 flex flex-col gap-2">
 											<span className="text-[10px] font-mono uppercase tracking-widest text-white/40">{tool.branch ?? "TOOL"}</span>
-											<h3 className="text-sm font-bold text-white group-hover:text-[#00C4C4] transition-colors leading-snug uppercase">{tool.name}</h3>
+											<h3 className="text-sm font-bold text-white group-hover:text-[#00C4C4] transition-colors leading-snug">{tool.name}</h3>
 											{tool.short_description ? <p className="text-[11px] text-white/60 line-clamp-2 leading-normal">{tool.short_description}</p> : null}
 										</div>
 									</div>
