@@ -71,7 +71,7 @@ export default async function ExplorePage() {
           >
             {renderFormattedText(config.explore_hero_title?.text, 'white') || '7 Branches'}
           </h1>
-          <div className="text-white/60 text-base leading-relaxed max-w-md" style={{ fontFamily: "var(--font-mono)" }}>
+          <div className="text-white/60 text-base leading-relaxed max-w-md" >
             {renderFormattedText(config.explore_hero_subtitle?.text, 'white') || 'Every tool and article maps to one of 7 branches — the areas where neurodivergent adults are most underserved.'}
           </div>
         </div>
