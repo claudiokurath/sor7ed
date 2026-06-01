@@ -30,7 +30,7 @@ function isSafeHttpUrl(url: string) {
 
 export default async function ToolsPage() {
 	const config = await getSiteConfig();
-	const supabase = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+	const supabase = createAdminClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 	const { data: tools, error } = await supabase
 		.from("tools")
