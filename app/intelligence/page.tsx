@@ -75,16 +75,19 @@ export default async function IntelligencePage() {
                   <div className="w-full h-full bg-[#0d1619] flex items-center justify-center absolute inset-0">
                     <span className="t-label opacity-20 uppercase tracking-widest">{article.branch}</span>
                   </div>
-                  <img
-                    src={`/Images/articles/${article.slug}.jpg`}
-                    alt={article.title}
-                    className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
-                    onError={(e) => {
-                      const img = e.target as HTMLImageElement;
-                      if (article.cover_image && img.src !== article.cover_image) { img.src = article.cover_image; }
-                      else { img.style.display = "none"; }
-                    }}
-                  />
+                  {(article.cover_image || true) && (
+                    <img
+                      src={article.cover_image || `/Images/articles/${article.slug}.jpg`}
+                      alt={article.title}
+                      className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        const local = `/Images/articles/${article.slug}.jpg`;
+                        if (img.src !== local) { img.src = local; }
+                        else { img.style.display = "none"; }
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Text box */}
