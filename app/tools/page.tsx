@@ -1,4 +1,4 @@
-import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -30,7 +30,7 @@ function isSafeHttpUrl(url: string) {
 
 export default async function ToolsPage() {
 	const config = await getSiteConfig();
-	const supabase = createAdminClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+	const supabase = createAdminClient();
 
 	const { data: tools, error } = await supabase
 		.from("tools")
