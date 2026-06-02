@@ -28,7 +28,7 @@ export default async function ExplorePage() {
       name: b.name || fallback?.name || "",
       icon: b.icon || fallback?.icon || "⚡",
       description: b.description || fallback?.description || "",
-      cover_image: b.cover_image || `/Images/members/${b.slug}.png`,
+      cover_image: `/Images/members/${b.slug}.png`,
       color: b.color || fallback?.color || "#00C4C4"
     };
   });
