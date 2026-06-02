@@ -10,7 +10,7 @@ type Branch = {
 
 export default function BranchesGrid({ branches }: { branches: Branch[] }) {
   return (
-    <div className="grid grid-cols-7 w-full gap-1" style={{ height: "40vw", maxHeight: "480px", minHeight: "240px" }}>
+    <div className="grid grid-cols-7 w-full gap-2" style={{ height: "40vw", maxHeight: "480px", minHeight: "240px" }}>
       {branches.map((b) => (
         <Link
           key={b.slug}
