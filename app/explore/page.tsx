@@ -67,7 +67,7 @@ export default async function ExplorePage() {
           <p className="t-label text-white/50 mb-3 font-mono tracking-widest">7 AREAS OF LIFE</p>
           <h1
             className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
-            style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}
+            style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}
           >
             {renderFormattedText(config.explore_hero_title?.text, 'white') || '7 Branches'}
           </h1>
