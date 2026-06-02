@@ -20,7 +20,7 @@ export default function BranchesGrid({ branches }: { branches: Branch[] }) {
         >
           {/* Background image */}
           <img
-            src={`/Images/branches/${b.slug}.jpg`}
+            src={`/Images/members/${b.slug}.png`}
             alt={b.name}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
