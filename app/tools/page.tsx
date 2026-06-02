@@ -61,7 +61,7 @@ export default async function ToolsPage() {
 				</div>
 				<div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
 					<p className="t-label text-white/50 mb-3 font-mono tracking-widest">USE</p>
-					<h1 className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl" style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}>
+					<h1 className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl" style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}>
 						{heroTitle}
 					</h1>
 					<div className="text-white/60 text-base leading-relaxed max-w-md">
