@@ -13,7 +13,7 @@ export default function HeroSlideshow() {
       <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-24 w-full">
         <h1
           className="font-display font-black uppercase text-white leading-none mb-6 max-w-3xl"
-          style={{ fontSize: "clamp(2.5rem, 8vw, 6rem)", letterSpacing: "-0.02em" }}
+          style={{ fontSize: "clamp(3.5rem, 12vw, 9rem)", letterSpacing: "-0.03em" }}
         >
           Skip the nonsense
         </h1>
