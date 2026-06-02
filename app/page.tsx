@@ -40,22 +40,18 @@ export default async function HomePage() {
       <HeroSlideshow />
 
       {/* ── 7 BRANCHES GRID ────────────────────────────────── */}
-      <section className="section border-t border-border-subtle bg-surface-subtle/30">
-        <div className="page-container lg:max-w-[1400px]">
-          {/* Header */}
-          <div className="mb-10">
-            <h2 className="t-display mb-3">7 Branches</h2>
-            <p className="t-label text-white/40 font-mono tracking-widest uppercase max-w-2xl">
-              Every article and every tool maps to one of 7 branches —{" "}
-              the areas of life where neurodivergent adults are most underserved and most overlooked.
-            </p>
-          </div>
-
-          {/* Grid: rotating feature card + 6 small cards */}
-          {branchList.length > 0 && (
-            <BranchesGrid branches={branchList} />
-          )}
+      <section className="border-t border-border-subtle bg-surface-subtle/30">
+        {/* Header inside container */}
+        <div className="page-container py-10">
+          <h2 className="t-display mb-2">7 Branches</h2>
+          <p className="text-white/40 text-sm">
+            Every article and tool maps to one of 7 areas of life.
+          </p>
         </div>
+        {/* Grid full width */}
+        {branchList.length > 0 && (
+          <BranchesGrid branches={branchList} />
+        )}
       </section>
 
       {/* ── FOOTER CTA ─────────────────────────────────────────── */}
