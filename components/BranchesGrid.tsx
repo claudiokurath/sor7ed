@@ -10,23 +10,25 @@ type Branch = {
 
 export default function BranchesGrid({ branches }: { branches: Branch[] }) {
   return (
-    <div className="grid grid-cols-7 gap-3">
+    <div className="grid grid-cols-7 w-full" style={{ height: "40vw", maxHeight: "480px", minHeight: "240px" }}>
       {branches.map((b) => (
         <Link
           key={b.slug}
           href={`/${b.slug}`}
-          className="group relative overflow-hidden aspect-square bg-[#0d1619]"
+          className="group relative overflow-hidden bg-[#0d1619]"
           title={b.name}
         >
-          {/* Image */}
+          {/* Background image */}
           <img
             src={`/Images/branches/${b.slug}.jpg`}
             alt={b.name}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          {/* Hover overlay with name */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-            <span className="text-white text-xs font-display font-black uppercase leading-tight">
+          {/* Dark gradient at bottom */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+          {/* Branch name always visible at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 p-3">
+            <span className="text-white font-display font-black uppercase text-sm leading-tight block">
               {b.name}
             </span>
           </div>
