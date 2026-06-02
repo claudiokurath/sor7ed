@@ -3,8 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const IMAGES = [
-  "/Images/home/hero.jpg",
-  "/Images/home/system_--ar_169_--raw_--sref_httpss.mj.runJzhghK91FMQ_httpss._4341b027-7b6d-4047-8a50-cece4d794b4d_0.png",
+  "/Images/home/hero.png",
 ];
 
 export default function HeroSlideshow() {
