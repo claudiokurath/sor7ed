@@ -46,7 +46,7 @@ export default function StatementPage() {
   font-weight: 400;
   font-stretch: 100%;
   font-display: swap;
-  src: url("a2a4e7c1-6dfc-4b93-b710-bc2503a5f7ff") format('woff2');
+  src: url("/fonts/statement/ae9e7a63-513b-4196-b238-2734bcc02cd0.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -56,7 +56,7 @@ export default function StatementPage() {
   font-weight: 400;
   font-stretch: 100%;
   font-display: swap;
-  src: url("621b835f-4dff-4a5b-849d-7f40da658db0") format('woff2');
+  src: url("/fonts/statement/72f2b588-55ba-40b3-aa0c-81ccfd200256.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -66,7 +66,7 @@ export default function StatementPage() {
   font-weight: 400;
   font-stretch: 100%;
   font-display: swap;
-  src: url("e2fc3247-a4ee-48f7-89f4-035ece6b6236") format('woff2');
+  src: url("/fonts/statement/02872bf1-c9b6-4911-9a47-6d7d3c257b41.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* vietnamese */
@@ -76,7 +76,7 @@ export default function StatementPage() {
   font-weight: 500;
   font-stretch: 100%;
   font-display: swap;
-  src: url("a2a4e7c1-6dfc-4b93-b710-bc2503a5f7ff") format('woff2');
+  src: url("/fonts/statement/ae9e7a63-513b-4196-b238-2734bcc02cd0.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -86,7 +86,7 @@ export default function StatementPage() {
   font-weight: 500;
   font-stretch: 100%;
   font-display: swap;
-  src: url("621b835f-4dff-4a5b-849d-7f40da658db0") format('woff2');
+  src: url("/fonts/statement/72f2b588-55ba-40b3-aa0c-81ccfd200256.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -96,7 +96,7 @@ export default function StatementPage() {
   font-weight: 500;
   font-stretch: 100%;
   font-display: swap;
-  src: url("e2fc3247-a4ee-48f7-89f4-035ece6b6236") format('woff2');
+  src: url("/fonts/statement/02872bf1-c9b6-4911-9a47-6d7d3c257b41.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* vietnamese */
@@ -106,7 +106,7 @@ export default function StatementPage() {
   font-weight: 600;
   font-stretch: 100%;
   font-display: swap;
-  src: url("a2a4e7c1-6dfc-4b93-b710-bc2503a5f7ff") format('woff2');
+  src: url("/fonts/statement/ae9e7a63-513b-4196-b238-2734bcc02cd0.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -116,7 +116,7 @@ export default function StatementPage() {
   font-weight: 600;
   font-stretch: 100%;
   font-display: swap;
-  src: url("621b835f-4dff-4a5b-849d-7f40da658db0") format('woff2');
+  src: url("/fonts/statement/72f2b588-55ba-40b3-aa0c-81ccfd200256.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -126,7 +126,7 @@ export default function StatementPage() {
   font-weight: 600;
   font-stretch: 100%;
   font-display: swap;
-  src: url("e2fc3247-a4ee-48f7-89f4-035ece6b6236") format('woff2');
+  src: url("/fonts/statement/02872bf1-c9b6-4911-9a47-6d7d3c257b41.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* vietnamese */
@@ -136,7 +136,7 @@ export default function StatementPage() {
   font-weight: 700;
   font-stretch: 100%;
   font-display: swap;
-  src: url("a2a4e7c1-6dfc-4b93-b710-bc2503a5f7ff") format('woff2');
+  src: url("/fonts/statement/ae9e7a63-513b-4196-b238-2734bcc02cd0.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -146,7 +146,7 @@ export default function StatementPage() {
   font-weight: 700;
   font-stretch: 100%;
   font-display: swap;
-  src: url("621b835f-4dff-4a5b-849d-7f40da658db0") format('woff2');
+  src: url("/fonts/statement/72f2b588-55ba-40b3-aa0c-81ccfd200256.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -156,7 +156,7 @@ export default function StatementPage() {
   font-weight: 700;
   font-stretch: 100%;
   font-display: swap;
-  src: url("e2fc3247-a4ee-48f7-89f4-035ece6b6236") format('woff2');
+  src: url("/fonts/statement/02872bf1-c9b6-4911-9a47-6d7d3c257b41.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* vietnamese */
@@ -166,7 +166,7 @@ export default function StatementPage() {
   font-weight: 800;
   font-stretch: 100%;
   font-display: swap;
-  src: url("a2a4e7c1-6dfc-4b93-b710-bc2503a5f7ff") format('woff2');
+  src: url("/fonts/statement/ae9e7a63-513b-4196-b238-2734bcc02cd0.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -176,7 +176,7 @@ export default function StatementPage() {
   font-weight: 800;
   font-stretch: 100%;
   font-display: swap;
-  src: url("621b835f-4dff-4a5b-849d-7f40da658db0") format('woff2');
+  src: url("/fonts/statement/72f2b588-55ba-40b3-aa0c-81ccfd200256.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -186,7 +186,7 @@ export default function StatementPage() {
   font-weight: 800;
   font-stretch: 100%;
   font-display: swap;
-  src: url("e2fc3247-a4ee-48f7-89f4-035ece6b6236") format('woff2');
+  src: url("/fonts/statement/02872bf1-c9b6-4911-9a47-6d7d3c257b41.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* vietnamese */
@@ -196,7 +196,7 @@ export default function StatementPage() {
   font-weight: 900;
   font-stretch: 100%;
   font-display: swap;
-  src: url("a2a4e7c1-6dfc-4b93-b710-bc2503a5f7ff") format('woff2');
+  src: url("/fonts/statement/ae9e7a63-513b-4196-b238-2734bcc02cd0.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -206,7 +206,7 @@ export default function StatementPage() {
   font-weight: 900;
   font-stretch: 100%;
   font-display: swap;
-  src: url("621b835f-4dff-4a5b-849d-7f40da658db0") format('woff2');
+  src: url("/fonts/statement/72f2b588-55ba-40b3-aa0c-81ccfd200256.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -216,7 +216,7 @@ export default function StatementPage() {
   font-weight: 900;
   font-stretch: 100%;
   font-display: swap;
-  src: url("e2fc3247-a4ee-48f7-89f4-035ece6b6236") format('woff2');
+  src: url("/fonts/statement/02872bf1-c9b6-4911-9a47-6d7d3c257b41.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* cyrillic-ext */
@@ -225,7 +225,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("54aa571d-c1d8-45d8-9fd1-3350575818c1") format('woff2');
+  src: url("/fonts/statement/4d1b5fcd-011f-48d5-b063-936409ee583d.woff2") format('woff2');
   unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 /* cyrillic */
@@ -234,7 +234,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("6fe5f37d-80c7-4ef2-874e-aa53d7bc9522") format('woff2');
+  src: url("/fonts/statement/7f9812b1-4f7b-4c70-9f2f-31509d02e178.woff2") format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek */
@@ -243,7 +243,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("cb937d8a-1425-414d-99a3-a8a51654a7ef") format('woff2');
+  src: url("/fonts/statement/065cfb50-d140-4247-ac8d-d36919b12a7c.woff2") format('woff2');
   unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
 }
 /* vietnamese */
@@ -252,7 +252,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("7a5f13c2-8940-49f9-b1e5-f834f8820018") format('woff2');
+  src: url("/fonts/statement/8e1d5e30-fabf-4cb1-b440-1f893d4a3c0b.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -261,7 +261,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("024d8107-5b41-4fdd-9c26-877368cf6cee") format('woff2');
+  src: url("/fonts/statement/031a95f1-6337-4703-a726-3de189e63dac.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -270,7 +270,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("5a99955e-0c6c-4f06-a58d-3e7551ad72e9") format('woff2');
+  src: url("/fonts/statement/19ae850c-219a-4b74-8e73-32f57d54fe71.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* cyrillic-ext */
@@ -279,7 +279,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("54aa571d-c1d8-45d8-9fd1-3350575818c1") format('woff2');
+  src: url("/fonts/statement/4d1b5fcd-011f-48d5-b063-936409ee583d.woff2") format('woff2');
   unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 /* cyrillic */
@@ -288,7 +288,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("6fe5f37d-80c7-4ef2-874e-aa53d7bc9522") format('woff2');
+  src: url("/fonts/statement/7f9812b1-4f7b-4c70-9f2f-31509d02e178.woff2") format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek */
@@ -297,7 +297,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("cb937d8a-1425-414d-99a3-a8a51654a7ef") format('woff2');
+  src: url("/fonts/statement/065cfb50-d140-4247-ac8d-d36919b12a7c.woff2") format('woff2');
   unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
 }
 /* vietnamese */
@@ -306,7 +306,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("7a5f13c2-8940-49f9-b1e5-f834f8820018") format('woff2');
+  src: url("/fonts/statement/8e1d5e30-fabf-4cb1-b440-1f893d4a3c0b.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -315,7 +315,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("024d8107-5b41-4fdd-9c26-877368cf6cee") format('woff2');
+  src: url("/fonts/statement/031a95f1-6337-4703-a726-3de189e63dac.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -324,7 +324,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("5a99955e-0c6c-4f06-a58d-3e7551ad72e9") format('woff2');
+  src: url("/fonts/statement/19ae850c-219a-4b74-8e73-32f57d54fe71.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 /* cyrillic-ext */
@@ -333,7 +333,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("54aa571d-c1d8-45d8-9fd1-3350575818c1") format('woff2');
+  src: url("/fonts/statement/4d1b5fcd-011f-48d5-b063-936409ee583d.woff2") format('woff2');
   unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 /* cyrillic */
@@ -342,7 +342,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("6fe5f37d-80c7-4ef2-874e-aa53d7bc9522") format('woff2');
+  src: url("/fonts/statement/7f9812b1-4f7b-4c70-9f2f-31509d02e178.woff2") format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek */
@@ -351,7 +351,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("cb937d8a-1425-414d-99a3-a8a51654a7ef") format('woff2');
+  src: url("/fonts/statement/065cfb50-d140-4247-ac8d-d36919b12a7c.woff2") format('woff2');
   unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
 }
 /* vietnamese */
@@ -360,7 +360,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("7a5f13c2-8940-49f9-b1e5-f834f8820018") format('woff2');
+  src: url("/fonts/statement/8e1d5e30-fabf-4cb1-b440-1f893d4a3c0b.woff2") format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
 }
 /* latin-ext */
@@ -369,7 +369,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("024d8107-5b41-4fdd-9c26-877368cf6cee") format('woff2');
+  src: url("/fonts/statement/031a95f1-6337-4703-a726-3de189e63dac.woff2") format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -378,7 +378,7 @@ export default function StatementPage() {
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("5a99955e-0c6c-4f06-a58d-3e7551ad72e9") format('woff2');
+  src: url("/fonts/statement/19ae850c-219a-4b74-8e73-32f57d54fe71.woff2") format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -648,7 +648,7 @@ export default function StatementPage() {
       {/* Top Header */}
       <header className="topbar">
         <Link className="brand-logo" href="https://sor7ed.com" aria-label="SOR7ED home">
-          <img src="/Images/statement/ef90b96a-f218-4709-af99-8c8926dbc6f5.png" alt="SOR7ED" style={{ height: "34px" }} />
+          <img src="/Images/statement/b4f8e5ca-5e02-4f8e-82f0-760f074b433c.png" alt="SOR7ED" style={{ height: "34px" }} />
         </Link>
         <span className="pageno mono">THE STATEMENT — 2026</span>
       </header>
@@ -658,7 +658,7 @@ export default function StatementPage() {
   
   <section className="panel hero" data-screen-label="Hero">
     <div className="hero-media" aria-hidden="true">
-      <img src="dff4fdaa-5a30-4b0f-89d9-b12f2706c3a8" alt="" />
+      <img src="/Images/statement/e8e48dba-bbcd-4c15-9552-10724d366848.png" alt="" />
       <div className="scrim"></div>
     </div>
     <div className="wrap reveal">
@@ -753,13 +753,13 @@ export default function StatementPage() {
         <span className="st">branches.<br />One <span className="em">message</span> away.</span>
       </div>
       <div className="tile-grid reveal d1">
-        <Link className="tile" href="https://wa.me/447591922247?text=KEEP%20GOING" data-link="keep-going"><img src="17bbe76b-46ee-456b-8f88-cf8a83ebfec2" alt="Keep Going" /><span className="tcap"><span className="tn">01</span><span className="td">Career, learning, momentum &amp; skill-building</span></span></Link>
-        <Link className="tile" href="https://wa.me/447591922247?text=FEEL%20GOOD" data-link="feel-good"><img src="1c6987d8-d1f7-464a-af55-6f8f6d2f17e6" alt="Feel Good" /><span className="tcap"><span className="tn">02</span><span className="td">Health, energy, sleep &amp; sensory needs</span></span></Link>
-        <Link className="tile" href="https://wa.me/447591922247?text=SPEND%20SMART" data-link="spend-smart"><img src="765cbcc6-f92c-4841-a68e-514dd1a9a632" alt="Spend Smart" /><span className="tcap"><span className="tn">03</span><span className="td">Money, bills, budgeting &amp; impulse spending</span></span></Link>
-        <Link className="tile" href="https://wa.me/447591922247?text=BE%20CONNECTED" data-link="be-connected"><img src="aad3fb46-b342-4b81-973b-34eb0626d7b2" alt="Be Connected" /><span className="tcap"><span className="tn">04</span><span className="td">Relationships, communication &amp; boundaries</span></span></Link>
-        <Link className="tile" href="https://wa.me/447591922247?text=PLAN%20AHEAD" data-link="plan-ahead"><img src="f69e667b-b24a-4edb-97c5-5e9a4d751f19" alt="Plan Ahead" /><span className="tcap"><span className="tn">05</span><span className="td">Planning, executive function &amp; systems</span></span></Link>
-        <Link className="tile" href="https://wa.me/447591922247?text=BE%20YOURSELF" data-link="be-yourself"><img src="6b49e618-35cf-4180-9e15-425f29fad4a1" alt="Be Yourself" /><span className="tcap"><span className="tn">06</span><span className="td">Identity, unmasking, shame &amp; regulation</span></span></Link>
-        <Link className="tile" href="https://wa.me/447591922247?text=LEVEL%20UP" data-link="level-up"><img src="9d7b949a-47ee-4b1f-b52b-8a18f936a46e" alt="Level Up" /><span className="tcap"><span className="tn">07</span><span className="td">Digital tools, automation &amp; productivity</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=KEEP%20GOING" data-link="keep-going"><img src="/Images/statement/edc363d6-c816-4281-a3c9-06606afd01b5.png" alt="Keep Going" /><span className="tcap"><span className="tn">01</span><span className="td">Career, learning, momentum &amp; skill-building</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=FEEL%20GOOD" data-link="feel-good"><img src="/Images/statement/a42179d7-5f90-416b-8d28-1e76774a9f79.png" alt="Feel Good" /><span className="tcap"><span className="tn">02</span><span className="td">Health, energy, sleep &amp; sensory needs</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=SPEND%20SMART" data-link="spend-smart"><img src="/Images/statement/7a39722e-4481-4c33-8c05-e557ce45c301.png" alt="Spend Smart" /><span className="tcap"><span className="tn">03</span><span className="td">Money, bills, budgeting &amp; impulse spending</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=BE%20CONNECTED" data-link="be-connected"><img src="/Images/statement/6a074c72-4561-42c1-bd05-ccc44959a50f.png" alt="Be Connected" /><span className="tcap"><span className="tn">04</span><span className="td">Relationships, communication &amp; boundaries</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=PLAN%20AHEAD" data-link="plan-ahead"><img src="/Images/statement/0d652fb7-bbdf-4611-9e1d-9d605051caf2.png" alt="Plan Ahead" /><span className="tcap"><span className="tn">05</span><span className="td">Planning, executive function &amp; systems</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=BE%20YOURSELF" data-link="be-yourself"><img src="/Images/statement/f2f6b5ba-9e2e-420e-981d-1192d500a174.png" alt="Be Yourself" /><span className="tcap"><span className="tn">06</span><span className="td">Identity, unmasking, shame &amp; regulation</span></span></Link>
+        <Link className="tile" href="https://wa.me/447591922247?text=LEVEL%20UP" data-link="level-up"><img src="/Images/statement/c52b4fba-9f99-46e1-a4d0-a3c4930f425b.png" alt="Level Up" /><span className="tcap"><span className="tn">07</span><span className="td">Digital tools, automation &amp; productivity</span></span></Link>
         <Link className="tile more" href="https://wa.me/447591922247?text=Hi%20SOR7ED%20%E2%80%94%20I'd%20like%20to%20get%20started." data-link="whatsapp">
           <span className="ml">Start anywhere</span>
           <span className="mt">Pick the one that's loudest.</span>
@@ -782,7 +782,7 @@ export default function StatementPage() {
       <div className="tool-feature reveal d2">
         <div className="tool-media">
           <span className="flag">★ Flagship tool</span>
-          <img src="c7444fe8-0492-48fb-87f8-50b46dcabd70" alt="" />
+          <img src="/Images/statement/afef16f8-cc79-4b00-b258-5abc3da686a4.png" alt="" />
           <div className="tscrim"></div>
         </div>
         <div className="tool-copy">
@@ -816,7 +816,7 @@ export default function StatementPage() {
       <p className="sub reveal d1" style={{"marginTop":"0","marginBottom":"clamp(34px,5vh,52px)"}}>We unpack the patterns behind burnout, loneliness, people-pleasing and money stress — <b>practical insight, not fluff.</b></p>
       <div className="art-grid reveal d2">
         <article className="art-card">
-          <div className="amedia"><img src="0895132f-ba40-4449-ba6a-4a8b1c2225b5" alt="" /></div>
+          <div className="amedia"><img src="/Images/statement/b3479035-bb00-40b7-b5fe-8b79dc359725.png" alt="" /></div>
           <div className="abody">
             <span className="tag">Feel Good</span>
             <h3>The burnout loop nobody warned you about</h3>
@@ -825,7 +825,7 @@ export default function StatementPage() {
           </div>
         </article>
         <article className="art-card">
-          <div className="amedia"><img src="53fc9e6b-9be1-4431-9755-9084543474da" alt="" /></div>
+          <div className="amedia"><img src="/Images/statement/5b7eaa00-0b56-46fd-85f2-0ad5ca2eb9e1.png" alt="" /></div>
           <div className="abody">
             <span className="tag">Be Connected</span>
             <h3>People-pleasing is a nervous system, not a personality</h3>
@@ -834,7 +834,7 @@ export default function StatementPage() {
           </div>
         </article>
         <article className="art-card">
-          <div className="amedia"><img src="6ab6db7d-41f3-4b8d-b192-6dd0cfe81806" alt="" /></div>
+          <div className="amedia"><img src="/Images/statement/0cc7bb8e-e4c6-4892-885e-cccb477fae78.png" alt="" /></div>
           <div className="abody">
             <span className="tag">Spend Smart</span>
             <h3>Where the ADHD tax actually hides</h3>
@@ -849,7 +849,7 @@ export default function StatementPage() {
   
   <section className="panel closer" data-screen-label="Closer">
     <div className="closer-media" aria-hidden="true">
-      <img src="98bcbb3b-23d9-4f92-8ac0-a5824297d52d" alt="" />
+      <img src="/Images/statement/6cbd6fea-32c5-4044-b029-b8ea860132b9.png" alt="" />
       <div className="scrim"></div>
     </div>
     <div className="wrap">
@@ -875,7 +875,7 @@ export default function StatementPage() {
 
       <footer>
   <div className="wrap foot-in">
-    <span><Link className="brand-logo" href="https://sor7ed.com" data-link="home" aria-label="SOR7ED home" style={{"verticalAlign":"middle","marginRight":"14px"}}><img src="ef90b96a-f218-4709-af99-8c8926dbc6f5" alt="SOR7ED" style={{"height":"22px","opacity":".9"}} /></Link>Practical protocols for neurodivergent minds</span>
+    <span><Link className="brand-logo" href="https://sor7ed.com" data-link="home" aria-label="SOR7ED home" style={{"verticalAlign":"middle","marginRight":"14px"}}><img src="/Images/statement/b4f8e5ca-5e02-4f8e-82f0-760f074b433c.png" alt="SOR7ED" style={{"height":"22px","opacity":".9"}} /></Link>Practical protocols for neurodivergent minds</span>
     <span>© 2026 · hello@sor7ed.com · Skip the nonsense</span>
   </div>
 </footer>
