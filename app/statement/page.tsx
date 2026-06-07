@@ -533,7 +533,7 @@ export default function StatementPage() {
       <footer>
   <div className="wrap foot-in">
     <span><Link className="brand-logo" href="https://sor7ed.com" data-link="home" aria-label="SOR7ED home" style={{"verticalAlign":"middle","marginRight":"14px"}}><img src="/Images/statement/v2_img_14.png" alt="SOR7ED" style={{"height":"22px","opacity":".9"}} /></Link>Practical protocols for neurodivergent minds</span>
-    <span>© 2026 · <Link href="/cdn-cgi/l/email-protection" className="__cf_email__" data-cfemail="0e666b6262614e7d617c396b6a206d6163">[email&#160;protected]</Link> · Skip the nonsense</span>
+    <span>© 2026 · <a href="mailto:hello@sor7ed.com">hello@sor7ed.com</a> · Skip the nonsense</span>
   </div>
 </footer>
     </>
