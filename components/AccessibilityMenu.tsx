@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 type Settings = {
   highContrast: boolean;
@@ -16,8 +17,11 @@ const defaults: Settings = {
 };
 
 export default function AccessibilityMenu() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<Settings>(defaults);
+
+  if (pathname?.startsWith("/statement")) return null;
 
   // Load from localStorage on mount
   useEffect(() => {

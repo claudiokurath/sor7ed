@@ -33,6 +33,8 @@ export default function Navbar() {
 
   useEffect(() => { setOpen(false); }, [pathname]);
 
+  if (pathname?.startsWith("/statement")) return null;
+
   return (
     <>
       <header style={{

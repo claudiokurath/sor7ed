@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const EXPLORE = [
   { href: "/explore",      label: "The 7 Branches"     },
@@ -20,6 +23,8 @@ const STUDIO = [
 ];
 
 export default function SiteFooter() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/statement")) return null;
   return (
     <footer style={{ borderTop: "1px solid #252f33", background: "#0a0d0e" }}>
       <div style={{

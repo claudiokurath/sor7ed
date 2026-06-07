@@ -13,7 +13,7 @@ const NAV = [
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const hidden = ['/signup', '/auth', '/bridge'].some(p => pathname.startsWith(p));
+  const hidden = ['/signup', '/auth', '/bridge', '/statement'].some(p => pathname.startsWith(p));
   if (hidden) return null;
 
   return (
