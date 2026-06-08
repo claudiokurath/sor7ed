@@ -13,6 +13,8 @@ const PUBLIC_PATHS = [
   '/explore',  // 7 branches page — public
   '/r',  // Rich link redirects
   '/s',  // Save card redirects
+  '/statement-v2.html',
+  '/statement-v2',
 ];
 
 // Only specific API routes should be public - never blanket '/api'
