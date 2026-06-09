@@ -3,64 +3,67 @@ import Link from "next/link";
 
 export default function HeroSlideshow() {
   return (
-    <section className="relative w-full min-h-[100svh] flex flex-col justify-center overflow-hidden" style={{ paddingTop: 96 }}>
-      {/* Background image */}
-      <img
-        src="/Images/home/hero.png"
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: "64% 30%", opacity: 0.82, transform: "scale(1.04)", filter: "contrast(1.16) saturate(1.12) brightness(1.04)" }}
-      />
-      {/* Scrim — matches Statement exactly */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(90deg, #09090b 4%, color-mix(in srgb, #09090b 62%, transparent) 42%, color-mix(in srgb, #09090b 14%, transparent) 72%, transparent),
-            linear-gradient(0deg, #09090b, color-mix(in srgb, #09090b 24%, transparent) 44%, transparent 72%)
-          `
-        }}
-      />
+    <section className="relative w-full pt-32 pb-16 md:pt-40 md:pb-24">
+      <div className="page-container flex flex-col gap-12 md:gap-16">
+        {/* Text Area */}
+        <div className="max-w-4xl flex flex-col gap-6 reveal in">
+          {/* Eyebrow and Badge */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="t-label">For neurodivergent adults</span>
+            <span className="t-mono bg-[var(--color-surface-2)] text-[10px] px-3 py-1 rounded-full border border-[var(--color-line)]">
+              Skip the nonsense
+            </span>
+          </div>
 
-      {/* Content */}
-      <div className="relative z-10 page-container py-16 md:py-24 w-full">
-        {/* Kicker label */}
-        <div className="flex items-center gap-4 mb-8 md:mb-12 flex-wrap">
-          <span className="t-label">SOR7ED</span>
-          <span className="font-mono text-[11.5px] tracking-[0.16em] uppercase border border-[#2e2a22] px-3 py-[7px]" style={{ color: "#8c8473", fontFamily: "var(--font-mono)" }}>
-            WhatsApp-First · UK
-          </span>
+          {/* Headline */}
+          <h1 className="t-display mt-2">
+            Practical protocols for <em>neurodivergent</em> minds
+          </h1>
+
+          {/* Subhead */}
+          <p className="t-body max-w-2xl text-[18px] md:text-[21px] font-sans leading-relaxed text-[var(--color-muted)] mt-2">
+            Get step-by-step support for <strong className="font-semibold text-[var(--color-bone)]">money, planning, burnout, relationships</strong> and daily life — delivered straight to your WhatsApp.
+          </p>
+
+          {/* Buttons */}
+          <div className="flex gap-4 items-center flex-wrap mt-4">
+            <Link href="#tools" className="btn btn-primary btn-lg">
+              Browse tools <span className="arrow">→</span>
+            </Link>
+            <Link href="#branches" className="btn btn-ghost btn-lg">
+              Explore the 7 Branches <span className="arrow">→</span>
+            </Link>
+          </div>
+
+          {/* Microcopy */}
+          <p className="t-mono text-[11px] text-[var(--color-muted)] max-w-xl leading-relaxed mt-2">
+            No app. No subscription required. Start with one area and get practical support that actually fits how your brain works.
+          </p>
         </div>
 
-        {/* Hero headline */}
-        <h1
-          className="font-display font-extrabold leading-[0.9] max-w-4xl"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(46px, 10.4vw, 178px)",
-            letterSpacing: "-0.035em",
-            color: "#f1ece1",
-          }}
-        >
-          Skip the<br />
-          <span style={{ color: "#8c8473" }}>non<span style={{ color: "#d4af37" }}>sense</span></span>
-        </h1>
-
-        {/* Scroll cue */}
-        <div className="mt-16 md:mt-24 flex items-center gap-4" style={{ fontFamily: "var(--font-mono)", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "#8c8473" }}>
-          <div className="w-[60px] h-px bg-[#8c8473] relative overflow-hidden">
-            <span className="absolute inset-0 w-[40%] bg-[#d4af37] animate-[slide_1.8s_cubic-bezier(0.5,0,0.5,1)_infinite]" />
+        {/* Large Rounded Band Image Header */}
+        <div className="relative w-full aspect-[21/9] min-h-[300px] rounded-[24px] overflow-hidden border border-[var(--color-line)] shadow-medium reveal in">
+          <img
+            src="/Images/home/hero.png"
+            alt="SOR7ED Dashboard on WhatsApp"
+            className="w-full h-full object-cover object-[center_35%]"
+          />
+          {/* Scrim: left-to-bottom dark/warm scrim */}
+          <div 
+            className="absolute inset-0 z-10"
+            style={{
+              background: `linear-gradient(to top, rgba(34,30,24,0.7) 0%, rgba(34,30,24,0.2) 50%, rgba(34,30,24,0) 100%),
+                           linear-gradient(to right, rgba(34,30,24,0.4) 0%, rgba(34,30,24,0) 50%)`
+            }}
+          />
+          {/* Image caption tag */}
+          <div className="absolute bottom-6 left-6 z-20">
+            <span className="t-mono bg-[var(--color-ink)] text-[var(--color-bone)] text-[10px] px-3.5 py-1.5 rounded-full border border-[var(--color-line)] font-medium tracking-[0.1em]">
+              Support, straight to your WhatsApp
+            </span>
           </div>
-          <span>Scroll to explore</span>
         </div>
       </div>
-
-      <style>{`
-        @keyframes slide {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(250%); }
-        }
-      `}</style>
     </section>
   );
 }

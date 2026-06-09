@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, JetBrains_Mono } from "next/font/google";
+import { Archivo, JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
@@ -18,6 +18,14 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -28,8 +36,8 @@ export const viewport: Viewport = {
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
 export const metadata: Metadata = {
-  title: "SOR7ED | Practical Protocols for Neurodivergent Minds",
-  description: "SOR7ED (pronounced 'sorted') — practical protocols for neurodivergent adults across 7 branches of life, delivered to your WhatsApp.",
+  title: "SOR7ED — Practical protocols for neurodivergent minds",
+  description: "Step-by-step support for money, planning, burnout, relationships and daily life — delivered straight to your WhatsApp. Built for neurodivergent adults. No app, no subscription.",
   metadataBase: new URL(siteUrl),
   alternates: { canonical: '/' },
   openGraph: {
@@ -57,13 +65,12 @@ import AccessibilityMenu from "@/components/AccessibilityMenu";
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const config = await getSiteConfig();
 
-  const accent = config.home_accent_color?.color || '#2ee6c9';
-  const coral   = config.home_accent_sec_color?.color || '#E8453C';
-  const bg      = config.home_bg_color?.color || '#0a0d0e';
+  const accent = config.home_accent_color?.color || '#2f6b50';
+  const coral   = config.home_accent_sec_color?.color || '#b9601c';
+  const bg      = config.home_bg_color?.color || '#f4efe5';
 
   const styleOverride = {
     backgroundColor: bg,
-    '--color-surface': bg,
     '--color-accent': accent,
     '--color-accent-dim': accent + '1a',
     '--color-accent-border': accent + '40',
@@ -73,17 +80,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable} ${newsreader.variable} h-full antialiased`}>
       <head>
         <link
-        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Expanded:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Expanded:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&display=swap"
         rel="stylesheet"
       />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body className="min-h-full flex flex-col" style={styleOverride}>
         <Navbar />

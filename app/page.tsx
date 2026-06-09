@@ -17,6 +17,30 @@ const BRANCHES = [
   { slug: "level-up",     num: "07", label: "Level Up",      emoji: "🚀", desc: "Digital systems, automation, apps, setups" },
 ];
 
+const STATIC_ARTICLES = [
+  {
+    slug: "burnout-loop-nobody-warned-you-about",
+    title: "The burnout loop nobody warned you about",
+    tag: "Feel Good",
+    summary: "Why ND burnout isn't laziness — and the recovery protocol that doesn't rely on willpower.",
+    image: "/Images/statement/v2_img_10.jpg"
+  },
+  {
+    slug: "people-pleasing-nervous-system-not-personality",
+    title: "People-pleasing is a nervous system, not a personality",
+    tag: "Be Connected",
+    summary: "Scripts and boundaries for when \"no\" feels physically impossible.",
+    image: "/Images/statement/v2_img_11.jpg"
+  },
+  {
+    slug: "where-adhd-tax-actually-hides",
+    title: "Where the ADHD tax actually hides",
+    tag: "Spend Smart",
+    summary: "The five quiet leaks draining your account — and how to plug them this week.",
+    image: "/Images/statement/v2_img_12.jpg"
+  }
+];
+
 export default async function HomePage() {
   const supabase = createAdminClient();
 
@@ -49,145 +73,143 @@ export default async function HomePage() {
           cover_image: `/Images/members/${b.slug}.png`,
         }));
 
-  // ── ARTICLES TEASER (same query shape as app/articles/page.tsx) ──
-  const { data: posts } = await supabase
-    .from("protocols")
-    .select("slug, title, branch, summary, cover_image, read_time")
-    .eq("status", "Published")
-    .order("created_at", { ascending: false })
-    .limit(3);
-  const articles = posts ?? [];
-
   return (
     <>
-      {/* 1 ── HERO ── */}
+      {/* 1 ── HERO (Rounded image band is built in) ── */}
       <HeroSlideshow />
 
-      {/* 2 ── TRUST STRIP ── */}
+      {/* 2 ── TRUST STRIP (4 items) ── */}
       <HomeTrustStrip />
 
-      {/* 3 ── HOW IT WORKS ── */}
+      {/* 3 ── HOW IT WORKS (3 steps) ── */}
       <HomeHowItWorks />
 
-      {/* 4 ── 7 BRANCHES ── */}
-      <section className="border-t border-border-subtle">
-        <div className="relative w-full min-h-[34vh] flex items-end overflow-hidden">
-          <img
-            src="/Images/banners/7%20branches%20banner.png"
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/10" />
-          <div className="relative z-10 page-container py-10 md:py-14 w-full">
-            <p className="t-label mb-3">The 7 Branches</p>
-            <h2 className="t-display">7 branches. One easier way to start.</h2>
-          </div>
+      {/* 4 ── 7 BRANCHES (Image grid) ── */}
+      <section id="branches" className="section border-t border-[var(--color-line)] bg-transparent">
+        <div className="page-container mb-12 flex flex-col gap-4 reveal in">
+          <span className="t-label">/ The 7 Branches</span>
+          <h2 className="t-heading text-3xl md:text-5xl font-medium">
+            7 branches. One easier way to start.
+          </h2>
+          <p className="t-body mt-2">
+            SOR7ED organizes support across the seven areas most affected by executive dysfunction, ADHD, autism and burnout. Pick the one that matters most right now.
+          </p>
         </div>
-        <BranchesGrid branches={branches} />
+        <div className="page-container">
+          <BranchesGrid branches={branches} />
+        </div>
       </section>
 
-      {/* 5 ── ADHD TAX CALCULATOR ── */}
+      {/* 5 ── FEATURED TOOL: ADHD TAX CALCULATOR ── */}
       <AdhDTaxCalculator />
 
-      {/* 6 ── INTELLIGENCE TEASER (live data, same card markup as /articles) ── */}
-      {articles.length > 0 && (
-        <section className="section border-t border-border-subtle">
-          <div className="page-container">
-            <p className="t-label mb-3">Intelligence</p>
-            <h2 className="t-display mb-10 max-w-2xl">
-              Articles that explain what&apos;s actually happening
+      {/* 6 ── INTELLIGENCE / ARTICLES (3 cards) ── */}
+      <section className="section border-t border-[var(--color-line)] bg-transparent">
+        <div className="page-container">
+          <div className="max-w-3xl mb-12 flex flex-col gap-4 reveal in">
+            <span className="t-label">/ Intelligence</span>
+            <h2 className="t-heading text-3xl md:text-5xl font-medium">
+              Articles that explain what's <em>actually</em> happening
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 stagger">
-              {articles.map((article: any) => (
-                <Link
-                  key={article.slug}
-                  href={`/intelligence/${article.slug}`}
-                  className="group bg-[#0d1619] border border-white/10 overflow-hidden hover:border-accent/50 transition-all duration-300 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="relative w-full aspect-video overflow-hidden bg-[#0d1619] border-b border-white/5">
-                      <img
-                        src={article.cover_image || `/Images/articles/${article.slug}.jpg`}
-                        alt={article.title}
-                        className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500"
-                      />
-                    </div>
-                    <div className="p-5 flex flex-col gap-2">
-                      <span className="tag tag-accent bg-black/40 border-accent/20 text-[10px] self-start">
-                        {article.branch}
-                      </span>
-                      <h3 className="t-heading text-sm font-bold text-white group-hover:text-accent transition-colors leading-snug line-clamp-2">
-                        {article.title}
-                      </h3>
-                      {article.summary && (
-                        <p className="text-[11px] text-white/60 line-clamp-2 font-sans leading-normal">
-                          {article.summary}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="p-5 pt-0 mt-auto">
-                    <div className="flex items-center justify-between pt-3 border-t border-white/5 text-[9px] font-mono tracking-widest text-accent">
-                      <span className="text-white/40 font-mono font-normal normal-case">
-                        {article.read_time ? `${article.read_time} min read` : ""}
-                      </span>
-                      <span>READ PROTOCOL →</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            <div className="mt-10">
-              <Link href="/articles" className="btn btn-ghost">
-                Read more from Intelligence →
-              </Link>
-            </div>
+            <p className="t-body mt-2">
+              We unpack the patterns behind burnout, loneliness, people-pleasing and money stress — with practical insight, not fluff. Read the protocol. Understand the pattern. Take the next step.
+            </p>
           </div>
-        </section>
-      )}
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 reveal in">
+            {STATIC_ARTICLES.map((article) => (
+              <Link
+                key={article.slug}
+                href={`/intelligence/${article.slug}`}
+                className="group card overflow-hidden hover:border-[var(--color-accent)] transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative w-full aspect-[16/10] overflow-hidden bg-[var(--color-surface)] border-b border-[var(--color-line)]">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <div className="p-6 flex flex-col gap-3">
+                    <span className="text-[10px] uppercase font-mono font-bold tracking-[0.08em] px-2.5 py-0.5 bg-[var(--color-accent-soft)] text-[var(--color-accent)] rounded self-start border border-[var(--color-line)]/50">
+                      {article.tag}
+                    </span>
+                    <h3 className="font-sans font-bold text-lg text-[var(--color-bone)] group-hover:text-[var(--color-accent)] transition-colors leading-snug line-clamp-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-xs text-[var(--color-muted)] line-clamp-3 font-sans leading-relaxed">
+                      {article.summary}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-6 pt-0 mt-auto">
+                  <div className="flex items-center justify-between pt-3 border-t border-[var(--color-line)]/40 text-[10px] font-mono tracking-widest text-[var(--color-accent)] font-bold">
+                    <span>READ PROTOCOL</span>
+                    <span>→</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          
+          <div className="mt-12 reveal in">
+            <Link href="/articles" className="btn btn-ghost">
+              Read more from Intelligence <span className="arrow">→</span>
+            </Link>
+          </div>
+        </div>
+      </section>
 
-      {/* 7 ── WHATSAPP / SIGNUP CTA ── */}
-      <section className="section border-t border-border-subtle">
+      {/* 7 ── SIGNUP FORM (WhatsApp) ── */}
+      <section id="signup" className="section border-t border-[var(--color-line)] bg-transparent">
         <div className="page-container">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div>
-              <p className="t-label mb-6">Delivered on WhatsApp</p>
-              <h2 className="t-display mb-6">Get SOR7ED on WhatsApp</h2>
-              <p className="t-body max-w-sm">
-                Create your account once, then text a keyword to get step-by-step protocols
-                delivered straight to your WhatsApp. Start free — no app, no subscription required.
+            <div className="flex flex-col gap-6 reveal in">
+              <div className="flex">
+                <span className="text-[10px] tracking-[0.14em] uppercase font-mono font-bold px-3.5 py-1.5 bg-[var(--color-accent-soft)] text-[var(--color-accent)] rounded-full border border-[var(--color-line)]">
+                  Delivered on WhatsApp
+                </span>
+              </div>
+              <h2 className="t-heading text-3xl md:text-5xl font-medium">
+                Get SOR7ED on WhatsApp
+              </h2>
+              <p className="t-body">
+                Create your account once, then text a keyword to get step-by-step protocols delivered straight to your WhatsApp. Start free — no app, no subscription required.
               </p>
-              <div className="relative mt-8 border border-border overflow-hidden">
+              {/* Photography in large rounded "band" header */}
+              <div className="relative rounded-[20px] overflow-hidden border border-[var(--color-line)] shadow-medium mt-2">
                 <img
                   src="/Images/banners/sign%20in%20banner.png"
                   alt="Sign in to SOR7ED"
-                  className="w-full object-cover"
-                  style={{ height: "clamp(140px, 18vh, 200px)" }}
+                  className="w-full h-48 object-cover filter brightness-[0.95]"
                 />
               </div>
             </div>
-            <HomeSignupForm />
+            
+            <div className="reveal in">
+              <HomeSignupForm />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 8 ── FOOTER CTA ── */}
-      <section className="section border-t border-border-subtle text-center">
-        <div className="page-container">
+      {/* 8 ── FINAL CTA ── */}
+      <section className="section border-t border-[var(--color-line)] bg-transparent text-center">
+        <div className="page-container flex flex-col items-center py-8">
           <h2
-            className="font-display uppercase text-white"
-            style={{ fontSize: "clamp(3rem, 9vw, 9rem)", lineHeight: 0.9, letterSpacing: "-0.01em" }}
+            className="font-serif text-[var(--color-bone)] leading-none reveal in"
+            style={{ fontSize: "clamp(2.75rem, 8vw, 7.5rem)", letterSpacing: "-0.025em" }}
           >
-            Ready to get<br />
-            <span className="text-accent">SOR7ED?</span>
+            Ready to get <span className="text-[var(--color-accent)]">SOR7ED?</span>
           </h2>
-          <p className="t-body max-w-md mx-auto mt-6 mb-10">
-            You don&apos;t need to fix everything at once. Start with one branch, one tool, or one
+          <p className="t-body max-w-xl mx-auto mt-6 mb-10 reveal in">
+            You don't need to fix everything at once. Start with one branch, one tool, or one
             protocol — and build from there.
           </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Link href="/signup" className="btn btn-primary btn-lg">Get started →</Link>
-            <Link href="/explore" className="btn btn-ghost btn-lg">Explore the 7 Branches →</Link>
+          <div className="flex gap-4 justify-center flex-wrap reveal in">
+            <Link href="#signup" className="btn btn-primary btn-lg">Get started <span className="arrow">→</span></Link>
+            <Link href="#branches" className="btn btn-ghost btn-lg">Explore the 7 branches <span className="arrow">→</span></Link>
           </div>
         </div>
       </section>

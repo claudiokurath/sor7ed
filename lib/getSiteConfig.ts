@@ -35,29 +35,29 @@ const DEFAULT_CONFIG: Record<string, { text: string; color: string; image: strin
   home_hero: { text: '', color: '', image: '/Images/home/hero_new.png', active: true },
   intelligence_hero: { text: '', color: '', image: '/HERO.png', active: true },
   og_explore: { text: '', color: '', image: '/Images/og-explore.png', active: true },
-  home_bg_color: { text: '', color: '#000000', image: '', active: true },
-  home_accent_color: { text: '', color: '#00C4C4', image: '', active: true },
-  home_accent_sec_color: { text: '', color: '#E8453C', image: '', active: true },
+  home_bg_color: { text: '', color: '#f4efe5', image: '', active: true },
+  home_accent_color: { text: '', color: '#2f6b50', image: '', active: true },
+  home_accent_sec_color: { text: '', color: '#b9601c', image: '', active: true },
   home_hero_title: { text: 'Life admin, *actually* sor7ed.', color: '', image: '', active: true },
   home_hero_subtitle: { text: 'Practical protocols for neurodivergent adults — delivered straight to WhatsApp. No app, no overwhelm.', color: '', image: '', active: true },
 
   // explore page
   explore_hero_title: { text: 'Everything maps to *one* of seven areas', color: '', image: '', active: true },
   explore_hero_subtitle: { text: 'SOR7ED covers the seven areas most affected by executive dysfunction, ADHD, autism, and burnout. Pick yours.', color: '', image: '', active: true },
-  explore_bg_color: { text: '', color: '#000000', image: '', active: true },
-  explore_accent_color: { text: '', color: '#00C4C4', image: '', active: true },
+  explore_bg_color: { text: '', color: '#f4efe5', image: '', active: true },
+  explore_accent_color: { text: '', color: '#2f6b50', image: '', active: true },
 
   // tools page
   tools_hero_title: { text: '*Tools*', color: '', image: '', active: true },
   tools_hero_subtitle: { text: 'High-value audits designed for neurodivergent minds. Complete the assessment to unlock your personalised protocol on WhatsApp.', color: '', image: '', active: true },
-  tools_bg_color: { text: '', color: '#000000', image: '', active: true },
-  tools_accent_color: { text: '', color: '#E8453C', image: '', active: true },
+  tools_bg_color: { text: '', color: '#f4efe5', image: '', active: true },
+  tools_accent_color: { text: '', color: '#2f6b50', image: '', active: true },
 
   // intelligence page
   intelligence_hero_title: { text: 'All the things your *brain* has been waiting for', color: '', image: '', active: true },
   intelligence_hero_subtitle: { text: 'Most mental health content wasn\'t written for people who forget to drink water, not people who forget they\'re human.', color: '', image: '', active: true },
-  intelligence_bg_color: { text: '', color: '#000000', image: '', active: true },
-  intelligence_accent_color: { text: '', color: '#00C4C4', image: '', active: true },
+  intelligence_bg_color: { text: '', color: '#f4efe5', image: '', active: true },
+  intelligence_accent_color: { text: '', color: '#2f6b50', image: '', active: true },
 };
 
 export async function getSiteConfig(): Promise<SiteConfigMap> {

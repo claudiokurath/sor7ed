@@ -1,38 +1,59 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 12);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = [
+    { href: "/explore", label: "Explore" },
+    { href: "/tools", label: "Tools" },
+    { href: "/articles", label: "Intelligence" },
+    { href: "/#how-it-works", label: "How it works" },
+  ];
 
   return (
     <>
       <header
-        className="fixed inset-x-0 top-0 z-60 flex items-center justify-between px-[var(--pad)] py-5"
-        style={{ zIndex: 60 }}
+        className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-[var(--pad)] py-4 transition-all duration-200 ${
+          scrolled
+            ? "bg-[var(--color-ink)]/85 backdrop-blur-md border-b border-[var(--color-line)]"
+            : "bg-transparent"
+        }`}
       >
         <Link href="/" aria-label="SOR7ED home" className="flex items-center">
-          <Image src="/Images/Logo2026.png" alt="SOR7ED" height={34} width={80} style={{ height: 34, width: "auto" }} priority />
+          <span className="font-sans font-black text-2xl tracking-[0.02em] text-[var(--color-bone)] uppercase">
+            SOR<span className="text-[var(--color-accent)]">7</span>ED
+          </span>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {[
-            { href: "/explore", label: "Explore" },
-            { href: "/tools", label: "Tools" },
-            { href: "/articles", label: "Articles" },
-            { href: "/signup", label: "Get Started" },
-          ].map(({ href, label }) => (
+          {navLinks.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className="font-mono text-[11px] tracking-[0.2em] uppercase transition-colors"
-              style={{ fontFamily: "var(--font-mono)", color: label === "Get Started" ? "#d4af37" : "rgba(241,236,225,0.65)" }}
+              className="font-mono text-[11px] tracking-[0.15em] uppercase text-[var(--color-muted)] hover:text-[var(--color-bone)] transition-colors"
             >
               {label}
             </Link>
           ))}
+          <Link
+            href="https://wa.me/447591922247?text=Hi%20SOR7ED%20%E2%80%94%20I'd%20like%20to%20get%20started."
+            className="btn btn-primary"
+            style={{ padding: "10px 20px" }}
+          >
+            Start on WhatsApp <span className="arrow">→</span>
+          </Link>
         </nav>
 
         {/* Mobile hamburger */}
@@ -41,31 +62,32 @@ export default function Navbar() {
           onClick={() => setOpen(!open)}
           aria-label="Menu"
         >
-          <span className="block w-6 h-px bg-[#f1ece1] transition-all" style={{ transform: open ? "rotate(45deg) translate(4px,4px)" : "" }} />
-          <span className="block w-6 h-px bg-[#f1ece1] transition-all" style={{ opacity: open ? 0 : 1 }} />
-          <span className="block w-6 h-px bg-[#f1ece1] transition-all" style={{ transform: open ? "rotate(-45deg) translate(4px,-4px)" : "" }} />
+          <span className="block w-6 h-px bg-[var(--color-bone)] transition-all" style={{ transform: open ? "rotate(45deg) translate(4px,4px)" : "" }} />
+          <span className="block w-6 h-px bg-[var(--color-bone)] transition-all" style={{ opacity: open ? 0 : 1 }} />
+          <span className="block w-6 h-px bg-[var(--color-bone)] transition-all" style={{ transform: open ? "rotate(-45deg) translate(4px,-4px)" : "" }} />
         </button>
       </header>
 
       {/* Mobile menu */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-center items-center gap-8 bg-[#09090b]" style={{ paddingTop: 80 }}>
-          {[
-            { href: "/explore", label: "Explore" },
-            { href: "/tools", label: "Tools" },
-            { href: "/articles", label: "Articles" },
-            { href: "/signup", label: "Get Started" },
-          ].map(({ href, label }) => (
+        <div className="fixed inset-0 z-40 flex flex-col justify-center items-center gap-8 bg-[var(--color-ink)]" style={{ paddingTop: 80 }}>
+          {navLinks.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="font-display font-bold uppercase text-3xl tracking-tight"
-              style={{ fontFamily: "var(--font-display)", color: label === "Get Started" ? "#d4af37" : "#f1ece1" }}
+              className="font-display font-bold uppercase text-3xl tracking-tight text-[var(--color-bone)]"
             >
               {label}
             </Link>
           ))}
+          <Link
+            href="https://wa.me/447591922247?text=Hi%20SOR7ED%20%E2%80%94%20I'd%20like%20to%20get%20started."
+            onClick={() => setOpen(false)}
+            className="btn btn-primary mt-4"
+          >
+            Start on WhatsApp <span className="arrow">→</span>
+          </Link>
         </div>
       )}
     </>

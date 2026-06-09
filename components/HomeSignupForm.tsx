@@ -6,20 +6,20 @@ export default function HomeSignupForm() {
 
   if (done) {
     return (
-      <div style={{ textAlign: "center", padding: "30px 10px" }}>
-        <svg
-          style={{ color: "var(--hp-accent)", width: "44px", height: "44px", margin: "0 auto 16px", display: "block" }}
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-        >
-          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-        </svg>
-        <h3 style={{
-          fontFamily: "'Archivo Expanded','Archivo',sans-serif", fontWeight: 800,
-          fontSize: "26px", marginBottom: "10px", color: "#eaf1ee",
-        }}>
-          You&apos;re in.
+      <div className="card p-8 md:p-10 flex flex-col justify-center items-center text-center gap-5 shadow-medium border-[var(--color-accent)] animate-fade-in">
+        <div className="w-12 h-12 rounded-full bg-[var(--color-accent-soft)] flex items-center justify-center">
+          <svg
+            className="text-[var(--color-accent)] w-6 h-6"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+            strokeLinecap="round" strokeLinejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <h3 className="font-display font-extrabold text-2xl md:text-3xl text-[var(--color-bone)]">
+          You're in.
         </h3>
-        <p style={{ color: "var(--hp-muted)" }}>
+        <p className="text-sm text-[var(--color-muted)] leading-relaxed max-w-sm">
           Check WhatsApp — your first protocol is on the way. Start with one branch; build from there.
         </p>
       </div>
@@ -27,31 +27,45 @@ export default function HomeSignupForm() {
   }
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); setDone(true); }} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-      <div style={{
-        fontFamily: "'JetBrains Mono',monospace", fontSize: "12px",
-        textTransform: "uppercase", letterSpacing: ".06em", color: "var(--hp-accent)", marginBottom: "18px",
-      }}>
+    <form 
+      onSubmit={(e) => { e.preventDefault(); setDone(true); }} 
+      className="card p-8 md:p-10 flex flex-col gap-5 shadow-medium border-[var(--color-line)]"
+    >
+      <div className="t-mono text-[var(--color-accent)] font-bold text-[11px] mb-2 tracking-[0.12em]">
         Create your free account
       </div>
+      
       {[
         { id: "f-name",  label: "First name",        type: "text",  placeholder: "Alex"             },
         { id: "f-email", label: "Email",              type: "email", placeholder: "you@email.com"    },
         { id: "f-wa",    label: "WhatsApp number",    type: "tel",   placeholder: "+44 7700 900000"  },
       ].map((f) => (
-        <div key={f.id} className="hp-field">
-          <label htmlFor={f.id}>{f.label}</label>
-          <input id={f.id} type={f.type} placeholder={f.placeholder} required />
+        <div key={f.id} className="flex flex-col gap-1.5">
+          <label 
+            htmlFor={f.id} 
+            className="t-mono text-[10px] text-[var(--color-muted)] font-medium"
+          >
+            {f.label}
+          </label>
+          <input 
+            id={f.id} 
+            type={f.type} 
+            placeholder={f.placeholder} 
+            required 
+            className="w-full bg-[var(--color-ink)] border border-[var(--color-line)] px-4 py-3 rounded-lg text-sm text-[var(--color-bone)] placeholder-[var(--color-muted)]/40 focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] outline-none transition-colors duration-200"
+          />
         </div>
       ))}
-      <button type="submit" className="hp-btn hp-btn-primary" style={{ justifyContent: "center", marginTop: "4px" }}>
-        Create free account →
+      
+      <button 
+        type="submit" 
+        className="btn btn-primary w-full justify-center text-center mt-3 py-3.5"
+      >
+        Create free account <span className="arrow">→</span>
       </button>
-      <p style={{
-        fontFamily: "'JetBrains Mono',monospace", fontSize: "11.5px",
-        color: "var(--hp-muted)", lineHeight: 1.6,
-      }}>
-        By signing up, you&apos;ll be able to access practical support across all 7 branches whenever you need it.
+      
+      <p className="t-mono text-[10.5px] text-[var(--color-muted)] leading-normal mt-1">
+        By signing up, you'll be able to access practical support across all 7 branches whenever you need it.
       </p>
     </form>
   );
