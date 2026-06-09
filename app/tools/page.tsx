@@ -60,11 +60,11 @@ export default async function ToolsPage() {
 					<div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 				</div>
 				<div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
-					<p className="t-label text-white/50 mb-3 font-mono tracking-widest">USE</p>
+					<p className="t-label mb-3">USE</p>
 					<h1 className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl" style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}>
 						{heroTitle}
 					</h1>
-					<div className="text-white/60 text-base leading-relaxed max-w-md">
+					<div className="t-body max-w-xl">
 						{heroSubtitle}
 					</div>
 				</div>
@@ -72,7 +72,7 @@ export default async function ToolsPage() {
 
 			<div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16">
 				{items.length === 0 ? (
-					<div className="bg-[#0d1619] border border-white/10 p-6">
+					<div className="bg-[#0d1619] border border-[#2e2a22] p-6">
 						<p className="text-white/60 text-sm mb-4">No tools published yet.</p>
 						<Link href="/signup" className="btn btn-accent">Get started →</Link>
 					</div>
@@ -82,7 +82,7 @@ export default async function ToolsPage() {
 							const cover = tool.cover_image;
 							const canShowCover = !!cover && isSafeHttpUrl(cover);
 							return (
-								<Link key={tool.slug} href={`/tools/${tool.slug}`} className="group bg-[#0d1619] border border-white/10 overflow-hidden hover:border-white/30 transition-all duration-300 flex flex-col justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C4C4]/80" aria-label={`Launch tool: ${tool.name}`}>
+								<Link key={tool.slug} href={`/tools/${tool.slug}`} className="group bg-[#0d1619] border border-[#2e2a22] overflow-hidden hover:border-white/30 transition-all duration-300 flex flex-col justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00C4C4]/80" aria-label={`Launch tool: ${tool.name}`}>
 									<div>
 										<div className="relative w-full aspect-video overflow-hidden bg-[#0d1619] border-b border-white/5">
 											{canShowCover ? (
