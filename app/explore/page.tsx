@@ -64,14 +64,14 @@ export default async function ExplorePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
-          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">7 AREAS OF LIFE</p>
+          <p className="t-label mb-3">7 AREAS OF LIFE</p>
           <h1
             className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl"
             style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}
           >
             {renderFormattedText(config.explore_hero_title?.text, 'white') || '7 Branches'}
           </h1>
-          <div className="text-white/60 text-base leading-relaxed max-w-md" >
+          <div className="t-body max-w-xl" >
             {renderFormattedText(config.explore_hero_subtitle?.text, 'white') || 'Every tool and article maps to one of 7 branches — the areas where neurodivergent adults are most underserved.'}
           </div>
         </div>
@@ -83,7 +83,7 @@ export default async function ExplorePage() {
             <div key={branch.slug} className="flex flex-col items-center">
               <Link
                 href={`/${branch.slug}`}
-                className="group relative w-full aspect-square border border-white/10 hover:border-accent/50 overflow-hidden transition-all duration-300"
+                className="group relative w-full aspect-square border border-[#2e2a22] hover:border-accent/50 overflow-hidden transition-all duration-300"
               >
                 <img
                   src={branch.cover_image}
