@@ -48,9 +48,9 @@ export default async function IntelligencePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
-          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">ARTICLES</p>
+          <p className="t-label mb-3">ARTICLES</p>
           <h1
-            className="font-display font-black uppercase text-white leading-none max-w-2xl"
+            className="font-display font-black uppercase leading-none max-w-2xl" style={{ color: "#f1ece1" }}
             style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}
           >
             {renderFormattedText(config.intelligence_hero_title?.text, 'white') || 'Intelligence'}
@@ -66,7 +66,7 @@ export default async function IntelligencePage() {
             <Link
               key={article.slug}
               href={`/intelligence/${article.slug}`}
-              className="group bg-[#0d1619] border border-white/10 overflow-hidden hover:border-accent/50 transition-all duration-300 flex flex-col justify-between"
+              className="group bg-[#0d1619] border border-[#2e2a22] overflow-hidden hover:border-accent/50 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 {/* Image container: aspect-video (16:9) to fit landscape images perfectly */}
@@ -109,7 +109,7 @@ export default async function IntelligencePage() {
         </div>
 
         {articles.length === 0 && (
-          <p className="text-white/40 text-sm">No articles published yet.</p>
+          <p className="t-mono mt-2">No articles published yet.</p>
         )}
       </div>
     </div>
