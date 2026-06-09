@@ -36,7 +36,7 @@ export default function AboutPage() {
 					<div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 				</div>
 				<div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
-					<p className="t-label text-white/50 mb-3 font-mono tracking-widest">ABOUT</p>
+					<p className="t-label mb-3">ABOUT</p>
 					<h1 className="font-display font-black uppercase text-white leading-none mb-6 max-w-2xl" style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}>
 						We exist for the 1 in 5.
 					</h1>
@@ -50,7 +50,7 @@ export default function AboutPage() {
 				</div>
 			</header>
 
-			<section className="border-b border-border-subtle">
+			<section className="border-b border-[#1c1913]">
 				<div className="page-container py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
 					<div>
 						<p className="t-label text-accent mb-4">The problem</p>
@@ -85,7 +85,7 @@ export default function AboutPage() {
 				</div>
 			</section>
 
-			<section className="border-b border-border-subtle bg-surface-subtle">
+			<section className="border-b border-[#1c1913] bg-[#0c0b08]">
 				<div className="page-container py-16">
 					<p className="t-label text-ink-tertiary mb-4">How it works</p>
 					<h2 className="t-title mb-8">A loop you can actually complete.</h2>
@@ -104,7 +104,7 @@ export default function AboutPage() {
 				</div>
 			</section>
 
-			<section className="border-b border-border-subtle" aria-label="Important disclaimer">
+			<section className="border-b border-[#1c1913]" aria-label="Important disclaimer">
 				<div className="page-container py-10">
 					<div className="max-w-2xl">
 						<p className="t-label text-ink-tertiary mb-3">Important</p>
