@@ -14,7 +14,7 @@ export default function TermsPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 w-full">
-          <p className="t-label text-white/50 mb-3 font-mono tracking-widest">LEGAL</p>
+          <p className="t-label mb-3">LEGAL</p>
           <h1 className="font-display font-black uppercase text-white leading-none" style={{fontSize:"clamp(2.5rem,7vw,5.5rem)",letterSpacing:"-0.01em"}}>
             Terms & Conditions
           </h1>
