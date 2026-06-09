@@ -50,7 +50,7 @@ export default async function IntelligencePage() {
         <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
           <p className="t-label mb-3">ARTICLES</p>
           <h1
-            className="font-display font-black uppercase leading-none max-w-2xl" style={{ color: "#f1ece1" }}
+            className="font-display font-black uppercase leading-none max-w-2xl text-[#f1ece1]"
             style={{ fontSize: "clamp(3rem, 8vw, 7rem)", letterSpacing: "-0.01em" }}
           >
             {renderFormattedText(config.intelligence_hero_title?.text, 'white') || 'Intelligence'}
