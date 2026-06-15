@@ -1,4 +1,4 @@
-import { createClientComponentClient, createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient, createServerClient as createSSRServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 export type Protocol = {
@@ -30,32 +30,50 @@ export type UserProfile = {
   created_at: string;
 };
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
 // Client-side Supabase client
-export const createClient = () => createClientComponentClient();
+export const createClient = () =>
+  createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Server-side Supabase client
-export const createServerClient = () => createServerComponentClient({ cookies });
+export const createServerClient = async () => {
+  const cookieStore = await cookies();
+  return createSSRServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      getAll() { return cookieStore.getAll(); },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {}
+      },
+    },
+  });
+};
 
 // Helper functions for common database operations
 export async function getPublishedProtocols(limit?: number) {
-  const supabase = createServerClient();
-  
+  const supabase = await createServerClient();
+
   let query = supabase
     .from('protocols')
     .select('*')
     .eq('status', 'Published')
     .order('updated_at', { ascending: false });
-    
+
   if (limit) {
     query = query.limit(limit);
   }
-  
+
   return query;
 }
 
 export async function getProtocolBySlug(slug: string) {
-  const supabase = createServerClient();
-  
+  const supabase = await createServerClient();
+
   return supabase
     .from('protocols')
     .select('*')
@@ -65,8 +83,8 @@ export async function getProtocolBySlug(slug: string) {
 }
 
 export async function getUserProfile(userId: string) {
-  const supabase = createServerClient();
-  
+  const supabase = await createServerClient();
+
   return supabase
     .from('users')
     .select('*')
