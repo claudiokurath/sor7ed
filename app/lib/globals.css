@@ -1,0 +1,314 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Type Stack (from Design Brief) ── */
+  --font-sans:    'Archivo', sans-serif;
+  --font-serif:   'Newsreader', serif;
+  --font-display: 'Newsreader', serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* ── Gold & Black Palette ── */
+  --color-ink:           #0b0a08; /* page background (near-black) */
+  --color-surface:       #16130d; /* cards */
+  --color-surface-2:     #211b11; /* hover surface */
+  --color-line:          #2e2719; /* borders / hairlines */
+  --color-bone:          #f1ece1; /* primary text (warm off-white) */
+  --color-muted:         #9a8f78; /* secondary text */
+  --color-accent:        #d4af37; /* gold — links, CTAs */
+  --color-accent-soft:   #2a2310; /* soft gold chip bg */
+  --color-accent-ink:    #1a1304; /* text on accent (dark) */
+  --color-warn:          #e0a93a; /* "biggest leak" highlight */
+
+  /* ── Tailwind Theme Compatibility ── */
+  --color-border-subtle:  #2e2719;
+  --color-surface-subtle: #211b11;
+  --color-coral:          #e0a93a;
+
+  /* ── Shadows ── */
+  --shadow-soft:   0 1px 3px rgba(0,0,0,0.4);
+  --shadow-medium: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-large:  0 12px 40px rgba(0,0,0,0.6);
+}
+
+:root {
+  --page-max:    1280px;
+  --pad:         clamp(20px, 5vw, 60px);
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background: var(--color-ink);
+    color: var(--color-bone);
+    position: relative;
+  }
+
+  /* film-grain / vignette ambience (light/warm overlay) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 80% at 80% -10%, color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 55%),
+      radial-gradient(90% 70% at -10% 110%, color-mix(in srgb, var(--color-accent) 6%, transparent), transparent 55%);
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 2px; }
+
+  *:focus-visible {
+    outline: 1px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus:not(:focus-visible) { outline: none; }
+
+  a { color: inherit; text-decoration: none; }
+}
+
+@layer components {
+  /* ── Layout ── */
+  .page-container {
+    max-width: var(--page-max);
+    margin-inline: auto;
+    padding-inline: var(--pad);
+  }
+
+  .section {
+    padding-block: clamp(80px, 12vh, 160px);
+    border-top: 1px solid var(--color-line);
+    position: relative;
+    z-index: 1;
+  }
+
+  .section:first-of-type { border-top: 0; }
+
+  /* ── Typography ── */
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    font-size: clamp(38px, 8.2vw, 132px);
+    color: var(--color-bone);
+  }
+  
+  .t-display em {
+    font-style: italic;
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
+
+  .t-heading {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    color: var(--color-bone);
+  }
+
+  .t-heading em {
+    font-style: italic;
+  }
+
+  .t-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .t-label::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    flex: none;
+    border-radius: 50%;
+  }
+
+  .t-mono {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .t-body {
+    font-family: var(--font-sans);
+    color: var(--color-muted);
+    font-size: clamp(15px, 1.1vw, 17px);
+    line-height: 1.7;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border: 1px solid var(--color-line);
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent;
+    color: var(--color-bone);
+    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+  }
+
+  .btn .arrow {
+    transition: transform 0.2s;
+  }
+
+  .btn:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 4px 12px rgba(47,107,80,0.15);
+  }
+
+  .btn-ghost {
+    border-color: var(--color-line);
+    color: var(--color-bone);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-bone);
+    background: rgba(34,30,24,0.03);
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 20px;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    position: relative;
+    z-index: 1;
+  }
+  .card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  /* ── Progress Rail ── */
+  .rail {
+    position: fixed;
+    left: 0; top: 0;
+    height: 2px;
+    width: 0%;
+    background: var(--color-accent);
+    z-index: 70;
+    transition: width 0.1s linear;
+  }
+
+  /* ── Banner / Hero ── */
+  .banner {
+    position: relative;
+    width: 100%;
+    min-height: 48vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    z-index: 1;
+    border-radius: 24px;
+  }
+
+  .banner-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, var(--color-ink) 4%, color-mix(in srgb, var(--color-ink) 62%, transparent) 42%, color-mix(in srgb, var(--color-ink) 14%, transparent) 72%, transparent),
+      linear-gradient(0deg, var(--color-ink), color-mix(in srgb, var(--color-ink) 24%, transparent) 44%, transparent 72%);
+  }
+
+  /* ── Tile (branch card) ── */
+  .tile {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    display: block;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    border-radius: 20px;
+  }
+
+  .tile img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.05) saturate(0.95);
+    transition: transform 0.6s cubic-bezier(0.2,0.7,0.2,1);
+  }
+
+  .tile:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+  }
+  .tile:hover img { transform: scale(1.04); }
+
+  /* ── Reveal animation ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+}
