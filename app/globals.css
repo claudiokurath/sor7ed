@@ -1,33 +1,60 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Type Stack (from Design Brief) ── */
-  --font-sans:    'Archivo', sans-serif;
-  --font-serif:   'Newsreader', serif;
-  --font-display: 'Newsreader', serif;
+  /* Colors */
+  --color-black: #000000;
+  --color-black-soft: #0a0a0a;
+  --color-black-card: #111111;
+  --color-black-border: #1a1a1a;
+
+  --color-gold-light: #f4e4a6;
+  --color-gold: #d4af37;
+  --color-gold-dark: #b8941f;
+
+  --color-gray-400: #999999;
+  --color-gray-600: #555555;
+  --color-gray-body: #cccccc;
+  --color-gray-muted: #888888;
+
+  --color-ink:           var(--color-black-soft); /* page background */
+  --color-surface:       var(--color-black-card); /* cards */
+  --color-surface-2:     #1c1c1c; /* hover surface */
+  --color-line:          var(--color-black-border); /* borders */
+  --color-bone:          #ffffff; /* primary text */
+  --color-muted:         var(--color-gray-muted); /* secondary text */
+  --color-accent:        var(--color-gold); /* gold accent */
+  --color-accent-soft:   rgba(212, 175, 55, 0.1); /* soft gold bg */
+  --color-accent-ink:    #000000; /* text on accent */
+  --color-warn:          var(--color-gold-dark);
+
+  /* Tailwind Theme Compatibility */
+  --color-border-subtle:  var(--color-black-border);
+  --color-surface-subtle: var(--color-black-card);
+  --color-coral:          var(--color-gold-dark);
+
+  /* ── Type Stack ── */
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-serif:   'Oswald', system-ui, sans-serif;
+  --font-display: 'Oswald', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 
-  /* ── Warm Bone Palette ── */
-  --color-ink:           #f4efe5; /* page background (warm bone) */
-  --color-surface:       #fbf8f1; /* cards */
-  --color-surface-2:     #efe8d9; /* hover surface */
-  --color-line:          #e1d8c6; /* borders / hairlines */
-  --color-bone:          #221e18; /* primary text (near-black brown) */
-  --color-muted:         #897f6e; /* secondary text */
-  --color-accent:        #2f6b50; /* forest green — links, CTAs */
-  --color-accent-soft:   #e3ede5; /* soft green chip bg */
-  --color-accent-ink:    #f6f2e8; /* text on accent */
-  --color-warn:          #b9601c; /* "biggest leak" amber */
+  /* Keyframes & Animations */
+  --animate-marquee: marquee 25s linear infinite;
+  --animate-pulse-glow: pulse-glow 4s ease-in-out infinite;
 
-  /* ── Tailwind Theme Compatibility ── */
-  --color-border-subtle:  #e1d8c6;
-  --color-surface-subtle: #efe8d9;
-  --color-coral:          #b9601c;
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.05); opacity: 0.5; }
+  }
 
   /* ── Shadows ── */
-  --shadow-soft:   0 1px 3px rgba(34,30,24,0.06);
-  --shadow-medium: 0 4px 20px rgba(34,30,24,0.08);
-  --shadow-large:  0 12px 40px rgba(34,30,24,0.12);
+  --shadow-soft:   0 1px 3px rgba(0,0,0,0.5);
+  --shadow-medium: 0 4px 20px rgba(0,0,0,0.7);
+  --shadow-large:  0 12px 40px rgba(0,0,0,0.9);
 }
 
 :root {
@@ -59,23 +86,16 @@
     background: var(--color-ink);
     color: var(--color-bone);
     position: relative;
+    background-image: radial-gradient(ellipse at top, #151515 0%, #000000 55%);
   }
 
-  /* film-grain / vignette ambience (light/warm overlay) */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(120% 80% at 80% -10%, color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 55%),
-      radial-gradient(90% 70% at -10% 110%, color-mix(in srgb, var(--color-accent) 6%, transparent), transparent 55%);
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
   }
 
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(47,107,80,0.3); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 2px; }
 
   *:focus-visible {
     outline: 1px solid var(--color-accent);
@@ -310,5 +330,24 @@
 
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
+  }
+}
+
+@utility text-gradient-gold {
+  background-image: linear-gradient(135deg, var(--color-gold-light), var(--color-gold), var(--color-gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility container-padding {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  @media (min-width: 768px) {
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 }

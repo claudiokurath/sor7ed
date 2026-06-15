@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, JetBrains_Mono, Newsreader } from "next/font/google";
+import { Inter, JetBrains_Mono, Oswald } from "next/font/google";
 import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
 
-const archivo = Archivo({
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -18,11 +18,10 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
-const newsreader = Newsreader({
+const oswald = Oswald({
   subsets: ['latin'],
   variable: '--font-serif',
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
@@ -80,12 +79,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   } as React.CSSProperties;
 
   return (
-    <html lang="en" className={`${archivo.variable} ${jetbrainsMono.variable} ${newsreader.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${oswald.variable} h-full antialiased`}>
       <head>
         <link
-        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Expanded:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&display=swap"
-        rel="stylesheet"
-      />
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-full flex flex-col" style={styleOverride}>
