@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
 
+export const dynamic = 'force-dynamic';
+
 const FALLBACK_BRANCHES = [
   { slug: "keep-going",   name: "Keep Going",    icon: "⚡", description: "Energy, momentum, getting unstuck", color: "#00C4C4" },
   { slug: "spend-smart",  name: "Spend Smart",   icon: "💷", description: "Money clarity without the shame", color: "#00A0C4" },

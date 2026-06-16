@@ -7,6 +7,8 @@ import HomeHowItWorks from "@/components/HomeHowItWorks";
 import AdhDTaxCalculator from "@/components/AdhDTaxCalculator";
 import HomeSignupForm from "@/components/HomeSignupForm";
 
+export const dynamic = 'force-dynamic';
+
 const BRANCHES = [
   { slug: "keep-going",   num: "01", label: "Keep Going",    emoji: "⚡", desc: "Career, learning, momentum, progress" },
   { slug: "feel-good",    num: "02", label: "Feel Good",     emoji: "🌿", desc: "Energy, sleep, meds, food, sensory support" },

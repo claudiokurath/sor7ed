@@ -5,6 +5,8 @@ import { Suspense } from "react";
 import ToolAssessmentClient from "@/components/ToolAssessmentClient";
 import { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 // ✅ CORRECT: Keep Promise-based params for Next.js 15
 export async function generateMetadata({ 
   params 

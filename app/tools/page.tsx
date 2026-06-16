@@ -4,6 +4,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getSiteConfig, renderFormattedText } from "@/lib/getSiteConfig";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
 	title: "Tools — SOR7ED",
 	description: "High-value audits designed for neurodivergent minds.",

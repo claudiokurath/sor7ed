@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 const BRANCHES: Record<string, { label: string; emoji: string; desc: string; color: string }> = {
   "keep-going":   { label: "Keep Going",   emoji: "⚡", desc: "Energy, momentum and getting unstuck when your brain refuses to cooperate.", color: "#00C4C4" },
   "spend-smart":  { label: "Spend Smart",  emoji: "💷", desc: "Money clarity, budgeting without shame, and financial admin that doesn't spiral.", color: "#00A0C4" },

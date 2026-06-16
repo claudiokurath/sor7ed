@@ -61,6 +61,8 @@ import { getSiteConfig } from "@/lib/getSiteConfig";
 import BottomNav from "@/components/BottomNav";
 import AccessibilityMenu from "@/components/AccessibilityMenu";
 
+export const dynamic = 'force-dynamic';
+
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const config = await getSiteConfig();
 

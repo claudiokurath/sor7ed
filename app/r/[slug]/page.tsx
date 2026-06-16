@@ -5,6 +5,8 @@ import { resolveOgImageUrl } from '@/lib/og-image';
 import type { Metadata } from 'next';
 import type { RichLink } from '@/types/rich-links';
 
+export const dynamic = 'force-dynamic';
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
 // Cached to prevent duplicate queries between generateMetadata and page component

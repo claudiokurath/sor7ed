@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import DashboardClient from "@/components/DashboardClient";
 import { createClient } from "@/lib/supabase/server";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
 	title: "Dashboard | SOR7ED",
 	description: "Your personal dashboard — track assessments, saved protocols, and progress across all 7 branches.",

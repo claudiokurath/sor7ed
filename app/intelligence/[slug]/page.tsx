@@ -5,6 +5,8 @@ import IntelligenceClient from "@/components/IntelligenceClient";
 import { resolveOgImageUrl } from "@/lib/og-image";
 import type { Metadata } from "next";
 
+export const dynamic = 'force-dynamic';
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sor7ed.com';
 
 /**

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = { title: "Archive — SOR7ED" };
 
 const BRANCH_SLUG_MAP: Record<string, string> = {

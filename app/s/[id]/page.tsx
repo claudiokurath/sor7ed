@@ -4,6 +4,8 @@ import { notFound, redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: Promise<{ id: string }>
 }
