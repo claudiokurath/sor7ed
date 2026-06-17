@@ -82,7 +82,7 @@ export default async function ArchivePage() {
                 {/* Branch section header image */}
                 <div className="relative w-full h-32 md:h-40 overflow-hidden mb-6">
                   <img
-                    src={`/Images/members/${slug}.png`}
+                    src={`/Images/branches/${slug}.png`}
                     alt={branchName}
                     className="w-full h-full object-cover"
                   />

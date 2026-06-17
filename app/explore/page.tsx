@@ -30,7 +30,7 @@ export default async function ExplorePage() {
       name: b.name || fallback?.name || "",
       icon: b.icon || fallback?.icon || "⚡",
       description: b.description || fallback?.description || "",
-      cover_image: `/Images/members/${b.slug}.png`,
+      cover_image: `/Images/branches/${b.slug}.png`,
       color: b.color || fallback?.color || "#00C4C4"
     };
   });
@@ -38,7 +38,7 @@ export default async function ExplorePage() {
   // If Supabase fetch was completely empty, fallback to static defaults
   const displayBranches = branchList.length > 0 ? branchList : FALLBACK_BRANCHES.map(b => ({
     ...b,
-    cover_image: `/Images/members/${b.slug}.png`
+    cover_image: `/Images/branches/${b.slug}.png`
   }));
 
   const pageBg = config.explore_bg_color?.color || '#080f11';

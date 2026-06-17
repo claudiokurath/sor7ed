@@ -59,7 +59,7 @@ export default async function HomePage() {
       name: b.name || hc?.label || "",
       icon: b.icon || hc?.emoji || "⚡",
       description: b.description || hc?.desc || "",
-      cover_image: `/Images/members/${b.slug}.png`,
+      cover_image: `/Images/branches/${b.slug}.png`,
     };
   });
 
@@ -72,7 +72,7 @@ export default async function HomePage() {
           name: b.label,
           icon: b.emoji,
           description: b.desc,
-          cover_image: `/Images/members/${b.slug}.png`,
+          cover_image: `/Images/branches/${b.slug}.png`,
         }));
 
   return (
