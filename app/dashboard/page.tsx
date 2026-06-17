@@ -116,8 +116,11 @@ export default async function Dashboard() {
 
 	return (
 		<>
-			<section className="relative w-full min-h-[50vh] flex items-end overflow-hidden border-b border-[var(--color-line)] bg-gradient-to-b from-[var(--color-surface)] to-black">
-				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--color-accent-soft),transparent_50%)]" />
+			<section className="relative w-full min-h-[50vh] flex items-end overflow-hidden">
+				<div className="absolute inset-0">
+					<img src="/Images/banners/dash%20banner.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
+					<div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
+				</div>
 				<div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-16 md:py-20 w-full">
 					<p className="t-label text-white/50 mb-3 font-mono tracking-widest">YOUR DASHBOARD</p>
 					<h1 className="font-display font-black uppercase text-white leading-none max-w-2xl" style={{ fontSize: "clamp(2.5rem, 7vw, 5.5rem)", letterSpacing: "-0.01em" }}>
