@@ -6,6 +6,8 @@ export const dynamic = 'force-dynamic';
 
 const PROTOCOLS_DB_ID = process.env.NOTION_BLOG_DB_ID!;
 const TOOLS_DB_ID     = process.env.NOTION_TOOLS_DB_ID!;
+const BRANCHES_DB_ID  = process.env.NOTION_BRANCHES_DB_ID || 'bf1e89a5167e484b9fc85376031f72e3';
+const CONFIG_DB_ID    = process.env.NOTION_SITE_CONFIG_DB_ID || '3670d601-4acc-8137-a1e3-daf1e0bdfa51';
 const STORAGE_BUCKET  = 'notion-files';
 const STORAGE_PREFIX  = 'covers';
 
@@ -69,7 +71,7 @@ function isAlreadyPersisted(url: string): boolean {
 
 // Download from Notion → upload to Supabase Storage → return permanent public URL
 // Runs ONE AT A TIME to avoid hammering S3 or Supabase rate limits.
-async function persistCoverImage(slug: string, notionUrl: string, force = false): Promise<string> {
+async function persistCoverImage(slug: string, notionUrl: string, force = false, prefix = STORAGE_PREFIX): Promise<string> {
   const supabase = getSupabase();
 
   // Skip if already a permanent Supabase URL (unless force)
@@ -78,14 +80,14 @@ async function persistCoverImage(slug: string, notionUrl: string, force = false)
   // Check if already stored under any extension
   const { data: existing } = await supabase.storage
     .from(STORAGE_BUCKET)
-    .list(STORAGE_PREFIX, { search: slug });
+    .list(prefix, { search: slug });
 
   if (!force && existing && existing.length > 0) {
     const match = existing.find(f => f.name.startsWith(slug + '.'));
     if (match) {
       const { data } = supabase.storage
         .from(STORAGE_BUCKET)
-        .getPublicUrl(`${STORAGE_PREFIX}/${match.name}`);
+        .getPublicUrl(`${prefix}/${match.name}`);
       return data.publicUrl;
     }
   }
@@ -108,7 +110,7 @@ async function persistCoverImage(slug: string, notionUrl: string, force = false)
 
   const contentType = imgRes.headers.get('content-type') ?? 'image/jpeg';
   const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
-  const storagePath = `${STORAGE_PREFIX}/${slug}.${ext}`;
+  const storagePath = `${prefix}/${slug}.${ext}`;
 
   const buffer = await imgRes.arrayBuffer();
 
@@ -329,9 +331,149 @@ async function syncTools(force = false) {
   return { synced: rawRows.length, deleted: deleted ?? 0, images };
 }
 
+// ---- Sync branches ----
+
+async function syncBranches(force = false) {
+  if (!BRANCHES_DB_ID) return { synced: 0, deleted: 0, images: 0 };
+  const pages = await queryNotion(BRANCHES_DB_ID);
+  const supabase = getSupabase();
+
+  const rawRows = pages
+    .map(page => {
+      const p = page.properties as Record<string, NotionProp>;
+      const slug = text(p['Slug']);
+      if (!slug) return null;
+
+      const file = notionFile(p['Cover Image']);
+      const notionImageUrl = file?.url ?? '';
+
+      return {
+        slug,
+        notionImageUrl,
+        isHosted: file?.isHosted ?? false,
+        row: {
+          notion_id: page.id,
+          num: text(p['Number']),
+          name: text(p['Name']),
+          slug,
+          color: text(p['Color']) || '#ffffff',
+          icon: text(p['Icon']),
+          description: text(p['Description']),
+          cover_image: notionImageUrl,
+        },
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
+
+  const branchesDeduped = Object.values(
+    Object.fromEntries(rawRows.map(r => [r.row.slug, r.row]))
+  );
+
+  const { error: upsertError } = await supabase
+    .from('branches')
+    .upsert(branchesDeduped, { onConflict: 'slug' });
+
+  if (upsertError) throw new Error(`Branches upsert failed: ${upsertError.message}`);
+
+  let images = 0;
+  for (const { slug, notionImageUrl, isHosted } of rawRows) {
+    if (!notionImageUrl) continue;
+    const persistedUrl = isHosted
+      ? await persistCoverImage(slug, notionImageUrl, force, 'branches')
+      : notionImageUrl;
+
+    if (persistedUrl !== notionImageUrl) {
+      await supabase.from('branches').update({ cover_image: persistedUrl }).eq('slug', slug);
+      images++;
+    }
+  }
+
+  const publishedSlugs = rawRows.map(r => r.slug);
+  const { count: deleted } = await supabase
+    .from('branches')
+    .delete({ count: 'exact' })
+    .not('slug', 'in', `(${publishedSlugs.join(',')})`);
+
+  return { synced: rawRows.length, deleted: deleted ?? 0, images };
+}
+
+// ---- Sync site config ----
+
+async function syncSiteConfig(force = false) {
+  if (!CONFIG_DB_ID) return { synced: 0, deleted: 0, images: 0 };
+
+  const supabase = getSupabase();
+  const { error: tableCheck } = await supabase.from('site_config').select('key').limit(1);
+  if (tableCheck && tableCheck.code === 'PGRST205') {
+    console.warn('[sync-notion] Table "site_config" does not exist in Supabase yet.');
+    return { synced: 0, deleted: 0, images: 0 };
+  }
+
+  const pages = await queryNotion(CONFIG_DB_ID);
+
+  const rawRows = pages
+    .map(page => {
+      const p = page.properties as Record<string, NotionProp>;
+      const key = text(p['Key']);
+      if (!key) return null;
+
+      const file = notionFile(p['Image']);
+      const notionImageUrl = file?.url ?? '';
+
+      return {
+        key,
+        notionImageUrl,
+        isHosted: file?.isHosted ?? false,
+        row: {
+          key,
+          name: text(p['Name']),
+          value_text: text(p['Text Value']) || null,
+          value_color: text(p['Color']) || null,
+          image_url: notionImageUrl || null,
+          description: text(p['Description']) || null,
+          active: checkbox(p['Active']),
+        },
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
+
+  const configsDeduped = Object.values(
+    Object.fromEntries(rawRows.map(r => [r.row.key, r.row]))
+  );
+
+  const { error: upsertError } = await supabase
+    .from('site_config')
+    .upsert(configsDeduped, { onConflict: 'key' });
+
+  if (upsertError) throw new Error(`Site Config upsert failed: ${upsertError.message}`);
+
+  let images = 0;
+  for (const { key, notionImageUrl, isHosted } of rawRows) {
+    if (!notionImageUrl) continue;
+    const persistedUrl = isHosted
+      ? await persistCoverImage(key, notionImageUrl, force, 'site-config')
+      : notionImageUrl;
+
+    if (persistedUrl !== notionImageUrl) {
+      await supabase.from('site_config').update({ image_url: persistedUrl }).eq('key', key);
+      images++;
+    }
+  }
+
+  const activeKeys = rawRows.map(r => r.key);
+  const { count: deleted } = await supabase
+    .from('site_config')
+    .delete({ count: 'exact' })
+    .not('key', 'in', `(${activeKeys.join(',')})`);
+
+  return { synced: rawRows.length, deleted: deleted ?? 0, images };
+}
+
 // ---- Handler ----
-
-
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -346,15 +488,19 @@ export async function GET(req: NextRequest) {
   const force = req.nextUrl.searchParams.get('force') === 'true';
 
   try {
-    const [protocols, tools] = await Promise.all([
+    const [protocols, tools, branches, siteConfig] = await Promise.all([
       syncProtocols(force),
       syncTools(force),
+      syncBranches(force),
+      syncSiteConfig(force),
     ]);
 
     console.log(`[sync-notion] protocols: ${protocols.synced} synced, ${protocols.deleted} deleted, ${protocols.images} images persisted`);
     console.log(`[sync-notion] tools: ${tools.synced} synced, ${tools.deleted} deleted, ${tools.images} images persisted`);
+    console.log(`[sync-notion] branches: ${branches.synced} synced, ${branches.deleted} deleted, ${branches.images} images persisted`);
+    console.log(`[sync-notion] site_config: ${siteConfig.synced} synced, ${siteConfig.deleted} deleted, ${siteConfig.images} images persisted`);
 
-    return NextResponse.json({ protocols, tools });
+    return NextResponse.json({ protocols, tools, branches, siteConfig });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[sync-notion] Error:', message);
