@@ -29,7 +29,8 @@ type NotionProp =
   | { type: 'status'; status: { name: string } | null }
   | { type: 'checkbox'; checkbox: boolean }
   | { type: 'files'; files: NotionFile[] }
-  | { type: 'date'; date: { start: string } | null };
+  | { type: 'date'; date: { start: string } | null }
+  | { type: 'multi_select'; multi_select: Array<{ name: string }> };
 
 function text(p: NotionProp | undefined): string {
   if (!p) return '';
@@ -51,6 +52,11 @@ function status(p: NotionProp | undefined): string {
 function checkbox(p: NotionProp | undefined): boolean {
   if (!p || p.type !== 'checkbox') return false;
   return p.checkbox;
+}
+
+function multiSelect(p: NotionProp | undefined): string[] {
+  if (!p || p.type !== 'multi_select') return [];
+  return p.multi_select?.map(s => s.name) || [];
 }
 
 function notionFile(p: NotionProp | undefined): { url: string; isHosted: boolean } | null {
@@ -411,6 +417,24 @@ async function syncSiteConfig(force = false) {
     return { synced: 0, deleted: 0, images: 0 };
   }
 
+  // Fetch columns from PostgREST OpenAPI spec to be robust against schema mismatches
+  let hasDescriptionColumn = false;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/`, {
+      headers: {
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+      },
+    });
+    if (res.ok) {
+      const schema = await res.json();
+      const props = schema?.definitions?.site_config?.properties;
+      hasDescriptionColumn = props && 'description' in props;
+    }
+  } catch (err) {
+    console.error('[sync-notion] Failed to fetch site_config schema:', err);
+  }
+
   const pages = await queryNotion(CONFIG_DB_ID);
 
   const rawRows = pages
@@ -422,19 +446,24 @@ async function syncSiteConfig(force = false) {
       const file = notionFile(p['Image']);
       const notionImageUrl = file?.url ?? '';
 
+      const row: any = {
+        key,
+        name: text(p['Name']),
+        value_text: text(p['Text Value']) || null,
+        value_color: text(p['Color']) || null,
+        image_url: notionImageUrl || null,
+        active: checkbox(p['Active']),
+      };
+
+      if (hasDescriptionColumn) {
+        row.description = text(p['Description']) || null;
+      }
+
       return {
         key,
         notionImageUrl,
         isHosted: file?.isHosted ?? false,
-        row: {
-          key,
-          name: text(p['Name']),
-          value_text: text(p['Text Value']) || null,
-          value_color: text(p['Color']) || null,
-          image_url: notionImageUrl || null,
-          description: text(p['Description']) || null,
-          active: checkbox(p['Active']),
-        },
+        row,
       };
     })
     .filter((r): r is NonNullable<typeof r> => r !== null);
@@ -473,6 +502,147 @@ async function syncSiteConfig(force = false) {
   return { synced: rawRows.length, deleted: deleted ?? 0, images };
 }
 
+// ---- Sync song brackets ----
+
+function replaceSongTags(text: string, vibes: string[]): string {
+  const lines = text.split('\n');
+  const selectedVibes = vibes.slice(0, 2);
+  const vibeStr = selectedVibes.join(', ') || 'Emotional';
+  
+  const updatedLines = lines.map(line => {
+    const trimmed = line.trim();
+    // Match any bracket at the start of a line
+    const bracketMatch = trimmed.match(/^(\[[^\]]+\])(.*)$/);
+    if (bracketMatch) {
+      const bracket = bracketMatch[1];
+      const rest = bracketMatch[2];
+      
+      if (bracket.includes('GERMAN RAP — FAST, AGGRESSIVE')) {
+        return line;
+      }
+      
+      let newTag = bracket;
+      
+      // INTRO
+      if (/^\[INTRO(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[INTRO — Hushed Vocals, Intimate Melodic Rap, ${vibeStr}, 85 BPM]`;
+      }
+      // VERSE
+      else if (/^\[(FINAL\s+)?VERSE\s*(\d+)?(\s*—.*)?\]$/i.test(bracket)) {
+        const numMatch = bracket.match(/\d+/);
+        const num = numMatch ? ` ${numMatch[0]}` : '';
+        const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
+        newTag = `[${prefix}VERSE${num} — Intimate Melodic Rap, Hushed Vocals, 85 BPM, ${vibeStr}]`;
+      }
+      // RAP VERSE
+      else if (/^\[RAP\s+VERSE\s*(\d+)?(\s*—.*)?\]$/i.test(bracket)) {
+        const numMatch = bracket.match(/\d+/);
+        const num = numMatch ? ` ${numMatch[0]}` : '';
+        newTag = `[RAP VERSE${num} — Intimate Melodic Rap, Hushed Vocals, 85 BPM, ${vibeStr}]`;
+      }
+      // PRE-CHORUS / PRE-HOOK
+      else if (/^\[(FINAL\s+)?PRE-CHORUS(\s*—.*)?\]$/i.test(bracket) || /^\[(FINAL\s+)?PRE-HOOK(\s*—.*)?\]$/i.test(bracket)) {
+        const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
+        newTag = `[${prefix}PRE-CHORUS — Emotional Synth Buildup, Hushed Vocals, ${selectedVibes[0] || 'Intimate'}, Rising Intensity]`;
+      }
+      // CHORUS / HOOK
+      else if (/^\[(FINAL\s+)?CHORUS(\s*—.*)?\]$/i.test(bracket) || /^\[(FINAL\s+)?HOOK(\s*—.*)?\]$/i.test(bracket)) {
+        const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
+        newTag = `[${prefix}CHORUS — Smooth R&B Ballad, Emotional Synth Buildup, 85 BPM, ${vibeStr}]`;
+      }
+      // POST-CHORUS
+      else if (/^\[POST-CHORUS(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[POST-CHORUS — Hushed Vocals, Smooth R&B Ballad, ${vibeStr}]`;
+      }
+      // BRIDGE
+      else if (/^\[BRIDGE(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[BRIDGE — ${vibeStr}, Smooth R&B Ballad, Hushed Vocals]`;
+      }
+      // RAP BRIDGE
+      else if (/^\[RAP\s+BRIDGE(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[RAP BRIDGE — ${vibeStr}, Smooth R&B Ballad, Hushed Vocals]`;
+      }
+      // RAP BREAK
+      else if (/^\[RAP\s+BREAK(\s*—.*)?\]$/i.test(bracket) || /^\[RAP\s+–\s+BREAK(\s*—.*)?\]$/i.test(bracket) || /^\[RAP\s+—\s+BREAK(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[RAP BREAK — 85 BPM, Smooth R&B Ballad, Intimate Melodic Rap]`;
+      }
+      // OUTRO
+      else if (/^\[OUTRO(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[OUTRO — Intimate Melodic Rap, Hushed Vocals Fadeout, ${selectedVibes[0] || 'Smooth'}]`;
+      }
+      
+      if (newTag !== bracket) {
+        return line.replace(bracket, newTag);
+      }
+    }
+    return line;
+  });
+  
+  return updatedLines.join('\n');
+}
+
+function chunkSongText(text: string, limit = 1950): Array<{ type: 'text'; text: { content: string } }> {
+  const chunks: Array<{ type: 'text'; text: { content: string } }> = [];
+  for (let i = 0; i < text.length; i += limit) {
+    chunks.push({
+      type: 'text',
+      text: {
+        content: text.substring(i, i + limit)
+      }
+    });
+  }
+  return chunks;
+}
+
+async function updateNotionPageLyrics(pageId: string, textChunks: Array<{ type: 'text'; text: { content: string } }>) {
+  const res = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      properties: {
+        Lyrics: {
+          rich_text: textChunks,
+        },
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to update page ${pageId}: ${await res.text()}`);
+  }
+}
+
+async function syncSongBrackets() {
+  const songsDbId = process.env.NOTION_SONGS_DB_ID || '2780d601-4acc-8064-a87e-edc5e96fe22e';
+  console.log(`[sync-notion] Formatting lyric style tags in Notion database ${songsDbId}...`);
+  
+  const pages = await queryNotion(songsDbId);
+  let totalUpdated = 0;
+
+  for (const page of pages) {
+    const p = page.properties as Record<string, NotionProp>;
+    const title = text(p['Title']) || text(p['Song Title']) || 'Untitled';
+    const lyricsText = text(p['Lyrics']);
+    const vibes = multiSelect(p['Emotion&Vibe']);
+
+    const updatedLyrics = replaceSongTags(lyricsText, vibes);
+
+    if (updatedLyrics !== lyricsText) {
+      console.log(`[sync-notion] Updating tags for song "${title}"...`);
+      const textChunks = chunkSongText(updatedLyrics, 1950);
+      await updateNotionPageLyrics(page.id, textChunks);
+      totalUpdated++;
+      await new Promise(resolve => setTimeout(resolve, 350));
+    }
+  }
+
+  return { synced: pages.length, updated: totalUpdated };
+}
+
 // ---- Handler ----
 
 export async function GET(req: NextRequest) {
@@ -488,19 +658,21 @@ export async function GET(req: NextRequest) {
   const force = req.nextUrl.searchParams.get('force') === 'true';
 
   try {
-    const [protocols, tools, branches, siteConfig] = await Promise.all([
+    const [protocols, tools, branches, siteConfig, songs] = await Promise.all([
       syncProtocols(force),
       syncTools(force),
       syncBranches(force),
       syncSiteConfig(force),
+      syncSongBrackets(),
     ]);
 
     console.log(`[sync-notion] protocols: ${protocols.synced} synced, ${protocols.deleted} deleted, ${protocols.images} images persisted`);
     console.log(`[sync-notion] tools: ${tools.synced} synced, ${tools.deleted} deleted, ${tools.images} images persisted`);
     console.log(`[sync-notion] branches: ${branches.synced} synced, ${branches.deleted} deleted, ${branches.images} images persisted`);
     console.log(`[sync-notion] site_config: ${siteConfig.synced} synced, ${siteConfig.deleted} deleted, ${siteConfig.images} images persisted`);
+    console.log(`[sync-notion] songs: ${songs.synced} synced, ${songs.updated} songs updated with formatted brackets`);
 
-    return NextResponse.json({ protocols, tools, branches, siteConfig });
+    return NextResponse.json({ protocols, tools, branches, siteConfig, songs });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[sync-notion] Error:', message);

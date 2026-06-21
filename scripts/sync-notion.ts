@@ -83,6 +83,11 @@ const getUrl = (prop: unknown): string => {
   return (prop as { url?: string }).url || '';
 };
 
+const getMultiSelect = (prop: unknown): string[] => {
+  if (typeof prop !== 'object' || prop === null) return [];
+  return (prop as { multi_select?: Array<{ name: string }> }).multi_select?.map(s => s.name) || [];
+};
+
 /**
  * Safely parses JSON values with error boundaries to prevent script crashes on invalid input.
  */
@@ -489,6 +494,24 @@ async function syncSiteConfig(pages: NotionPage[]): Promise<string[]> {
     return []
   }
 
+  // Fetch columns from PostgREST OpenAPI spec to be robust against schema mismatches
+  let hasDescriptionColumn = false;
+  try {
+    const res = await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/`, {
+      headers: {
+        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+    });
+    if (res.ok) {
+      const schema = await res.json();
+      const props = schema?.definitions?.site_config?.properties;
+      hasDescriptionColumn = props && 'description' in props;
+    }
+  } catch (err) {
+    console.error('[Sync] Failed to fetch site_config schema:', err);
+  }
+
   const results = await runWithLimit(pages, 5, async (page, index) => {
     const props = page.properties
     const key = getText(props.Key);
@@ -505,14 +528,17 @@ async function syncSiteConfig(pages: NotionPage[]): Promise<string[]> {
       image_url = await uploadCoverImageToSupabase(rawCover, 'site-config', key);
     }
 
-    const data = {
+    const data: any = {
       key,
       name,
       value_text: text_value || null,
       value_color: color || null,
       image_url: image_url || null,
-      description: description || null,
       active
+    }
+
+    if (hasDescriptionColumn) {
+      data.description = description || null;
     }
 
     const { error } = await supabase.from('site_config').upsert(data, { onConflict: 'key' })
@@ -528,43 +554,229 @@ async function syncSiteConfig(pages: NotionPage[]): Promise<string[]> {
   return results.filter(Boolean);
 }
 
+function replaceSongTags(text: string, vibes: string[]): string {
+  const lines = text.split('\n');
+  const selectedVibes = vibes.slice(0, 2);
+  const vibeStr = selectedVibes.join(', ') || 'Emotional';
+  
+  const updatedLines = lines.map(line => {
+    const trimmed = line.trim();
+    // Match any bracket at the start of a line
+    const bracketMatch = trimmed.match(/^(\[[^\]]+\])(.*)$/);
+    if (bracketMatch) {
+      const bracket = bracketMatch[1];
+      const rest = bracketMatch[2];
+      
+      if (bracket.includes('GERMAN RAP — FAST, AGGRESSIVE')) {
+        return line;
+      }
+      
+      let newTag = bracket;
+      
+      // INTRO
+      if (/^\[INTRO(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[INTRO — Hushed Vocals, Intimate Melodic Rap, ${vibeStr}, 85 BPM]`;
+      }
+      // VERSE
+      else if (/^\[(FINAL\s+)?VERSE\s*(\d+)?(\s*—.*)?\]$/i.test(bracket)) {
+        const numMatch = bracket.match(/\d+/);
+        const num = numMatch ? ` ${numMatch[0]}` : '';
+        const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
+        newTag = `[${prefix}VERSE${num} — Intimate Melodic Rap, Hushed Vocals, 85 BPM, ${vibeStr}]`;
+      }
+      // RAP VERSE
+      else if (/^\[RAP\s+VERSE\s*(\d+)?(\s*—.*)?\]$/i.test(bracket)) {
+        const numMatch = bracket.match(/\d+/);
+        const num = numMatch ? ` ${numMatch[0]}` : '';
+        newTag = `[RAP VERSE${num} — Intimate Melodic Rap, Hushed Vocals, 85 BPM, ${vibeStr}]`;
+      }
+      // PRE-CHORUS / PRE-HOOK
+      else if (/^\[(FINAL\s+)?PRE-CHORUS(\s*—.*)?\]$/i.test(bracket) || /^\[(FINAL\s+)?PRE-HOOK(\s*—.*)?\]$/i.test(bracket)) {
+        const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
+        newTag = `[${prefix}PRE-CHORUS — Emotional Synth Buildup, Hushed Vocals, ${selectedVibes[0] || 'Intimate'}, Rising Intensity]`;
+      }
+      // CHORUS / HOOK
+      else if (/^\[(FINAL\s+)?CHORUS(\s*—.*)?\]$/i.test(bracket) || /^\[(FINAL\s+)?HOOK(\s*—.*)?\]$/i.test(bracket)) {
+        const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
+        newTag = `[${prefix}CHORUS — Smooth R&B Ballad, Emotional Synth Buildup, 85 BPM, ${vibeStr}]`;
+      }
+      // POST-CHORUS
+      else if (/^\[POST-CHORUS(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[POST-CHORUS — Hushed Vocals, Smooth R&B Ballad, ${vibeStr}]`;
+      }
+      // BRIDGE
+      else if (/^\[BRIDGE(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[BRIDGE — ${vibeStr}, Smooth R&B Ballad, Hushed Vocals]`;
+      }
+      // RAP BRIDGE
+      else if (/^\[RAP\s+BRIDGE(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[RAP BRIDGE — ${vibeStr}, Smooth R&B Ballad, Hushed Vocals]`;
+      }
+      // RAP BREAK
+      else if (/^\[RAP\s+BREAK(\s*—.*)?\]$/i.test(bracket) || /^\[RAP\s+–\s+BREAK(\s*—.*)?\]$/i.test(bracket) || /^\[RAP\s+—\s+BREAK(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[RAP BREAK — 85 BPM, Smooth R&B Ballad, Intimate Melodic Rap]`;
+      }
+      // OUTRO
+      else if (/^\[OUTRO(\s*—.*)?\]$/i.test(bracket)) {
+        newTag = `[OUTRO — Intimate Melodic Rap, Hushed Vocals Fadeout, ${selectedVibes[0] || 'Smooth'}]`;
+      }
+      
+      if (newTag !== bracket) {
+        return line.replace(bracket, newTag);
+      }
+    }
+    return line;
+  });
+  
+  return updatedLines.join('\n');
+}
+
+function chunkSongText(text: string, limit = 1950): Array<{ type: 'text'; text: { content: string } }> {
+  const chunks: Array<{ type: 'text'; text: { content: string } }> = [];
+  for (let i = 0; i < text.length; i += limit) {
+    chunks.push({
+      type: 'text',
+      text: {
+        content: text.substring(i, i + limit)
+      }
+    });
+  }
+  return chunks;
+}
+
+async function syncSongBrackets() {
+  const songsDbId = env.NOTION_SONGS_DB_ID || '2780d601-4acc-8064-a87e-edc5e96fe22e';
+  console.log(`[Sync] Formatting lyric style tags in Notion database ${songsDbId}...`);
+  try {
+    const pages = await fetchAllNotionPages(songsDbId);
+    let totalUpdated = 0;
+
+    for (const page of pages) {
+      const props = page.properties;
+      const title = getText(props.Title) || getText(props['Song Title']) || 'Untitled';
+      const lyricsText = getText(props.Lyrics);
+      const vibes = getMultiSelect(props['Emotion&Vibe']);
+
+      const updatedLyrics = replaceSongTags(lyricsText, vibes);
+
+      if (updatedLyrics !== lyricsText) {
+        console.log(`[Sync] Updating tags for song "${title}"...`);
+        const textChunks = chunkSongText(updatedLyrics, 1950);
+        await notion.pages.update({
+          page_id: page.id,
+          properties: {
+            Lyrics: {
+              rich_text: textChunks
+            }
+          }
+        });
+        totalUpdated++;
+        await new Promise(resolve => setTimeout(resolve, 350));
+      }
+    }
+    console.log(`[Sync] Completed song brackets sync. Updated ${totalUpdated} songs.`);
+  } catch (err: any) {
+    console.error('[Sync] Error formatting song tags:', err.message);
+  }
+}
+
 async function sync() {
   console.log('Starting safe synchronization...')
   
   // 1. Fetch ALL records from Notion databases (regardless of status)
-  const allProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID)
-  const allTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID)
-  
-  const branchesDbId = env.NOTION_BRANCHES_DB_ID || 'bf1e89a5167e484b9fc85376031f72e3';
-  const branchesData = await fetchAllNotionPages(branchesDbId);
+  let allProtocols: NotionPage[] = [];
+  try {
+    allProtocols = await fetchAllNotionPages(env.NOTION_BLOG_DB_ID);
+  } catch (err: any) {
+    console.error('[Sync] Failed to fetch protocols from Notion:', err.message);
+  }
 
-  const siteConfigDbId = env.NOTION_SITE_CONFIG_DB_ID || '3670d601-4acc-8137-a1e3-daf1e0bdfa51';
-  const siteConfigs = await fetchAllNotionPages(siteConfigDbId);
+  let allTools: NotionPage[] = [];
+  try {
+    allTools = await fetchAllNotionPages(env.NOTION_TOOLS_DB_ID);
+  } catch (err: any) {
+    console.error('[Sync] Failed to fetch tools from Notion:', err.message);
+  }
+
+  let branchesData: NotionPage[] = [];
+  try {
+    const branchesDbId = env.NOTION_BRANCHES_DB_ID || 'bf1e89a5167e484b9fc85376031f72e3';
+    branchesData = await fetchAllNotionPages(branchesDbId);
+  } catch (err: any) {
+    console.error('[Sync] Failed to fetch branches from Notion:', err.message);
+  }
+
+  let siteConfigs: NotionPage[] = [];
+  try {
+    const siteConfigDbId = env.NOTION_SITE_CONFIG_DB_ID || '3670d601-4acc-8137-a1e3-daf1e0bdfa51';
+    siteConfigs = await fetchAllNotionPages(siteConfigDbId);
+  } catch (err: any) {
+    console.error('[Sync] Failed to fetch site configs from Notion:', err.message);
+  }
   
   if (allProtocols.length === 0 && allTools.length === 0 && branchesData.length === 0 && siteConfigs.length === 0) {
     console.error('[Sync] No data retrieved from Notion. Aborting sync to prevent data loss.')
     return
   }
 
-  const allProtocolSlugs = allProtocols.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
-  const allToolSlugs = allTools.map(p => getText(p.properties.Slug) || p.id).filter(Boolean)
-  const allConfigKeys = siteConfigs.map(p => getText(p.properties.Key)).filter(Boolean)
+  // 2. Protocols sync
+  let syncedProtocolSlugs: string[] = [];
+  if (allProtocols.length > 0) {
+    try {
+      const allProtocolSlugs = allProtocols.map(p => getText(p.properties.Slug) || p.id).filter(Boolean);
+      syncedProtocolSlugs = await syncProtocols(allProtocols);
+      await deleteStaleRecords('protocols', allProtocolSlugs);
+    } catch (err: any) {
+      console.error('[Sync] Protocols sync failed:', err.message);
+    }
+  }
 
-  // 2. Upsert all records (this will sync statuses like 'Draft' directly to Supabase)
-  const syncedProtocolSlugs = await syncProtocols(allProtocols)
-  const syncedToolSlugs = await syncTools(allTools)
-  const syncedBranchSlugs = await syncBranches(branchesData)
-  const syncedConfigKeys = await syncSiteConfig(siteConfigs)
+  // 3. Tools sync
+  let syncedToolSlugs: string[] = [];
+  if (allTools.length > 0) {
+    try {
+      const allToolSlugs = allTools.map(p => getText(p.properties.Slug) || p.id).filter(Boolean);
+      syncedToolSlugs = await syncTools(allTools);
+      await deleteStaleRecords('tools', allToolSlugs);
+    } catch (err: any) {
+      console.error('[Sync] Tools sync failed:', err.message);
+    }
+  }
 
-  // 3. Delete ONLY records that no longer exist anywhere in Notion
-  await deleteStaleRecords('protocols', allProtocolSlugs)
-  await deleteStaleRecords('tools', allToolSlugs)
-  await deleteStaleRecords('branches', syncedBranchSlugs)
-  await deleteStaleRecords('site_config', allConfigKeys)
+  // 4. Branches sync
+  let syncedBranchSlugs: string[] = [];
+  if (branchesData.length > 0) {
+    try {
+      syncedBranchSlugs = await syncBranches(branchesData);
+      await deleteStaleRecords('branches', syncedBranchSlugs);
+    } catch (err: any) {
+      console.error('[Sync] Branches sync failed:', err.message);
+    }
+  }
+
+  // 5. Site config sync
+  let syncedConfigKeys: string[] = [];
+  if (siteConfigs.length > 0) {
+    try {
+      const allConfigKeys = siteConfigs.map(p => getText(p.properties.Key)).filter(Boolean);
+      syncedConfigKeys = await syncSiteConfig(siteConfigs);
+      await deleteStaleRecords('site_config', allConfigKeys);
+    } catch (err: any) {
+      console.error('[Sync] Site config sync failed:', err.message);
+    }
+  }
+  
+  // 6. Sync song brackets
+  try {
+    await syncSongBrackets();
+  } catch (err: any) {
+    console.error('[Sync] Songs bracket sync failed:', err.message);
+  }
   
   console.log('All syncs complete successfully!')
   console.log(`[Sync] Protocols synced: ${syncedProtocolSlugs.length}`)
   console.log(`[Sync] Tools synced: ${syncedToolSlugs.length}`)
+  console.log(`[Sync] Branches synced: ${syncedBranchSlugs.length}`)
   console.log(`[Sync] Site config parameters synced: ${syncedConfigKeys.length}`)
 }
 
