@@ -26,7 +26,7 @@ export default async function IntelligencePage() {
 
   const pageBg = config.intelligence_bg_color?.color || '#000000';
   const pageAccent = config.intelligence_accent_color?.color || '#00C4C4';
-  const heroImage = '/Images/banners/blog%20banner.png';
+  const heroImage = '/Images/home/hero_new.png';
 
   const localStyle = {
     backgroundColor: pageBg,
