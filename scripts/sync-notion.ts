@@ -575,20 +575,20 @@ function replaceSongTags(text: string, vibes: string[]): string {
       
       // INTRO
       if (/^\[INTRO(\s*—.*)?\]$/i.test(bracket)) {
-        newTag = `[INTRO — Hushed Vocals, Intimate Melodic Rap, ${vibeStr}, 85 BPM]`;
+        newTag = `[INTRO — Hushed Vocals, Intimate Melodic Rap, ${vibeStr}]`;
       }
       // VERSE
       else if (/^\[(FINAL\s+)?VERSE\s*(\d+)?(\s*—.*)?\]$/i.test(bracket)) {
         const numMatch = bracket.match(/\d+/);
         const num = numMatch ? ` ${numMatch[0]}` : '';
         const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
-        newTag = `[${prefix}VERSE${num} — Intimate Melodic Rap, Hushed Vocals, 85 BPM, ${vibeStr}]`;
+        newTag = `[${prefix}VERSE${num} — Intimate Melodic Rap, Hushed Vocals, ${vibeStr}]`;
       }
       // RAP VERSE
       else if (/^\[RAP\s+VERSE\s*(\d+)?(\s*—.*)?\]$/i.test(bracket)) {
         const numMatch = bracket.match(/\d+/);
         const num = numMatch ? ` ${numMatch[0]}` : '';
-        newTag = `[RAP VERSE${num} — Intimate Melodic Rap, Hushed Vocals, 85 BPM, ${vibeStr}]`;
+        newTag = `[RAP VERSE${num} — Intimate Melodic Rap, Hushed Vocals, ${vibeStr}]`;
       }
       // PRE-CHORUS / PRE-HOOK
       else if (/^\[(FINAL\s+)?PRE-CHORUS(\s*—.*)?\]$/i.test(bracket) || /^\[(FINAL\s+)?PRE-HOOK(\s*—.*)?\]$/i.test(bracket)) {
@@ -598,7 +598,7 @@ function replaceSongTags(text: string, vibes: string[]): string {
       // CHORUS / HOOK
       else if (/^\[(FINAL\s+)?CHORUS(\s*—.*)?\]$/i.test(bracket) || /^\[(FINAL\s+)?HOOK(\s*—.*)?\]$/i.test(bracket)) {
         const prefix = /^\[FINAL/i.test(bracket) ? 'FINAL ' : '';
-        newTag = `[${prefix}CHORUS — Smooth R&B Ballad, Emotional Synth Buildup, 85 BPM, ${vibeStr}]`;
+        newTag = `[${prefix}CHORUS — Smooth R&B Ballad, Emotional Synth Buildup, ${vibeStr}]`;
       }
       // POST-CHORUS
       else if (/^\[POST-CHORUS(\s*—.*)?\]$/i.test(bracket)) {
@@ -614,7 +614,7 @@ function replaceSongTags(text: string, vibes: string[]): string {
       }
       // RAP BREAK
       else if (/^\[RAP\s+BREAK(\s*—.*)?\]$/i.test(bracket) || /^\[RAP\s+–\s+BREAK(\s*—.*)?\]$/i.test(bracket) || /^\[RAP\s+—\s+BREAK(\s*—.*)?\]$/i.test(bracket)) {
-        newTag = `[RAP BREAK — 85 BPM, Smooth R&B Ballad, Intimate Melodic Rap]`;
+        newTag = `[RAP BREAK — Smooth R&B Ballad, Intimate Melodic Rap]`;
       }
       // OUTRO
       else if (/^\[OUTRO(\s*—.*)?\]$/i.test(bracket)) {
