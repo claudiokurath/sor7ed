@@ -4,16 +4,16 @@
    DESIGN TOKENS & CSS VARIABLE OVERRIDES
 ============================================= */
 :root {
-  --ink: #f4efe5;
-  --surface: #fbf8f1;
-  --surface-2: #efe8d9;
-  --line: #e1d8c6;
-  --bone: #221e18;
-  --muted: #897f6e;
-  --accent: #2f6b50;
-  --accent-soft: #e3ede5;
-  --accent-ink: #f6f2e8;
-  --warn: #b9601c;
+  --ink: #000000;
+  --surface: #0a0d0e;
+  --surface-2: #141a1c;
+  --line: rgba(255, 255, 255, 0.12);
+  --bone: #eaf1ee;
+  --muted: rgba(234, 241, 238, 0.5);
+  --accent: #2ee6c9;
+  --accent-soft: rgba(46, 230, 201, 0.12);
+  --accent-ink: #000000;
+  --warn: #ffb800;
 
   /* Font mapping using Next.js Google Font CSS Variables */
   --font-display: var(--font-serif), 'Newsreader', Georgia, serif;
@@ -459,7 +459,7 @@ p {
 
 .wa-avatar.bot {
   background: var(--accent);
-  color: white;
+  color: var(--accent-ink);
 }
 
 .wa-avatar.user {
@@ -476,7 +476,8 @@ p {
 }
 
 .wa-bubble.bot {
-  background: rgba(47, 107, 80, 0.6);
+  background: rgba(46, 230, 201, 0.16);
+  border: 1px solid rgba(46, 230, 201, 0.25);
   color: rgba(255, 255, 255, 0.95);
   border-bottom-left-radius: 4px;
 }
@@ -1141,8 +1142,8 @@ input[type="tel"] {
   padding: 10px 12px;
   font-size: 13px;
   font-family: var(--font-sans);
-  background: #fff;
-  color: var(--bone);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
   outline: none;
   transition: border 140ms ease, box-shadow 140ms ease;
 }
@@ -1153,7 +1154,7 @@ input::placeholder {
 
 input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(47, 107, 80, 0.14);
+  box-shadow: 0 0 0 2px rgba(46, 230, 201, 0.2);
 }
 
 .form-microcopy {
@@ -1250,7 +1251,7 @@ input:focus {
 footer {
   border-top: 1px solid var(--line);
   padding: 28px var(--padding) 36px;
-  background: #f0e8d8;
+  background: #06090a;
 }
 
 .footer-inner {
