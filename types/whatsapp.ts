@@ -4,6 +4,7 @@ export type WaCommand =
   | { verb: 'ARTICLE'; arg: string }
   | { verb: 'LIBRARY'; arg: null }
   | { verb: 'WELCOME'; arg: null }
+  | { verb: 'LOGIN'; arg: null }
   | { verb: 'HELP' | 'MENU' | 'STOP'; arg: null }
   | { verb: 'VERIFY'; arg: string }
   | { verb: 'UNKNOWN'; arg: string };

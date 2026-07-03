@@ -7,6 +7,7 @@ import { handleSave } from '@/lib/whatsapp/handlers/save';
 import { handleLibrary } from '@/lib/whatsapp/handlers/library';
 import { handleArticle } from '@/lib/whatsapp/handlers/article';
 import { handleWelcome } from '@/lib/whatsapp/handlers/welcome';
+import { handleLogin } from '@/lib/whatsapp/handlers/login';
 import { touchLastInbound, drainPendingMessages } from '@/lib/whatsapp/csw';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { WaMessage, WaResponse } from '@/types/whatsapp';
@@ -106,10 +107,10 @@ async function handleVerify(from: string, code: string): Promise<WaResponse> {
     const supabase = createAdminClient();
     // Find user by phone number and matching verify code
     const { data: profile, error } = await supabase
-      .from('profiles')
+      .from('users')
       .select('user_id, wa_verify_code, whatsapp_verified')
-      .eq('whatsapp_number', from)
-      .single();
+      .or(`whatsapp_number.eq.+${from},whatsapp_number.eq.${from}`)
+      .maybeSingle();
 
     if (error || !profile) {
       return { to: from, text: "We couldn't find your account. Visit sor7ed.com/signup to get started." };
@@ -125,7 +126,7 @@ async function handleVerify(from: string, code: string): Promise<WaResponse> {
 
     // Mark as verified
     await supabase
-      .from('profiles')
+      .from('users')
       .update({ whatsapp_verified: true, wa_verify_code: null })
       .eq('user_id', profile.user_id);
 
@@ -164,17 +165,20 @@ async function processMessageInBackground(incoming: WaMessage) {
       case 'WELCOME':
         responses = [await handleWelcome(incoming.from)];
         break;
+      case 'LOGIN':
+        responses = [await handleLogin(incoming.from)];
+        break;
       case 'HELP':
       case 'MENU':
         responses = [{
           to: incoming.from,
-          text: "SAVE <tool> — save tool\nRUN <tool> — run tool\nLIBRARY — your items\n\nsor7ed.com/tools",
+          text: "SAVE <tool> — save tool\nRUN <tool> — run tool\nLIBRARY — your items\nLOGIN — get dashboard login link\n\nsor7ed.com/tools",
         }];
         break;
       default:
         responses = [{
           to: incoming.from,
-          text: "Unknown command\nTry: SAVE <tool> or visit sor7ed.com/tools",
+          text: "Unknown command\nTry: SAVE <tool>, RUN <tool>, or LOGIN.",
         }];
     }
 

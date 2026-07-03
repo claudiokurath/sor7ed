@@ -9,7 +9,10 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = await createClient();
-  const like = `%${q}%`;
+  // PostgREST treats `,` `.` `(` `)` as filter syntax — quote the value so
+  // user input can't break out of the ilike pattern into other clauses.
+  const escaped = q.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const like = `"%${escaped}%"`;
 
   const [toolsRes, articlesRes] = await Promise.all([
     supabase

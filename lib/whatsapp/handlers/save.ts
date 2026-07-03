@@ -16,6 +16,8 @@ export async function handleSave(
   let title = input;
   let targetUrl = `${SITE_URL}/tools/${input}`;
   let category = 'Tool';
+  let toolData: any = null;
+  let articleData: any = null;
 
   if (isUrl) {
     category = 'External';
@@ -28,7 +30,7 @@ export async function handleSave(
     // Try to resolve as tool slug first
     const { data: tool } = await supabase
       .from('tools')
-      .select('name, slug')
+      .select('name, slug, cover_image, short_description')
       .eq('slug', input)
       .single();
 
@@ -36,11 +38,12 @@ export async function handleSave(
       category = 'Tool';
       title = tool.name;
       targetUrl = `${SITE_URL}/tools/${tool.slug}`;
+      toolData = tool;
     } else {
       // Try as article slug
       const { data: article } = await supabase
         .from('protocols')
-        .select('title, slug')
+        .select('title, slug, cover_image, summary, tldr')
         .eq('slug', input)
         .single();
 
@@ -48,6 +51,7 @@ export async function handleSave(
         category = 'Article';
         title = article.title;
         targetUrl = `${SITE_URL}/intelligence/${article.slug}`;
+        articleData = article;
       }
     }
   }
@@ -89,6 +93,50 @@ export async function handleSave(
       console.error('[Webhook] Failed to insert saved_item:', error.message);
     } else if (inserted) {
       savedId = inserted.id;
+    }
+  }
+
+  // 4. Create/upsert a matching rich link so that /s/[id] previews and redirects work
+  if (savedId) {
+    let description = `${category} saved to SOR7ED`;
+    let imageUrl = `${SITE_URL}/Images/banners/landing%20banner.png`;
+
+    // Try to find the correct tool or article details if we didn't query them from input slug (e.g. if input was an URL)
+    let finalTool = toolData;
+    let finalArticle = articleData;
+
+    if (category === 'Tool' && finalTool) {
+      description = finalTool.short_description || description;
+      if (finalTool.cover_image && !finalTool.cover_image.includes('cdn.midjourney.com')) {
+        imageUrl = finalTool.cover_image;
+      }
+    } else {
+      // If we saved via a direct slug, we might already have the article fetched
+      const articleToUse = finalArticle;
+      if (category === 'Article' && articleToUse) {
+        description = articleToUse.summary || articleToUse.tldr || description;
+        if (articleToUse.cover_image && !articleToUse.cover_image.includes('cdn.midjourney.com')) {
+          imageUrl = articleToUse.cover_image;
+        }
+      }
+    }
+
+    try {
+      const { error: richLinkError } = await supabase
+        .from('rich_links')
+        .upsert({
+          slug: savedId,
+          title,
+          description,
+          target_url: targetUrl,
+          image_url: imageUrl,
+        }, { onConflict: 'slug' });
+
+      if (richLinkError) {
+        console.error('[Webhook] Failed to insert rich_link for saved_item:', richLinkError.message);
+      }
+    } catch (e) {
+      console.error('[Webhook] Exception inserting rich_link for saved_item:', e);
     }
   }
 

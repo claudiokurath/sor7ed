@@ -22,6 +22,8 @@ export function parseCommand(rawText: string): WaCommand {
       return { verb: 'WELCOME', arg: null };
     case 'VERIFY':
       return arg ? { verb: 'VERIFY', arg } : { verb: 'UNKNOWN', arg: trimmed };
+    case 'LOGIN':
+      return { verb: 'LOGIN', arg: null };
     case 'HELP':
     case 'MENU':
     case 'STOP':

@@ -695,13 +695,6 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     "decision-paralysis-solver": DecisionParalysisSolver,
   };
   const ToolOSComponent = TOOL_OS_SLUGS[tool.slug];
-  if (ToolOSComponent) {
-    return (
-      <div className="page-container py-12">
-        <ToolOSComponent isPaid={false} />
-      </div>
-    );
-  }
 
   const [currentStep, setCurrentStep] = useState(whatsappContext ? 0 : -1); // Auto-start if from WhatsApp
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -713,6 +706,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   const [showFullResults, setShowFullResults] = useState(false);
 
   useEffect(() => {
+    if (ToolOSComponent) return;
     if (currentStep >= 0 && currentStep < tool.questions.length) {
       const q = tool.questions[currentStep];
       const stored = answers[q.id];
@@ -725,6 +719,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   }, [currentStep, answers, tool.questions]);
 
   useEffect(() => {
+    if (ToolOSComponent) return;
     if (whatsappContext && tool.questions.length === 0) {
       handleAssessmentComplete();
     }
@@ -732,6 +727,7 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
   }, []);
 
   useEffect(() => {
+    if (ToolOSComponent) return;
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
@@ -748,6 +744,14 @@ export default function ToolAssessmentClient({ tool, whatsappContext }: {
     }
     checkUser();
   }, [tool.slug]);
+
+  if (ToolOSComponent) {
+    return (
+      <div className="page-container py-12">
+        <ToolOSComponent isPaid={false} />
+      </div>
+    );
+  }
 
   const saveHistory = async (result: AssessmentResult, frictionType?: string) => {
     if (!user) return;

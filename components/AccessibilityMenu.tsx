@@ -20,19 +20,20 @@ export default function AccessibilityMenu() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState<Settings>(defaults);
-
-  if (pathname?.startsWith("/statement")) return null;
+  const hidden = pathname?.startsWith("/statement") ?? false;
 
   // Load from localStorage on mount
   useEffect(() => {
+    if (hidden) return;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) setSettings(JSON.parse(saved));
     } catch {}
-  }, []);
+  }, [hidden]);
 
   // Apply settings to <html> element
   useEffect(() => {
+    if (hidden) return;
     const html = document.documentElement;
     html.classList.toggle("a11y-high-contrast", settings.highContrast);
     html.classList.toggle("a11y-dyslexia", settings.dyslexiaFont);
@@ -40,7 +41,9 @@ export default function AccessibilityMenu() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     } catch {}
-  }, [settings]);
+  }, [hidden, settings]);
+
+  if (hidden) return null;
 
   function toggle(key: keyof Settings) {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
