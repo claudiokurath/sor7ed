@@ -390,7 +390,7 @@ p {
   min-height: 400px;
   background: linear-gradient(135deg, rgba(47, 107, 80, 0.45) 0%, rgba(13, 43, 30, 0.6) 100%), url('/Images/hero-bg.png') no-repeat center center / cover;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   position: relative;
   overflow: hidden;

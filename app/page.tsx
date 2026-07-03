@@ -304,26 +304,6 @@ export default function HomePage() {
           <div className="hero-image" aria-hidden="true">
             <div className="hero-image-inner">
               <div className="hero-image-content">
-                <div className="hero-whatsapp-card">
-                  <div className="wa-msg">
-                    <div className="wa-avatar bot">S</div>
-                    <div className="wa-bubble bot">
-                      Hey! Which area feels hardest right now — money, energy, or planning? 💬
-                    </div>
-                  </div>
-                  <div className="wa-msg user">
-                    <div className="wa-avatar user">A</div>
-                    <div className="wa-bubble user">Honestly, all three. But money first.</div>
-                  </div>
-                  <div className="wa-msg">
-                    <div className="wa-avatar bot">S</div>
-                    <div className="wa-typing">
-                      <div className="wa-dot"></div>
-                      <div className="wa-dot"></div>
-                      <div className="wa-dot"></div>
-                    </div>
-                  </div>
-                </div>
                 <div className="hero-stats">
                   <div className="hero-stat">
                     <div className="hero-stat-num">7</div>
