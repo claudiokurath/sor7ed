@@ -40,7 +40,8 @@ html {
 }
 
 body {
-  background: var(--ink);
+  background: linear-gradient(to bottom, rgba(10, 13, 14, 0.72) 0%, rgba(10, 13, 14, 0.95) 100%), url('/Images/hero-bg.png') no-repeat center top fixed;
+  background-size: cover;
   color: var(--bone);
   font-family: var(--font-sans);
   line-height: 1.6;
@@ -295,11 +296,12 @@ p {
    HERO
 ============================================= */
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.1fr);
-  gap: 40px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
   margin-top: 40px;
+  max-width: 800px;
 }
 
 .hero-eyebrow {

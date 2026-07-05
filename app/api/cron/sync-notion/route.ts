@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cleanBlogPost, cleanProtocolField, parseTemplateToQuestions } from '@/lib/utils/clean-blog';
+import { generateCoverSvg } from '@/lib/utils/cover-generator';
 
 export const dynamic = 'force-dynamic';
 
@@ -205,6 +206,80 @@ async function syncProtocols(force = false) {
       };
     })
     .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  // Generate cover images for published/live protocols that don't have one
+  let generatedCoversCount = 0;
+  for (const item of rawRows) {
+    const isPublished = ['published', 'live'].includes(item.row.status?.trim().toLowerCase());
+    if (isPublished && !item.notionImageUrl) {
+      console.log(`[sync-notion] Generating cover for protocol: ${item.slug}`);
+      try {
+        const svgContent = generateCoverSvg(item.row.title, item.row.branch, item.row.keyword, item.slug);
+        const storagePath = `${STORAGE_PREFIX}/${item.slug}.svg`;
+        
+        // Upload to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(storagePath, Buffer.from(svgContent), {
+            contentType: 'image/svg+xml',
+            upsert: true
+          });
+          
+        if (uploadError) {
+          console.error(`[sync-notion] Failed to upload generated cover for ${item.slug}:`, uploadError.message);
+          continue;
+        }
+        
+        const { data: publicData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
+        const publicUrl = publicData.publicUrl;
+        
+        // Find the page in our fetched pages to get the Notion ID
+        const page = pages.find(p => {
+          const props = p.properties as Record<string, NotionProp>;
+          return text(props['Slug']) === item.slug;
+        });
+        
+        if (page) {
+          const updateRes = await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+            method: 'PATCH',
+            headers: {
+              Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
+              'Notion-Version': '2022-06-28',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              properties: {
+                'Cover Image 1': {
+                  files: [
+                    {
+                      name: 'Generated Cover',
+                      type: 'external',
+                      external: {
+                        url: publicUrl,
+                      },
+                    },
+                  ],
+                },
+              },
+            }),
+          });
+          
+          if (!updateRes.ok) {
+            console.error(`[sync-notion] Failed to update Notion cover for ${item.slug}:`, await updateRes.text());
+          } else {
+            console.log(`[sync-notion] Successfully updated Notion page cover for ${item.slug}`);
+          }
+        }
+        
+        // Set both the row's cover image and the notionImageUrl to our generated public URL
+        item.row.cover_image = publicUrl;
+        item.notionImageUrl = publicUrl;
+        generatedCoversCount++;
+      } catch (err) {
+        console.error(`[sync-notion] Error generating cover for ${item.slug}:`, err);
+      }
+    }
+  }
 
   if (rawRows.length === 0) return { synced: 0, deleted: 0, images: 0 };
 

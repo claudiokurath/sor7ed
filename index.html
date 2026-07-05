@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorted Websites Directory</title>
+    <style>
+        :root {
+            /* Light theme (default) */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .theme-toggle {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .filters {
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            background: var(--bg-secondary);
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .stats {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .favicon {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.375rem;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .favicon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.375rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .card-url {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-container {
+                min-width: 100%;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>My Sorted Websites</h1>
+        <p>A curated collection of useful websites, organized and searchable</p>
+        
+        <div class="controls">
+            <div class="search-container">
+                <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" placeholder="Search websites..." id="searchInput">
+            </div>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </div>
+    </header>
+
+    <div class="filters" id="filtersContainer">
+        <button class="filter-btn active" data-category="all">All Sites</button>
+    </div>
+
+    <main class="main">
+        <div class="stats" id="statsContainer">
+            Showing <span id="visibleCount">0</span> of <span id="totalCount">0</span> websites
+        </div>
+        
+        <div class="grid" id="websiteGrid"></div>
+        
+        <div class="empty-state hidden" id="emptyState">
+            <h3>No websites found</h3>
+            <p>Try adjusting your search or filter criteria</p>
+        </div>
+    </main>
+
+    <script>
+        // 🎯 ADD YOUR WEBSITES HERE - This is the only section you need to edit!
+        const WEBSITES = [
+            {
+                name: "GitHub",
+                url: "https://github.com",
+                description: "Code hosting platform for version control and collaboration using Git.",
+                category: "Development"
+            },
+            {
+                name: "Stack Overflow",
+                url: "https://stackoverflow.com",
+                description: "The largest online community for programmers to learn and share knowledge.",
+                category: "Development"
+            },
+            {
+                name: "Figma",
+                url: "https://figma.com",
+                description: "Collaborative interface design tool for creating user interfaces and prototypes.",
+                category: "Design"
+            },
+            {
+                name: "Dribbble",
+                url: "https://dribbble.com",
+                description: "Creative community for designers to share screenshots of their work.",
+                category: "Design"
+            },
+            {
+                name: "Notion",
+                url: "https://notion.so",
+                description: "All-in-one workspace for notes, docs, tasks, and project management.",
+                category: "Productivity"
+            },
+            {
+                name: "Trello",
+                url: "https://trello.com",
+                description: "Visual project management tool using boards, lists, and cards.",
+                category: "Productivity"
+            },
+            {
+                name: "Unsplash",
+                url: "https://unsplash.com",
+                description: "Beautiful, free photos and images from talented photographers worldwide.",
+                category: "Resources"
+            },
+            {
+                name: "Font Awesome",
+                url: "https://fontawesome.com",
+                description: "Comprehensive icon library with thousands of free and premium icons.",
+                category: "Resources"
+            }
+        ];
+
+        // 🚀 Application Logic - No need to modify below this line
+        class WebsiteDirectory {
+            constructor() {
+                this.websites = WEBSITES;
+                this.filteredWebsites = [...this.websites];
+                this.currentCategory = 'all';
+                this.searchTerm = '';
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.createCategoryFilters();
+                this.renderWebsites();
+                this.updateStats();
+                this.setupTheme();
+            }
+
+            setupEventListeners() {
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.searchTerm = e.target.value.toLowerCase();
+                    this.filterWebsites();
+                });
+
+                document.getElementById('themeToggle').addEventListener('click', () => {
+                    this.toggleTheme();
+                });
+            }
+
+            createCategoryFilters() {
+                const categories = [...new Set(this.websites.map(site => site.category))].sort();
+                const filtersContainer = document.getElementById('filtersContainer');
+                
+                categories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.textContent = category;
+                    button.dataset.category = category.toLowerCase();
+                    
+                    button.addEventListener('click', () => {
+                        this.setActiveFilter(button, category.toLowerCase());
+                    });
+                    
+                    filtersContainer.appendChild(button);
+                });
+            }
+
+            setActiveFilter(button, category) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                this.currentCategory = category;
+                this.filterWebsites();
+            }
+
+            filterWebsites() {
+                this.filteredWebsites = this.websites.filter(site => {
+                    const matchesCategory = this.currentCategory === 'all' || 
+                                          site.category.toLowerCase() === this.currentCategory;
+                    const matchesSearch = !this.searchTerm || 
+                                        site.name.toLowerCase().includes(this.searchTerm) ||
+                                        site.description.toLowerCase().includes(this.searchTerm) ||
+                                        site.category.toLowerCase().includes(this.searchTerm);
+                    
+                    return matchesCategory && matchesSearch;
+                });
+                
+                this.renderWebsites();
+                this.updateStats();
+            }
+
+            renderWebsites() {
+                const grid = document.getElementById('websiteGrid');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (this.filteredWebsites.length === 0) {
+                    grid.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                emptyState.classList.add('hidden');
+                
+                grid.innerHTML = this.filteredWebsites.map(site => {
+                    const domain = new URL(site.url).hostname;
+                    const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                    const initials = site.name.charAt(0).toUpperCase();
+                    
+                    return `
+                        <a href="${site.url}" target="_blank" rel="noopener noreferrer" class="card">
+                            <div class="card-header">
+                                <div class="favicon">
+                                    <img src="${faviconUrl}" alt="" onerror="this.style.display='none'; this.parentElement.textContent='${initials}'">
+                                </div>
+                                <div>
+                                    <h3 class="card-title">${site.name}</h3>
+                                    <div class="card-url">${domain}</div>
+                                </div>
+                            </div>
+                            <p class="card-description">${site.description}</p>
+                            <div class="card-footer">
+                                <span class="tag">${site.category}</span>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+            }
+
+            updateStats() {
+                document.getElementById('visibleCount').textContent = this.filteredWebsites.length;
+                document.getElementById('totalCount').textContent = this.websites.length;
+            }
+
+            setupTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.getElementById('themeToggle').textContent = '☀️';
+                }
+            }
+
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('theme', newTheme);
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new WebsiteDirectory();
+        });
+    </script>
+</body>
+</html>

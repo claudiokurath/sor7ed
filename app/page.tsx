@@ -299,28 +299,21 @@ export default function HomePage() {
             <p className="hero-microcopy">
               No app. No subscription required. Start with one area and get practical support that actually fits how your brain works.
             </p>
-          </div>
-
-          <div className="hero-image" aria-hidden="true">
-            <div className="hero-image-inner">
-              <div className="hero-image-content">
-                <div className="hero-stats">
-                  <div className="hero-stat">
-                    <div className="hero-stat-num">7</div>
-                    <div className="hero-stat-label">Branches</div>
-                  </div>
-                  <div className="hero-stat">
-                    <div className="hero-stat-num">0</div>
-                    <div className="hero-stat-label">New apps</div>
-                  </div>
-                  <div className="hero-stat">
-                    <div className="hero-stat-num">∞</div>
-                    <div className="hero-stat-label">Protocols</div>
-                  </div>
-                </div>
+            
+            <div className="hero-stats" style={{ maxWidth: "420px", marginTop: "28px" }}>
+              <div className="hero-stat">
+                <div className="hero-stat-num">7</div>
+                <div className="hero-stat-label">Branches</div>
+              </div>
+              <div className="hero-stat">
+                <div className="hero-stat-num">0</div>
+                <div className="hero-stat-label">New apps</div>
+              </div>
+              <div className="hero-stat">
+                <div className="hero-stat-num">∞</div>
+                <div className="hero-stat-label">Protocols</div>
               </div>
             </div>
-            <div className="hero-tag">Support, straight to your WhatsApp</div>
           </div>
         </section>
 

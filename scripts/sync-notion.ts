@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import * as fs from 'fs'
 import * as path from 'path'
 import { cleanBlogPost, cleanProtocolField, parseTemplateToQuestions } from '../lib/utils/clean-blog'
+import { generateCoverSvg } from '../lib/utils/cover-generator'
 
 // Robust environment variable loader
 function loadEnvironment(): Record<string, string> {
@@ -297,6 +298,57 @@ async function syncProtocols(pages: NotionPage[]): Promise<string[]> {
       if (rawCover) {
         cover_image = rawCover;
         console.log(`[Sync] Using cover URL for protocol: ${slug}`);
+      }
+    }
+
+    // 3. Generate cover image if it doesn't have one and is published/live
+    const currentStatus = getStatus(props.Status) || 'Live';
+    const isPublished = ['published', 'live'].includes(currentStatus.trim().toLowerCase());
+    
+    if (!cover_image && isPublished) {
+      console.log(`[Sync] Generating cover image for published protocol: ${slug}`);
+      try {
+        const branchName = getSelect(props.Branch);
+        const svgContent = generateCoverSvg(title, branchName, keyword, slug);
+        const storagePath = `covers/${slug}.svg`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('notion-files')
+          .upload(storagePath, Buffer.from(svgContent), {
+            contentType: 'image/svg+xml',
+            upsert: true
+          });
+          
+        if (uploadError) {
+          console.error(`[Sync] Failed to upload generated cover for ${slug}:`, uploadError.message);
+        } else {
+          const { data: publicData } = supabase.storage
+            .from('notion-files')
+            .getPublicUrl(storagePath);
+            
+          cover_image = publicData.publicUrl;
+          
+          // Update Notion page to persist it
+          await notion.pages.update({
+            page_id: page.id,
+            properties: {
+              'Cover Image 1': {
+                files: [
+                  {
+                    name: 'Generated Cover',
+                    type: 'external',
+                    external: {
+                      url: cover_image
+                    }
+                  }
+                ]
+              }
+            }
+          });
+          console.log(`[Sync] Successfully updated Notion page cover for ${slug}`);
+        }
+      } catch (err: any) {
+        console.error(`[Sync] Error generating cover for ${slug}:`, err.message || err);
       }
     }
 
