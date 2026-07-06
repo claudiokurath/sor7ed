@@ -37,7 +37,7 @@ export async function handleArticle(
   if (!article) {
     return [{
       to: userWaId,
-      text: "Article not found\nVisit sor7ed.com/intelligence",
+      text: "Article not found\nVisit sor7ed.com/#intelligence",
       preview_url: false,
     }];
   }
@@ -52,7 +52,7 @@ export async function handleArticle(
         slug: linkSlug,
         title: article.title,
         description: article.summary || article.tldr || 'Read this protocol on SOR7ED.',
-        target_url: `${SITE_URL}/intelligence/${article.slug}`,
+        target_url: `${SITE_URL}/#intelligence`,
         image_url: (article.cover_image && !article.cover_image.includes('cdn.midjourney.com')) ? article.cover_image : null
       }, { onConflict: 'slug' });
 

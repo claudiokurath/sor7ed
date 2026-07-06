@@ -18,7 +18,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
     console.warn(`[Login] User not found for phone: ${userWaId}`, userError?.message);
     return {
       to: userWaId,
-      text: `We couldn't find an account matching your WhatsApp number.\n\nSign up first at ${SITE_URL}/signup`,
+      text: `We couldn't find an account matching your WhatsApp number.\n\nSign up first at ${SITE_URL}/#signup`,
       preview_url: false,
     };
   }
@@ -29,7 +29,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
       type: 'magiclink',
       email: user.email,
       options: {
-        redirectTo: `${SITE_URL}/dashboard`,
+        redirectTo: `${SITE_URL}/`,
       },
     });
 
@@ -37,7 +37,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
       console.error('[Login] Failed to generate magic link:', linkError?.message);
       return {
         to: userWaId,
-        text: `Sorry, we failed to generate a login link. Please try logging in via the website at ${SITE_URL}/signup?mode=login`,
+        text: `Sorry, we failed to generate a login link. Please try logging in via the website at ${SITE_URL}/#signup`,
         preview_url: false,
       };
     }
@@ -50,7 +50,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
     const { error: richLinkError } = await supabase.from('rich_links').insert({
       slug,
       title: 'Login to SOR7ED',
-      description: `Hey ${user.first_name || 'there'}! Tap here to log in directly to your dashboard.`,
+      description: `Hey ${user.first_name || 'there'}! Tap here to log in to SOR7ED.`,
       target_url: actionLink,
       image_url: `${SITE_URL}/Images/banners/landing%20banner.png`,
     });
@@ -60,7 +60,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
       // Fallback to sending the direct link
       return {
         to: userWaId,
-        text: `Hey ${user.first_name || 'there'}! Tap here to log in directly to your dashboard:\n${actionLink}`,
+        text: `Hey ${user.first_name || 'there'}! Tap here to log in to SOR7ED:\n${actionLink}`,
         preview_url: false,
       };
     }
@@ -69,7 +69,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
 
     return {
       to: userWaId,
-      text: `Hey ${user.first_name || 'there'}! Tap here to log in directly to your dashboard:\n${loginUrl}`,
+      text: `Hey ${user.first_name || 'there'}! Tap here to log in to SOR7ED:\n${loginUrl}`,
       url: loginUrl,
       preview_url: true,
     };
@@ -77,7 +77,7 @@ export async function handleLogin(userWaId: string): Promise<WaResponse> {
     console.error('[Login] Exception in handleLogin:', err);
     return {
       to: userWaId,
-      text: `An error occurred while logging you in. Please visit the website to sign in: ${SITE_URL}/signup?mode=login`,
+      text: `An error occurred while logging you in. Please visit the website to sign in: ${SITE_URL}/#signup`,
       preview_url: false,
     };
   }

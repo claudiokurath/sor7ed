@@ -14,7 +14,7 @@ export async function handleSave(
   const isUrl = input.startsWith('http://') || input.startsWith('https://');
   
   let title = input;
-  let targetUrl = `${SITE_URL}/tools/${input}`;
+  let targetUrl = `${SITE_URL}/#tools`;
   let category = 'Tool';
   let toolData: any = null;
   let articleData: any = null;
@@ -37,7 +37,7 @@ export async function handleSave(
     if (tool) {
       category = 'Tool';
       title = tool.name;
-      targetUrl = `${SITE_URL}/tools/${tool.slug}`;
+      targetUrl = `${SITE_URL}/#tools`;
       toolData = tool;
     } else {
       // Try as article slug
@@ -50,7 +50,7 @@ export async function handleSave(
       if (article) {
         category = 'Article';
         title = article.title;
-        targetUrl = `${SITE_URL}/intelligence/${article.slug}`;
+        targetUrl = `${SITE_URL}/#intelligence`;
         articleData = article;
       }
     }

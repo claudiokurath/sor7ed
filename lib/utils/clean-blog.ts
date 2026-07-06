@@ -190,8 +190,11 @@ export function cleanJsonString(str: string): string {
  */
 export function parseTemplateToQuestions(templateStr: string): any[] {
   if (!templateStr || templateStr.trim() === '') return [];
+  const cleaned = cleanJsonString(templateStr);
+  // Most "Template" values are free-form notes, not JSON — only treat it as a
+  // parse failure worth logging if it actually looks like it was meant to be JSON.
+  const looksLikeJson = cleaned.startsWith('{') || cleaned.startsWith('[');
   try {
-    const cleaned = cleanJsonString(templateStr);
     const parsed = JSON.parse(cleaned);
     
     let rawFields: any[] = [];
@@ -265,7 +268,9 @@ export function parseTemplateToQuestions(templateStr: string): any[] {
       };
     });
   } catch (err) {
-    console.error('[parseTemplateToQuestions] Error parsing template:', err);
+    if (looksLikeJson) {
+      console.error('[parseTemplateToQuestions] Error parsing template:', err);
+    }
     return [];
   }
 }
